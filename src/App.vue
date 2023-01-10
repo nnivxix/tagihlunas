@@ -3,10 +3,8 @@
 </script>
 
 <template>
+  <h1>hello</h1>
   <div>
-    <h1 class="text-3xl font-bold underline">
-      Hello world! Google
-    </h1>
-    <p>Google</p>
+    <router-view></router-view>
   </div>
 </template>
