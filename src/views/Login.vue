@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-5">
+  <div>
     <AppBar titleapp="tagihlunas" />
     <h1 class="text-2xl py-5 text-dark">Sign in to <span class="font-medium">tagihlunas</span></h1>
     <form class="flex flex-col">

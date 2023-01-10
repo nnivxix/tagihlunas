@@ -1,5 +1,5 @@
 <template>
-  <div class="md:hidden">
+  <div class="md:hidden mx-5">
     <router-view></router-view>
   </div>
   <p class="hidden md:block">Sorry, currently the web-app doesn't support desktop mode, please resize your screen to mobile.</p>
