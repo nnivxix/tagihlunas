@@ -15,7 +15,22 @@ const routes: RouteRecordRaw[] = [
     path: '/users',
     name: 'Users',
     component: () => import('@/views/ListUsers.vue')
-  }
+  },
+  {
+    path: '/users/:id',
+    name: 'Detail',
+    component: () => import('@/views/ListTrx.vue')
+  },
+  {
+    path: '/transaction',
+    name: 'add.transaction',
+    component: () => import('@/views/Transaction.vue')
+  },
+  {
+    path: '/user',
+    name: 'add.user',
+    component: () => import('@/views/User.vue')
+  },
 ];
 
 const router = createRouter({

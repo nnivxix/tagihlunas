@@ -1,10 +1,20 @@
+<template>
+  <div :class='`w-${dimension} h-${dimension}`'
+  class="bg-gray-400 text-blue-600 p-6 flex flex-col justify-center  items-center rounded-full ">
+    <p class="font-semibold">{{ init }}</p>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
-import TheAvatar from './TheAvatar.vue';
 const props = defineProps({
   username: {
     type: String,
-    default: 'User Hello',
+
+  },
+  dimension: {
+    type: String,
+    default: 14
   }
 })
 
@@ -18,19 +28,12 @@ function getInitials(username: string) :string{
   if (parts.value.length >= 3) {
     parts.value.splice(2)
   }   
-  return parts.value.join('')    
+  return parts.value.join('').toLocaleUpperCase()
 }
 
-const init = ref(getInitials(props.username))
+const init = ref(getInitials(props.username as string))
 </script>
 
-<template>
-  <div class="flex items-center my-3">
-    <TheAvatar :username="username"></TheAvatar>
-    <p class="ml-4 text-xl">{{ username }}</p>
-  </div>
-</template>
-
-<style>
+<style scoped>
 
 </style>
