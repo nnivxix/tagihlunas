@@ -2,7 +2,7 @@
   <div class="mx-6">
   <AppBar titleapp="Add User">
     <template #back >
-      <button class="justify-self-start" @click="$router.back()">
+      <button class="justify-self-start" @click="$router.push({name: 'users'})">
         <img src="@/assets/arrow-back.svg" alt="back" srcset="">
       </button>
     </template>

@@ -1,6 +1,6 @@
 <template>
   <div :class='`w-${dimension} h-${dimension}`'
-  class="bg-gray-400 text-blue-600 p-6 flex flex-col justify-center  items-center rounded-full ">
+  class="bg-gray-400 text-gray-100 p-9 min-w-[100px] flex flex-col justify-center  items-center rounded-full ">
     <p class="font-semibold text-xl">{{ init }}</p>
   </div>
 </template>

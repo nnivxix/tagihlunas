@@ -9,6 +9,11 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'intro',
     component: () => import('@/views/TheIntro.vue'),
+    beforeEnter: (to, from) => {
+      if (isLoggedIn()) {
+        return {name: 'users'}
+      }
+    }
   },
   {
     path: '/users',
@@ -47,7 +52,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/TheLogin.vue')
+    component: () => import('@/views/TheLogin.vue'),
+    beforeEnter: (to, from) => {
+      if (isLoggedIn()) {
+        return {name: 'users'}
+      }
+    }
   },
   {
     path: '/test',
@@ -66,11 +76,6 @@ router.beforeEach((to, from) => {
   if ( to.meta.requiresAuth && !isLoggedIn()  && !Object.keys(to.query).includes("fromEmail")) {
     return {name: "login" };
   }
-  if ( to.name == 'login' || to.name == 'intro' && isLoggedIn()) {
-    return {name: "users" };
-  }
 })
-
-
 
 export default router;

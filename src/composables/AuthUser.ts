@@ -19,7 +19,7 @@ export default function useAuthUser() {
     }
   };
   const userLogout = async () => {
-    return;
+    await supabase.auth.signOut()
   };
   const isLoggedIn = () => {
     return !!user.value;

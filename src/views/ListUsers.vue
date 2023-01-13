@@ -7,15 +7,16 @@
         </button>
       </template>
       <template #exit >
-        <button class="justify-self-end">
+        <button class="justify-self-end" @click="handleLogout" title="log out button">
           <img :src="logout" alt="exit">
         </button>
       </template>
     </AppBar>
-    <TheButton :src-icon="plus" title="Add User"></TheButton>
+    <TheButton :src-icon="plus" title="Add User" @button-event="addUser" ></TheButton>
     <input type="text" name="filter users" id="" placeholder="3 Users" class="border p-2 rounded-md w-full my-8 border-gray-800">
     <div>
       <ContactUser username="Indah Pratiwi Ami Utami"></ContactUser>
+      <ContactUser username="Ike Istimaeni"></ContactUser>
       <ContactUser username="Ahmad Jihan Zaki"></ContactUser>
       <ContactUser username="Zihan Waluya Indra Abraham"></ContactUser>
       <ContactUser username="Wilda Ahad"></ContactUser>
@@ -29,22 +30,26 @@
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
-
-// import router from '@/router';
-// import useAuthUser from '@/composables/AuthUser'
+import router from '@/router';
+import useAuthUser from '@/composables/AuthUser'
 
 import plus from '@/assets/plus.svg'
 import logout from '@/assets/logout.svg'
-// const { logout } = useAuthUser();
+const { userLogout } = useAuthUser();
 
-// const handleLogout = async () => {
-//   await logout()
-//   await router.push({
-//     name: 'login'
-//   })
+const handleLogout = async () => {
+  await userLogout()
+  await router.push({
+    name: 'login'
+  })
+}
+
+function addUser(){
+  router.push({
+    name: 'add.user'
+  })
   
-// }
-
+}
 
 
 </script>

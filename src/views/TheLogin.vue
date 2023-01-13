@@ -1,7 +1,7 @@
 <template>
   <div class="mx-6">
     <AppBar titleapp="tagihlunas" />
-    <h1 class="text-2xl py-5 text-dark">Sign in to <span class="font-medium">tagihlunas</span></h1>
+    <h1 class="text-2xl py-5 text-dark">Welcome back, please sign in to <span class="font-medium">tagihlunas</span></h1>
 
     <form class="flex flex-col" @submit.prevent="handleLogin">
       <label for="username" class="text-xl text-dark">username</label>
@@ -40,7 +40,6 @@ const handleLogin = async () => {
   } catch (error) {
     return error
   }
-
 }
 </script>
 

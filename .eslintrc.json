@@ -22,5 +22,6 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-console": "error"
     }
 }
