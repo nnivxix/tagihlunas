@@ -11,8 +11,8 @@
       <label for="username" class="text-xl text-dark">username</label>
       <input type="text" name="username" id="username" class="bg-light-lemon p-2 mb-5 rounded-lg">
       
-      <label for="password" class="text-xl text-dark">password</label>
-      <input type="password" name="password" id="password" class="bg-light-lemon p-2 mb-12 rounded-lg">
+      <label for="name" class="text-xl text-dark">name</label>
+      <input type="name" name="name" id="name" class="bg-light-lemon p-2 mb-12 rounded-lg">
       
       <button class="bg-lemon p-3 font-bold text-dark rounded-lg">Add User</button>
     </form>

@@ -2,6 +2,8 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import useAuthUser from '@/composables/AuthUser';
 
+const { isLoggedIn } = useAuthUser();
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -60,19 +62,15 @@ const router = createRouter({
 });
 
 
-router.beforeEach((to, from, next) => {
-  const { isLoggedIn } = useAuthUser();
-
+router.beforeEach((to, from) => {
   if ( to.meta.requiresAuth && !isLoggedIn()  && !Object.keys(to.query).includes("fromEmail")) {
-    next({name: "login" });
+    return {name: "login" };
   }
-  // else if (to.name == 'login' || to.name == 'intro' && isLoggedIn()){
-  //   next({ name: 'users'})
-  // }
-
-  else {
-    next()
+  if ( to.name == 'login' || to.name == 'intro' && isLoggedIn()) {
+    return {name: "users" };
   }
 })
+
+
 
 export default router;
