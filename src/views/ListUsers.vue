@@ -42,6 +42,8 @@ const handleLogout = async () => {
   await router.push({
     name: 'login'
   })
+
+  window.location.reload()
 }
 
 function addUser(){

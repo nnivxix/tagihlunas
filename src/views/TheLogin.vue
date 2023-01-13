@@ -39,6 +39,8 @@ const handleLogin = async () => {
     })
   } catch (error) {
     return error
+  } finally {
+    window.location.reload()
   }
 }
 </script>
