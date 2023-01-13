@@ -1,6 +1,12 @@
 <template>
   <div class="mx-6">
-    <AppBar titleapp="Transaction"></AppBar>
+    <AppBar titleapp="Transaction">
+      <template #back >
+        <button class="justify-self-start" @click="$router.back()">
+          <img src="@/assets/arrow-back.svg" alt="back" srcset="">
+        </button>
+      </template>
+    </AppBar>
     <form class="flex flex-col">
       <label for="username" class="text-xl text-dark">username</label>
       <input type="text" name="username" id="username" class="bg-light-lemon p-2 mb-5 rounded-lg">
@@ -29,10 +35,4 @@
 
 <script setup lang="ts">
 import AppBar from '@/components/AppBar.vue';
-
-
 </script>
-
-<style scoped>
-
-</style>

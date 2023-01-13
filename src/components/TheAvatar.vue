@@ -1,7 +1,7 @@
 <template>
   <div :class='`w-${dimension} h-${dimension}`'
   class="bg-gray-400 text-blue-600 p-6 flex flex-col justify-center  items-center rounded-full ">
-    <p class="font-semibold">{{ init }}</p>
+    <p class="font-semibold text-xl">{{ init }}</p>
   </div>
 </template>
 
@@ -10,11 +10,11 @@ import { ref } from 'vue'
 const props = defineProps({
   username: {
     type: String,
-
+    default: 'User Hello'
   },
   dimension: {
-    type: String,
-    default: 14
+    type: Number,
+    default: 20
   }
 })
 
@@ -33,7 +33,3 @@ function getInitials(username: string) :string{
 
 const init = ref(getInitials(props.username as string))
 </script>
-
-<style scoped>
-
-</style>
