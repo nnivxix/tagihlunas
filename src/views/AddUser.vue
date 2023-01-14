@@ -26,22 +26,22 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import {customAlphabet} from 'nanoid';
-import { useVuelidate } from '@vuelidate/core'
-import { minLength, required } from '@vuelidate/validators'
+import { useVuelidate } from '@vuelidate/core';
+import { minLength, required } from '@vuelidate/validators';
 import AppBar from '@/components/AppBar.vue';
-import {useSupabase} from '@/composables/useSupabase'
-import {user} from '@/composables/AuthUser'
+import {useSupabase} from '@/composables/useSupabaseUser';
+import {user} from '@/composables/AuthUser';
 import { FormAddUser } from '@/interfaces/FormAddUser';
 import router from '@/router';
 
 const {addUser} = useSupabase(); 
-const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935'])
+const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
-const userId = `u-${nanoid(8)}${new Date().getDate()}${new Date().getMonth()+1}${new Date().getFullYear()}`
+const userId = `u-${nanoid(8)}${new Date().getDate()}${new Date().getMonth()+1}${new Date().getFullYear()}`;
 const formAddUser: FormAddUser = reactive({
   username: '',
-  name: ''
-})
+  name: '',
+});
 const rules = {
   formAddUser: {
     username: {
@@ -51,10 +51,10 @@ const rules = {
     name: {
       required,
       minLength: minLength(8),
-    }
-  }
-}
-const v = useVuelidate(rules, {formAddUser})
+    },
+  },
+};
+const v = useVuelidate(rules, {formAddUser});
 function pickOneColor(): string{
   const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
   return colorsProfile.value[indexColor];
@@ -66,13 +66,13 @@ async function HandleAddUser () {
       user_id: userId,
       name: formAddUser.name,
       username: formAddUser.username,
-      color_profile: pickOneColor()
+      color_profile: pickOneColor(),
     });
     await router.push({
-      name: 'users'
-    })
+      name: 'users',
+    });
   } catch (error) {
-    return error
+    return error;
   }
   
 }

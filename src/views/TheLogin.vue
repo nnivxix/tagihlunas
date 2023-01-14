@@ -24,25 +24,26 @@ import { reactive } from 'vue';
 import { useRouter } from "vue-router";
 import AppBar from '@/components/AppBar.vue';
 import useAuthUser from '@/composables/AuthUser';
+import { useSupabase } from '@/composables/useSupabaseUser';
 
+const { listAllUsers } = useSupabase();
 const { userLogin } = useAuthUser();
 const router = useRouter();
 const formSignIn = reactive({
   email: '',
-  password: ''
-})
+  password: '',
+});
 const handleLogin = async () => {
   try {
     await userLogin(formSignIn);
     await router.push({
-      name: 'users'
-    })
+      name: 'users',
+    });
+    await listAllUsers();
   } catch (error) {
-    return error
-  } finally {
-    window.location.reload()
+    return error;
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

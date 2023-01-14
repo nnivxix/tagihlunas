@@ -14,41 +14,45 @@
     </AppBar>
     <TheButton :src-icon="plus" title="Add User" @button-event="addUser" ></TheButton>
     <input type="text" name="filter users" id="" :placeholder='`${lengthUsers} users`' class="border p-2 rounded-md w-full my-8 border-gray-800">
-    <div>
-      <ContactUser v-for="user in users" :key="user.user_id" :name="user.name" :background="user.color_profile"></ContactUser>
+    <p v-if="users === undefined">loading</p>
+    <div v-else>
+      <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
+      :background="user.color_profile" :user-id="user.user_id"></ContactUser>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
 import router from '@/router';
-import useAuthUser from '@/composables/AuthUser'
-import {users, lengthUsers ,useSupabase} from '@/composables/useSupabase';
-import plus from '@/assets/plus.svg'
-import logout from '@/assets/logout.svg'
-import { onMounted } from 'vue';
+import useAuthUser from '@/composables/AuthUser';
+import {users, lengthUsers, useSupabase} from '@/composables/useSupabaseUser';
+import plus from '@/assets/plus.svg';
+import logout from '@/assets/logout.svg';
 
 const { userLogout } = useAuthUser();
-const { listAllUsers } = useSupabase()
+const {getAllUsers} = useSupabase();
+
+onMounted(() => {
+
+  getAllUsers();
+})
 
 const handleLogout = async () => {
-  await userLogout()
+  await userLogout();
   await router.push({
-    name: 'login'
-  })
-  window.location.reload()
-}
+    name: 'login',
+  });
+  window.location.reload();
+};
 function addUser(){
   router.push({
-    name: 'add.user'
-  })
-  
+    name: 'add.user',
+  });
 }
-onMounted(() => {
-  listAllUsers()
-})
+
 
 </script>

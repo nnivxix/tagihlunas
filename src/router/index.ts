@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
+import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
 import useAuthUser from '@/composables/AuthUser';
 
 const { isLoggedIn } = useAuthUser();
@@ -9,11 +8,11 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'intro',
     component: () => import('@/views/TheIntro.vue'),
-    beforeEnter: (to, from) => {
+    beforeEnter: () => {
       if (isLoggedIn()) {
-        return {name: 'users'}
+        return {name: 'users'};
       }
-    }
+    },
   },
   {
     path: '/users',
@@ -23,20 +22,22 @@ const routes: RouteRecordRaw[] = [
     ],
     meta: {
       requiresAuth: true,
-    }
+    },
   },
   {
-    path: '/users/:id',
-    name: 'detail',
-    component: () => import('@/views/ListTrx.vue'),
+    path: '/users/:userId',
+    name: 'detail.user',
+    component: () => import('@/views/DetailUser.vue'),
+    // props: route => ({id: route.params.id}) ,
     meta: {
       requiresAuth: true,
     },
   },
   {
-    path: '/users/transaction',
+    path: '/transaction/:userId',
     name: 'add.transaction',
-    component: () => import('@/views/TheTransaction.vue'),
+    component: () => import('@/views/AddTransaction.vue'),
+    props: route => ({ query: route.query.q }),
     meta: {
       requiresAuth: true,
     },
@@ -53,17 +54,17 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     name: 'login',
     component: () => import('@/views/TheLogin.vue'),
-    beforeEnter: (to, from) => {
+    beforeEnter: () => {
       if (isLoggedIn()) {
-        return {name: 'users'}
+        return {name: 'users'};
       }
-    }
+    },
   },
   {
     path: '/test',
     name: 'test',
-    component: () => import('@/views/TestPage.vue')
-  }
+    component: () => import('@/views/TestPage.vue'),
+  },
 ];
 
 const router = createRouter({
@@ -72,10 +73,10 @@ const router = createRouter({
 });
 
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   if ( to.meta.requiresAuth && !isLoggedIn()  && !Object.keys(to.query).includes("fromEmail")) {
     return {name: "login" };
   }
-})
+});
 
 export default router;
