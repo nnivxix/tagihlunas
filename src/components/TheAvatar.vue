@@ -1,6 +1,6 @@
 <template>
-  <div :class='`w-${dimension} h-${dimension} bg-[${backGround}]` '
-  class="text-gray-100 p-9 min-w-[100px] flex flex-col justify-center  items-center rounded-full ">
+  <div :class='`w-${dimension} h-${dimension}`' :style='`background-color:${background};`'
+  class=" text-gray-100 p-9 min-w-[100px] flex flex-col justify-center  items-center rounded-full ">
     <p class="font-semibold text-xl">{{ init }}</p>
   </div>
 </template>
@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 const props = defineProps({
-  username: {
+  name: {
     type: String,
     default: 'User Hello'
   },
@@ -16,13 +16,13 @@ const props = defineProps({
     type: Number,
     default: 20
   },
-  backGround: {
+  background: {
     type: String,
   }
 })
 
-function getInitials(username: string) :string{
-  const arrayName =  username.split(' ')
+function getInitials(name: string) :string{
+  const arrayName =  name.split(' ')
   const parts = ref<string[]>([]);
   
   for (let i = 0; i < arrayName.length; i++){
@@ -34,5 +34,5 @@ function getInitials(username: string) :string{
   return parts.value.join('').toLocaleUpperCase()
 }
 
-const init = ref(getInitials(props.username as string))
+const init = ref(getInitials(props.name as string))
 </script>

@@ -13,15 +13,9 @@
       </template>
     </AppBar>
     <TheButton :src-icon="plus" title="Add User" @button-event="addUser" ></TheButton>
-    <input type="text" name="filter users" id="" placeholder="3 Users" class="border p-2 rounded-md w-full my-8 border-gray-800">
+    <input type="text" name="filter users" id="" :placeholder='`${lengthUsers} users`' class="border p-2 rounded-md w-full my-8 border-gray-800">
     <div>
-      <ContactUser username="Indah Pratiwi Ami Utami"></ContactUser>
-      <ContactUser username="Ike Istimaeni"></ContactUser>
-      <ContactUser username="Ahmad Jihan Zaki"></ContactUser>
-      <ContactUser username="Zihan Waluya Indra Abraham"></ContactUser>
-      <ContactUser username="Wilda Ahad"></ContactUser>
-      <ContactUser username="Hendra"></ContactUser>
-      <ContactUser></ContactUser>
+      <ContactUser v-for="user in users" :key="user.user_id" :name="user.name" :background="user.color_profile"></ContactUser>
     </div>
   </div>
 </template>
@@ -32,26 +26,29 @@ import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
 import router from '@/router';
 import useAuthUser from '@/composables/AuthUser'
-
+import {users, lengthUsers ,useSupabase} from '@/composables/useSupabase';
 import plus from '@/assets/plus.svg'
 import logout from '@/assets/logout.svg'
+import { onMounted } from 'vue';
+
 const { userLogout } = useAuthUser();
+const { listAllUsers } = useSupabase()
 
 const handleLogout = async () => {
   await userLogout()
   await router.push({
     name: 'login'
   })
-
   window.location.reload()
 }
-
 function addUser(){
   router.push({
     name: 'add.user'
   })
   
 }
-
+onMounted(() => {
+  listAllUsers()
+})
 
 </script>

@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import TheAvatar from './TheAvatar.vue';
 defineProps({
-  username: {
+  name: {
     type: String,
     default: 'User Hello',
+  },
+  background: {
+    type: String,
   }
+
 })
 </script>
 
 <template>
   <div class="flex items-center my-3">
-    <TheAvatar :username="username"></TheAvatar>
-    <p class="ml-4 text-xl">{{ username }}</p>
+    <TheAvatar :name="name" :background="background"></TheAvatar>
+    <p class="ml-4 text-xl">{{ name }}</p>
   </div>
 </template>
 
