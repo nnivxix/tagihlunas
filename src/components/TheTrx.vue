@@ -2,7 +2,7 @@
   <div class="grid grid-rows-2 grid-cols-2 bg-semi-gray-1 px-12 py-4 text-dark hover:bg-lemon">
     <p class="text-lg">{{ trxId }}</p>
     <p class="text-xl text-end row-span-2 self-center">{{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}</p>
-    <p class="text-sm text-gray-400">{{ date }}</p>
+    <p class="text-sm text-gray-400">{{`${new Date(date as string).getDate()}-${new Date(date as string).getMonth()+1}-${new Date(date as string).getFullYear()} ${new Date(date as string).getHours()}:${new Date(date as string).getHours()}:${new Date(date as string).getMinutes()}:${new Date(date as string).getSeconds()}`}}</p>
   </div>
 </template>
 

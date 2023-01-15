@@ -34,7 +34,7 @@
         <option value="CASH">Cash</option>
       </select>
       <button class="bg-lemon p-3 font-bold text-dark rounded-lg">
-      {{ loading ? 'Mohon Ditunggu': 'Add Transaction' }}
+        Add Transaction
       </button>
     </form>
   </div>
@@ -56,7 +56,6 @@ const userId = route.params.userId;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const user: any = ref();
-const loading = ref(true);
 
 const {addTransaction} = useTransactions();
 const formAddTrx = reactive({
@@ -87,7 +86,6 @@ async function handleAddTransaction () {
     formAddTrx.flow = '';
     formAddTrx.amount = '';
     formAddTrx.wallet = '';
-    loading.value = true;
     router.back();
   } catch (error) {
     return error;

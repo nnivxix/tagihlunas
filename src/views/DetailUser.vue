@@ -17,9 +17,11 @@
         :background="user['color_profile']"></TheAvatar>
         <p class="ml-4 text-xl flex items-center">{{ user.name }} <span><img class="px-4" src="../assets/pencil.svg" alt="edit button"></span></p>
       </div>
-      <p class="text-4xl font-semibold text-dark py-4">-Rp. 200.000</p>
+      <p  class="text-4xl font-semibold text-dark py-4"> 
+      {{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}
+      </p>
       <TheButton :src-icon="plus" title="Add Trx"
-      @button-event="router.push({name: 'add.transaction'})" ></TheButton>
+      @button-event="router.push({name: 'add.transaction', params: {userId: id}})" ></TheButton>
     </div>
     <div v-if="!transactions || !transactions.length ">
     <p>belum ada transaction</p>
@@ -31,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onServerPrefetch } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
@@ -43,6 +45,7 @@ import { supabase } from '@/services/supabase';
 
 const user = ref();
 const transactions = ref();
+const amount = ref(0);
 const route = useRoute();
 const id = route.params.userId;
 
@@ -60,27 +63,24 @@ const getUserTransactions = async () => {
     .from('transactions')
     .select("*")
     .eq('user_id', id); 
-    if (error) throw error;
 
-  transactions.value =  data;
+  if (error) throw error;
+  if( transactions.value == undefined) {
+    transactions.value =  data;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data.forEach((e: any) => {
+    amount.value += e.amount;
+  });
+    
   return data;
-};
+  };  
 
-// check to avoid error
-if(user.value == undefined && transactions.value == undefined) {
-  getOneUser();
-  getUserTransactions();
-}
-
-// call the function
-getOneUser();
-getUserTransactions();
-
-onServerPrefetch( async () => {
+onBeforeMount( async () => {
   await getOneUser();
   await getUserTransactions();
 });
-
 </script>
 
 <style scoped>
