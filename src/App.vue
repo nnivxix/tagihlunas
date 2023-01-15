@@ -6,16 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted } from 'vue';
-import { useSupabase } from './composables/useSupabaseUser';
 import useAuthUser from '@/composables/AuthUser';
 import { supabase } from './services/supabase';
 
-const { getAllUsers } = useSupabase();
 
-onMounted(async () => {
-  await getAllUsers();
-});
 
 supabase.auth.onAuthStateChange((event, session) => {
   // the "event" is a string indicating what trigger the state change (ie. SIGN_IN, SIGN_OUT, etc)

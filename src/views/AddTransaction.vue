@@ -7,14 +7,13 @@
         </button>
       </template>
     </AppBar>
-    {{ $route.params.userId }}
     <form class="flex flex-col" @submit.prevent="handleAddTransaction">
       <label for="username" class="text-xl text-dark">username</label>
-      <input type="text" name="username" id="username" v-model="user[0][0].username"
+      <input type="text" name="username" id="username" v-model="user[0].username"
       class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
       
       <label for="name" class="text-xl text-dark">name</label>
-      <input type="text" name="name" id="name" v-model="user[0][0].name"
+      <input type="text" name="name" id="name" v-model="user[0].name"
       class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
       
       <label for="flow" class="text-xl text-dark">flow</label>
@@ -24,14 +23,19 @@
       </select>
 
       <label for="amount" class="text-xl text-dark">amount</label>
-      <input v-model="formAddTrx.amount" type="number" name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg">
+      <input v-model.number="formAddTrx.amount" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg">
 
       <label for="wallet" class="text-xl text-dark">wallet</label>
       <select v-model="formAddTrx.wallet" name="wallet" id="wallet" class="bg-light-lemon p-4 mb-12 rounded-lg">
-        <option value="Ovo">Ovo</option>
-        <option value="Gopay">Gopay</option>
+        <option value="OVO">OVO</option>
+        <option value="GPYDR">Gopay Driver</option>
+        <option value="GPYCS">Gopay Customer</option>
+        <option value="GBIDR">Grab Driver</option>
+        <option value="CASH">Cash</option>
       </select>
-      <button class="bg-lemon p-3 font-bold text-dark rounded-lg">Add Transaction</button>
+      <button class="bg-lemon p-3 font-bold text-dark rounded-lg">
+      {{ loading ? 'Mohon Ditunggu': 'Add Transaction' }}
+      </button>
     </form>
   </div>
 </template>
@@ -40,26 +44,19 @@
 import AppBar from '@/components/AppBar.vue';
 import { useTransactions } from '@/composables/useSupabaseTrx';
 import { reactive } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { supabase } from '@/services/supabase';
 import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
 const route = useRoute();
+const router = useRouter();
 const userId = route.params.userId;
-const user: any = ref([]);
-async function getOneUser() {
-  const { data, error } = await supabase
-  .from('users')
-  .select()
-  .eq('user_id', userId); 
 
-  user.value.push(data);
-}
-
-getOneUser();
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const user: any = ref();
+const loading = ref(true);
 
 const {addTransaction} = useTransactions();
 const formAddTrx = reactive({
@@ -68,6 +65,15 @@ const formAddTrx = reactive({
   wallet: '',
 });
 
+async function getOneUser() {
+  const { data, error } = await supabase
+  .from('users')
+  .select()
+  .eq('user_id', userId); 
+  if (error) throw error;
+  user.value = data;
+}
+
 async function handleAddTransaction () {
   try {
     await addTransaction({
@@ -75,10 +81,23 @@ async function handleAddTransaction () {
       flow: formAddTrx.flow,
       amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
       wallet: formAddTrx.wallet,
-      trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(8)}-${new Date().getHours()}${new Date().getMinutes()}` ,
+      trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(8).toLocaleUpperCase()}-${new Date().getHours()}${new Date().getMinutes()}`,
     });
+
+    formAddTrx.flow = '';
+    formAddTrx.amount = '';
+    formAddTrx.wallet = '';
+    loading.value = true;
+    router.back();
   } catch (error) {
     return error;
   }
+}
+
+getOneUser();
+
+if(user.value == undefined) {
+  user.value = [{}];  
+  getOneUser();
 }
 </script>

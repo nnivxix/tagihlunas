@@ -13,8 +13,20 @@ export function useTransactions () {
     }
   };
 
-
+  const getAllTransactions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select()
+        .eq('user_id', 'u-t4cpnh181412023'); 
+        if (error) throw error;
+        return data;
+    } catch (error) {
+      return error;
+    }
+  };
   return {
     addTransaction,
+    getAllTransactions,
   };
 }

@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
     path: '/transaction/:userId',
     name: 'add.transaction',
     component: () => import('@/views/AddTransaction.vue'),
-    props: route => ({ query: route.query.q }),
+    // props: route => ({ query: route.query.q }),
     meta: {
       requiresAuth: true,
     },

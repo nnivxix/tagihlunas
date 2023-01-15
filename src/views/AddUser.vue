@@ -11,12 +11,12 @@
       <label for="username" class="text-xl text-dark">username</label>
       <input type="text" name="username" id="username"
       class="bg-light-lemon p-2 mb-5 rounded-lg"
-      v-model="formAddUser.username">
+      v-model.trim="formAddUser.username">
       <p v-for="error of v.$errors" :key="error.$uid"> {{ error.$message }} </p>
       <label for="name" class="text-xl text-dark">name</label>
       <input type="name" name="name" id="name"
       class="bg-light-lemon p-2 mb-12 rounded-lg"
-      v-model=" formAddUser.name">      
+      v-model.trim=" formAddUser.name">      
       <button class="bg-lemon p-3 font-bold text-dark rounded-lg">Add User</button>
     </form>
     <p>name: {{ formAddUser.name }} - username: {{ formAddUser.username }}</p>

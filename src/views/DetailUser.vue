@@ -8,45 +8,78 @@
       </template>
     </AppBar>
     <div class="px-4 mb-7 mx-6">
-      <div class="flex items-center my-3">
+      <div v-if="user == undefined">
+          <p>loading</p>
+        </div>
+      <div v-else class="flex items-center my-3">
         <TheAvatar
-        :name="firstUser.name" :dimension='parseInt("64")'
-        :background="firstUser['color_profile']"></TheAvatar>
-        <p class="ml-4 text-xl flex items-center">{{ firstUser.name }} <span><img class="px-4" src="../assets/pencil.svg" alt="edit button"></span></p>
+        :name="user.name" :dimension='parseInt("64")'
+        :background="user['color_profile']"></TheAvatar>
+        <p class="ml-4 text-xl flex items-center">{{ user.name }} <span><img class="px-4" src="../assets/pencil.svg" alt="edit button"></span></p>
       </div>
       <p class="text-4xl font-semibold text-dark py-4">-Rp. 200.000</p>
       <TheButton :src-icon="plus" title="Add Trx"
       @button-event="router.push({name: 'add.transaction'})" ></TheButton>
     </div>
-    <div>
-    <TheTrx></TheTrx>
+    <div v-if="!transactions || !transactions.length ">
+    <p>belum ada transaction</p>
+    </div>
+    <div v-else>
+    <TheTrx v-for="transaction in transactions" :key="transaction.id" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></TheTrx>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onServerPrefetch } from 'vue';
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
 import plus from '@/assets/plus.svg';
 import TheTrx from '@/components/TheTrx.vue';
 import { useRoute } from "vue-router";
-import { user, userId, useSupabase } from '@/composables/useSupabaseUser';
 import router from '@/router';
+import { supabase } from '@/services/supabase';
 
-const {getOneUser} = useSupabase();
+const user = ref();
+const transactions = ref();
 const route = useRoute();
 const id = route.params.userId;
-getOneUser(id as string);
 
-const firstUser = user;
-// console.log(firstUser);
+const getOneUser = async () => {
+  const { data } = await supabase
+    .from('users')
+    .select("*")
+    .eq('user_id', id);
+  
+  user.value = await data?.shift();
+  return data;
+};
+const getUserTransactions = async () => {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select("*")
+    .eq('user_id', id); 
+    if (error) throw error;
 
-userId.value = id;
+  transactions.value =  data;
+  return data;
+};
 
+// check to avoid error
+if(user.value == undefined && transactions.value == undefined) {
+  getOneUser();
+  getUserTransactions();
+}
 
+// call the function
+getOneUser();
+getUserTransactions();
 
-
+onServerPrefetch( async () => {
+  await getOneUser();
+  await getUserTransactions();
+});
 
 </script>
 

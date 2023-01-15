@@ -26,7 +26,7 @@ import AppBar from '@/components/AppBar.vue';
 import useAuthUser from '@/composables/AuthUser';
 import { useSupabase } from '@/composables/useSupabaseUser';
 
-const { listAllUsers } = useSupabase();
+const { getAllUsers } = useSupabase();
 const { userLogin } = useAuthUser();
 const router = useRouter();
 const formSignIn = reactive({
@@ -39,7 +39,7 @@ const handleLogin = async () => {
     await router.push({
       name: 'users',
     });
-    await listAllUsers();
+    await getAllUsers();
   } catch (error) {
     return error;
   }
