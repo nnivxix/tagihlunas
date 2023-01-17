@@ -27,7 +27,7 @@
     <p>belum ada transaction</p>
     </div>
     <div v-else>
-    <TheTrx v-for="transaction in transactions" :key="transaction.id" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></TheTrx>
+    <CardTransaction v-for="transaction in transactions" :key="transaction.id" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
     </div>
   </div>
 </template>
@@ -38,12 +38,13 @@ import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
 import plus from '@/assets/plus.svg';
-import TheTrx from '@/components/TheTrx.vue';
 import { useRoute } from "vue-router";
 import router from '@/router';
 import { supabase } from '@/services/supabase';
+import CardTransaction from '@/components/CardTransaction.vue';
 
-const user = ref();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const user: any = ref([]);
 const transactions = ref();
 const amount = ref(0);
 const route = useRoute();

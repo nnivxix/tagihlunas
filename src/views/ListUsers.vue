@@ -13,8 +13,11 @@
       </template>
     </AppBar>
     <TheButton :src-icon="plus" title="Add User" @button-event="addUser" ></TheButton>
-    <input type="text" name="filter users" id="" :placeholder=' users === undefined ? "0 user" : users.length + " users"' class="border p-2 rounded-md w-full my-8 border-gray-800">
-    <p v-if="users === undefined">loading</p>
+    <input type="text" name="filter users" id=""
+    :placeholder='users.length + " users"'
+    class="border p-2 rounded-md w-full my-8 border-gray-800">
+    
+    <p v-if="users === undefined"> loading </p>
     <div v-else>
       <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
       :background="user.color_profile" :user-id="user.user_id"></ContactUser>
@@ -23,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onBeforeMount } from 'vue';
+import type { Ref } from 'vue';
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
@@ -31,11 +35,12 @@ import router from '@/router';
 import { supabase } from '@/services/supabase';
 import useAuthUser from '@/composables/AuthUser';
 import {lengthUsers} from '@/composables/useSupabaseUser';
+import {Users} from '@/interfaces/Users';
 import plus from '@/assets/plus.svg';
 import logout from '@/assets/logout.svg';
 
 const { userLogout } = useAuthUser();
-const users = ref();
+const users: Ref<Users[]> = ref([]);
 const getAllUsers = async () => {
   try {
     const { data, error } = await supabase
@@ -63,6 +68,9 @@ function addUser(){
   });
 }
 
-// run function to fetch all data
-getAllUsers();
+onBeforeMount(async () => {
+  // run function to fetch all data
+  await getAllUsers();
+});
+
 </script>

@@ -1,4 +1,4 @@
-import { NewUser } from "@/interfaces/NewUser";
+import { NewUser } from "@/interfaces/Users";
 import { supabase } from "@/services/supabase";
 import {  ref } from "vue";
 export const user = ref();

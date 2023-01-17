@@ -5,3 +5,7 @@ export interface NewUser {
   username: string,
   color_profile: string
 }
+export interface Users extends NewUser {
+  created_at?: string;
+  id?: number;
+}
