@@ -33,6 +33,11 @@
         <option value="GBIDR">Grab Driver</option>
         <option value="CASH">Cash</option>
       </select>
+
+      <label for="name" class="text-xl text-dark">Message (Optional)</label>
+      <input type="text" name="name" id="name" v-model="formAddTrx.message"
+      class="bg-light-lemon p-2 mb-5 rounded-lg">
+
       <button class="bg-lemon p-3 font-bold text-dark rounded-lg">
         Add Transaction
       </button>
@@ -41,27 +46,28 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, Ref, onBeforeMount } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { customAlphabet } from 'nanoid';
+
 import AppBar from '@/components/AppBar.vue';
 import { useTransactions } from '@/composables/useSupabaseTrx';
-import { reactive } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { supabase } from '@/services/supabase';
-import { customAlphabet } from 'nanoid';
+import { Users } from '@/interfaces/Users';
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
 const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const user: any = ref();
-
+const user: Ref<Users[]> = ref([]);
 const {addTransaction} = useTransactions();
 const formAddTrx = reactive({
   flow: '',
   amount: '',
   wallet: '',
+  message: '',
 });
 
 async function getOneUser() {
@@ -81,6 +87,7 @@ async function handleAddTransaction () {
       amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
       wallet: formAddTrx.wallet,
       trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(8).toLocaleUpperCase()}-${new Date().getHours()}${new Date().getMinutes()}`,
+      message:formAddTrx.message,
     });
 
     formAddTrx.flow = '';
@@ -91,11 +98,7 @@ async function handleAddTransaction () {
     return error;
   }
 }
-
-getOneUser();
-
-if(user.value == undefined) {
-  user.value = [{}];  
+onBeforeMount(() => {
   getOneUser();
-}
+});
 </script>

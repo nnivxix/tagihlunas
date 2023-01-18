@@ -26,3 +26,4 @@ Tagihlunas  is made to help record all bills of money borrowed by others.
 6. [Typing `ref()`](https://vuejs.org/guide/typescript/composition-api.html#typing-ref)
 7. [Font Awesome with VueJS 3](https://dev.to/sabbirsobhani/font-awesome-with-vuejs-3-59ee)
 8. [Add Icons with Vue: Doc FontAwesome](https://fontawesome.com/docs/web/use-with/vue/add-icons)
+9. [Here is Vue 3 version of a simple search.](https://stackoverflow.com/a/67719932)

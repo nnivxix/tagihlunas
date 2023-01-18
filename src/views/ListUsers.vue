@@ -13,14 +13,17 @@
       </template>
     </AppBar>
     <TheButton :src-icon="plus" title="Add User" @button-event="addUser" ></TheButton>
-    <input type="text" name="filter users" id=""
-    :placeholder='users.length + " users"'
-    class="border p-2 rounded-md w-full my-8 border-gray-800">
+    <form @submit.prevent="filterUser()">
+      <input type="text" name="filter users" id=""
+      :placeholder='users.length + " users"' v-model="name"
+      class="border p-2 rounded-md w-full my-8 border-gray-800">
+    </form>
     
     <p v-if="users === undefined"> loading </p>
     <div v-else>
       <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
-      :background="user.color_profile" :user-id="user.user_id"></ContactUser>
+      :background="user.color_profile" :user-id="user.user_id">
+      </ContactUser>
     </div>
   </div>
 </template>
@@ -41,20 +44,35 @@ import logout from '@/assets/logout.svg';
 
 const { userLogout } = useAuthUser();
 const users: Ref<Users[]> = ref([]);
+const Allusers: Ref<Users[]> = ref([]);
+console.log(users);
+
+const name: Ref<string> = ref('');
 const getAllUsers = async () => {
   try {
     const { data, error } = await supabase
     .from('users')
     .select();
     if (error) throw error;
+
     users.value = data;
-    
+    Allusers.value = data; // duplicate
+
     lengthUsers.value = data.length;
     return data;
   } catch (error) {
     return error;
   }
 };
+
+function filterUser() {
+  if (name.value == '') {
+    users.value = Allusers.value;
+  } else {
+    users.value = Allusers.value.filter((n) => n.name.toLocaleLowerCase().includes(name.value.toLocaleLowerCase()));
+  }  
+} 
+
 const handleLogout = async () => {
   await userLogout();
   await router.push({
