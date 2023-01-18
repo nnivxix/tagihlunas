@@ -8,16 +8,14 @@
       </template>
       <template #exit >
         <button class="justify-self-end" @click="handleLogout" title="log out button">
-          <img :src="logout" alt="exit">
+          <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket text-lg"></font-awesome-icon>
         </button>
       </template>
     </AppBar>
-    <TheButton :src-icon="plus" title="Add User" @button-event="addUser" ></TheButton>
-    <form @submit.prevent="filterUser()">
-      <input type="text" name="filter users" id=""
-      :placeholder='users.length + " users"' v-model="name"
-      class="border p-2 rounded-md w-full my-8 border-gray-800">
-    </form>
+    <TheButton icon="fa-plus" title="Add User" @button-event="addUser" ></TheButton>
+    <input type="text" name="filter users" id="#searchByName" @input="filterUser()"
+    :placeholder='users.length + " users"' v-model="name"
+    class="border p-2 rounded-md w-full my-8 border-gray-800">
     
     <p v-if="users === undefined"> loading </p>
     <div v-else>
@@ -39,8 +37,6 @@ import { supabase } from '@/services/supabase';
 import useAuthUser from '@/composables/AuthUser';
 import {lengthUsers} from '@/composables/useSupabaseUser';
 import {Users} from '@/interfaces/Users';
-import plus from '@/assets/plus.svg';
-import logout from '@/assets/logout.svg';
 
 const { userLogout } = useAuthUser();
 const users: Ref<Users[]> = ref([]);
@@ -84,6 +80,7 @@ function addUser(){
     name: 'add.user',
   });
 }
+
 
 onBeforeMount(async () => {
   // run function to fetch all data

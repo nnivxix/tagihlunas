@@ -10,7 +10,7 @@ import { ref } from 'vue';
 const props = defineProps({
   name: {
     type: String,
-    default: 'User Hello',
+    // default: 'User Hello',
   },
   dimension: {
     type: Number,

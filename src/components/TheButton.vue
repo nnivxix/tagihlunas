@@ -1,8 +1,8 @@
 <template>
-  <button class="bg-lemon flex px-2 py-2 pr-4 rounded-md text-dark text-sm font-bold" @click="$emit('button-event')">
-    <img :src="srcIcon" :alt="title" class="mr-3"> {{ title }}
+  <button class="bg-lemon text-lg px-2 py-2 pr-4 rounded-md text-dark font-bold" @click="$emit('button-event')">
+    <font-awesome-icon :icon="'fa-solid '+ icon" class="mr-2"></font-awesome-icon> {{ title }}
   </button>
 </template>
 <script setup lang="ts">
-defineProps(['srcIcon', 'title']);
+defineProps(['icon', 'title']);
 </script>
