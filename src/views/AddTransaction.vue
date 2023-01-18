@@ -7,17 +7,19 @@
         </button>
       </template>
     </AppBar>
-    <form class="flex flex-col" @submit.prevent="handleAddTransaction">
+    <form class="flex flex-col" @submit.prevent="handleAddTransaction"
+      v-for="u in user" :key="u.user_id">
+
       <label for="username" class="text-xl text-dark">username</label>
-      <input type="text" name="username" id="username" v-model="user[0].username"
+      <input type="text" name="username" id="username" v-model="u.username"
       class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
       
       <label for="name" class="text-xl text-dark">name</label>
-      <input type="text" name="name" id="name" v-model="user[0].name"
+      <input type="text" name="name" id="name" v-model="u.name"
       class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
       
       <label for="flow" class="text-xl text-dark">flow</label>
-      <select v-model="formAddTrx.flow" name="flow" id="flow" class="bg-light-lemon p-4 mb-5 rounded-lg">
+      <select v-model="formAddTrx.flow" name="flow" id="flow" class="bg-light-lemon p-2 mb-5 rounded-lg">
         <option value="cash out">cash out</option>
         <option value="cash in">cash in</option>
       </select>
@@ -60,9 +62,9 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
 const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
+const {addTransaction} = useTransactions();
 
 const user: Ref<Users[]> = ref([]);
-const {addTransaction} = useTransactions();
 const formAddTrx = reactive({
   flow: '',
   amount: '',
@@ -76,7 +78,7 @@ async function getOneUser() {
   .select()
   .eq('user_id', userId); 
   if (error) throw error;
-  user.value = data;
+  user.value = [...data];
 }
 
 async function handleAddTransaction () {
