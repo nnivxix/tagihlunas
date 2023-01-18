@@ -45,9 +45,8 @@ import logout from '@/assets/logout.svg';
 const { userLogout } = useAuthUser();
 const users: Ref<Users[]> = ref([]);
 const Allusers: Ref<Users[]> = ref([]);
-console.log(users);
-
 const name: Ref<string> = ref('');
+
 const getAllUsers = async () => {
   try {
     const { data, error } = await supabase

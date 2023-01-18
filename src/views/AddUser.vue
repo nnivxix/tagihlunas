@@ -19,14 +19,14 @@
       class="bg-light-lemon p-2 mb-5 rounded-lg" placeholder="ihsan123"
       v-model.trim="formAddUser.username">
       <p v-if="v$.username.$error" class="text-red-500">Username too short, min: 5 characters.</p>
-
+      <p v-if="erroMsg" class="text-red-500">Username has been taken.</p>
       <button class="bg-lemon p-3 font-bold text-dark rounded-lg">Add User</button>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, Ref } from 'vue';
 import {customAlphabet} from 'nanoid';
 import { useVuelidate } from '@vuelidate/core';
 import { minLength, required } from '@vuelidate/validators';
@@ -44,6 +44,7 @@ const formAddUser: AddUser = reactive({
   username: '',
   name: '',
 });
+const erroMsg: Ref<string> = ref('');
 const rules = computed(() => {
   return {
     username: { required,
@@ -77,8 +78,11 @@ async function HandleAddUser () {
         name: 'users',
       });
     }  
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    erroMsg.value = error.message;
     return error;
+    
   }
 }
 
