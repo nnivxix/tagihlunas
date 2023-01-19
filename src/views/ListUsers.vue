@@ -11,10 +11,12 @@
       </template>
     </AppBar>
     <TheButton icon="fa-plus" title="Add User" @button-event="addUser" ></TheButton>
-    <input type="text" name="filter users" id="#searchByName" @input="filterUser()"
-    :placeholder='users.length + " users"' v-model="name"
-    class="border p-2 rounded-md w-full my-8 border-gray-800">
-    
+    <div class="flex items-center">
+      <input type="text" name="filter users" id="#searchByName" @input="filterUser()"
+      :placeholder='users.length + " users"' v-model="name"
+      class="border p-2 rounded-md w-full my-8 border-gray-800">
+      <font-awesome-icon :class="{'hidden': !name.length}" @click="deleteQuery" class="absolute right-8 z-20" icon="fa-solid fa-xmark" />
+    </div>
     <p v-if="users === undefined"> loading </p>
     <div v-else>
       <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
@@ -57,6 +59,11 @@ const getAllUsers = async () => {
     return error;
   }
 };
+
+function deleteQuery() {
+  name.value = '';
+  users.value = Allusers.value;
+}
 
 function filterUser() {
   if (name.value == '') {
