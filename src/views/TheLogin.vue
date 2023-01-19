@@ -16,7 +16,7 @@
           :class="{'mb-3':errorMsg, 'mb-12': !errorMsg}"
           class="bg-light-lemon p-3 rounded-lg w-full ">
         <span class="absolute right-11 mt-3 z-20" @click="hidePswd = !hidePswd">
-          <font-awesome-icon :icon="hidePswd ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"  />
+          <font-awesome-icon :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"  />
         </span>
       </div>
       <p v-if="errorMsg" class="text-red-700 py-2">{{ errorMsg }}</p>

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="mx-5">
     <AppBar titleapp="List Users">
@@ -20,7 +21,7 @@
     <p v-if="users === undefined"> loading </p>
     <div v-else>
       <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
-      :background="user.color_profile" :user-id="user.user_id">
+      :background="user.color_profile" :username="user.username">
       </ContactUser>
     </div>
   </div>

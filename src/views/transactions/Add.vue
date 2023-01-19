@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="mx-6">
     <AppBar titleapp="Transaction">
@@ -67,7 +68,7 @@ import { Users } from '@/interfaces/Users';
 
 const route = useRoute();
 const router = useRouter();
-const userId = route.params.userId;
+const username = route.params.username;
 const {addTransaction} = useTransactions();
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
@@ -84,7 +85,7 @@ const rules = computed(() => {
       required,
     },
     amount: {
-     minValue: minValue(2000), 
+      minValue: minValue(2000), 
     },
     wallet:{
       required,
@@ -112,7 +113,7 @@ async function getOneUser() {
   const { data, error } = await supabase
   .from('users')
   .select()
-  .eq('user_id', userId); 
+  .eq('username', username); 
   if (error) throw error;
   user.value = data;
 }
@@ -122,7 +123,7 @@ async function handleAddTransaction () {
     v$.value.$validate(); 
     if (!v$.value.$error) {
       await addTransaction({
-        user_id: userId as string,
+        user_id: user.value[0].user_id as string,
         flow: formAddTrx.flow,
         amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
         wallet: formAddTrx.wallet,

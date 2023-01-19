@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="mx-6">
   <AppBar titleapp="Add User">
@@ -62,6 +63,7 @@ function pickOneColor(): string{
   const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
   return colorsProfile.value[indexColor];
 }
+
 async function HandleAddUser () {
   try {
     v$.value.$validate(); // check form
@@ -80,6 +82,8 @@ async function HandleAddUser () {
     }  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    // console.log(error);
+    
     erroMsg.value = error.message;
     return error;
     

@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/users',
     name: 'users',
-    component: () => import('@/views/ListUsers.vue'),
+    component: () => import('@/views/users/Index.vue'),
     children: [
     ],
     meta: {
@@ -25,19 +25,10 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/users/:userId',
+    path: '/users/:username',
     name: 'detail.user',
-    component: () => import('@/views/DetailUser.vue'),
+    component: () => import('@/views/users/Id.vue'),
     // props: route => ({id: route.params.id}) ,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: '/transaction/:userId',
-    name: 'add.transaction',
-    component: () => import('@/views/AddTransaction.vue'),
-    // props: route => ({ query: route.query.q }),
     meta: {
       requiresAuth: true,
     },
@@ -45,7 +36,16 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/users/adduser',
     name: 'add.user',
-    component: () => import('@/views/AddUser.vue'),
+    component: () => import('@/views/users/Add.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/transaction/:username',
+    name: 'add.transaction',
+    component: () => import('@/views/transactions/Add.vue'),
+    // props: route => ({ query: route.query.q }),
     meta: {
       requiresAuth: true,
     },
@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/test',
     name: 'test',
-    component: () => import('@/views/TestPage.vue'),
+    component: () => import('@/views/Temp/TestPage.vue'),
   },
 ];
 
