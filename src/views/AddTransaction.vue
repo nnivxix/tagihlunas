@@ -7,25 +7,28 @@
         </button>
       </template>
     </AppBar>
-    <form class="flex flex-col" @submit.prevent="handleAddTransaction"
-      v-for="u in user" :key="u.user_id">
-
-      <label for="username" class="text-xl text-dark">username</label>
-      <input type="text" name="username" id="username" v-model="u.username"
-      class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
-      
-      <label for="name" class="text-xl text-dark">name</label>
-      <input type="text" name="name" id="name" v-model="u.name"
-      class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
+    <form class="flex flex-col" @submit.prevent="handleAddTransaction">
+      <div v-for="u in user" :key="u.user_id" class="flex flex-col" >
+        <label for="username" class="text-xl text-dark">username</label>
+        <input type="text" name="username" id="username" v-model="u.username"
+        class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
+        
+        <label for="name" class="text-xl text-dark">name</label>
+        <input type="text" name="name" id="name" v-model="u.name"
+        class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
+      </div>
       
       <label for="flow" class="text-xl text-dark">flow</label>
       <select v-model="formAddTrx.flow" name="flow" id="flow" class="bg-light-lemon p-2 mb-5 rounded-lg">
         <option value="cash out">cash out</option>
         <option value="cash in">cash in</option>
       </select>
-
+      <p v-if="v$.flow.$error" class="text-red-500">Please select one!</p>
+      
       <label for="amount" class="text-xl text-dark">amount</label>
-       <money-3-component v-model.number="formAddTrx.amount" v-bind="config" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg"></money-3-component>
+      <money-3-component v-model.number="formAddTrx.amount" v-bind="config" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg"></money-3-component>
+      <p v-if="v$.amount.$error" class="text-red-500">The amount entered must be at least Rp. 2000.</p>
+      
       <label for="wallet" class="text-xl text-dark">wallet</label>
       <select v-model="formAddTrx.wallet" name="wallet" id="wallet" class="bg-light-lemon p-2 mb-5 rounded-lg">
         <option value="OVORP">OVO</option>
@@ -34,8 +37,9 @@
         <option value="GBIDR">Grab Driver</option>
         <option value="CSHRP">Cash</option>
       </select>
-
-      <label for="name" class="text-xl text-dark">Message (Optional)</label>
+      <p v-if="v$.wallet.$error" class="text-red-500">Please select one!</p>
+      
+      <label for="name" class="text-xl text-dark">message (Optional)</label>
       <input type="text" name="name" id="name" v-model="formAddTrx.message"
       class="bg-light-lemon p-2 mb-5 rounded-lg">
 
@@ -47,10 +51,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, Ref, onBeforeMount } from 'vue';
+import { reactive, Ref, onBeforeMount , computed} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { customAlphabet } from 'nanoid';
 import { Money3Component } from "v-money3";
+import { useVuelidate } from '@vuelidate/core';
+import { minValue, required } from '@vuelidate/validators';
+
 import AppBar from '@/components/AppBar.vue';
 import { useTransactions } from '@/composables/useSupabaseTrx';
 import { ref } from 'vue';
@@ -71,6 +78,20 @@ const formAddTrx = reactive({
   wallet: '',
   message: '',
 });
+const rules = computed(() => {
+  return {
+    flow: {
+      required,
+    },
+    amount: {
+     minValue: minValue(2000), 
+    },
+    wallet:{
+      required,
+    },
+  };
+});
+const v$ = useVuelidate(rules, formAddTrx);
 const config = reactive({
   spinner: true,
   step: 10,
@@ -98,19 +119,22 @@ async function getOneUser() {
 
 async function handleAddTransaction () {
   try {
-    await addTransaction({
-      user_id: userId as string,
-      flow: formAddTrx.flow,
-      amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
-      wallet: formAddTrx.wallet,
-      trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(8).toLocaleUpperCase()}-${new Date().getHours()}${new Date().getMinutes()}`,
-      message:formAddTrx.message,
-    });
-
-    formAddTrx.flow = '';
-    formAddTrx.amount = '';
-    formAddTrx.wallet = '';
-    router.back();
+    v$.value.$validate(); 
+    if (!v$.value.$error) {
+      await addTransaction({
+        user_id: userId as string,
+        flow: formAddTrx.flow,
+        amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
+        wallet: formAddTrx.wallet,
+        trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(8).toLocaleUpperCase()}-${new Date().getHours()}${new Date().getMinutes()}`,
+        message:formAddTrx.message,
+      });
+  
+      formAddTrx.flow = '';
+      formAddTrx.amount = '';
+      formAddTrx.wallet = '';
+      router.back();
+    }
   } catch (error) {
     return error;
   }
