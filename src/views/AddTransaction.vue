@@ -3,7 +3,7 @@
     <AppBar titleapp="Transaction">
       <template #back >
         <button class="justify-self-start" @click="$router.back()">
-          <img src="@/assets/arrow-back.svg" alt="back" srcset="">
+          <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
         </button>
       </template>
     </AppBar>
@@ -25,15 +25,14 @@
       </select>
 
       <label for="amount" class="text-xl text-dark">amount</label>
-      <input v-model.number="formAddTrx.amount" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg">
-
+       <money-3-component v-model.number="formAddTrx.amount" v-bind="config" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg"></money-3-component>
       <label for="wallet" class="text-xl text-dark">wallet</label>
-      <select v-model="formAddTrx.wallet" name="wallet" id="wallet" class="bg-light-lemon p-4 mb-12 rounded-lg">
-        <option value="OVO">OVO</option>
+      <select v-model="formAddTrx.wallet" name="wallet" id="wallet" class="bg-light-lemon p-2 mb-5 rounded-lg">
+        <option value="OVORP">OVO</option>
         <option value="GPYDR">Gopay Driver</option>
         <option value="GPYCS">Gopay Customer</option>
         <option value="GBIDR">Grab Driver</option>
-        <option value="CASH">Cash</option>
+        <option value="CSHRP">Cash</option>
       </select>
 
       <label for="name" class="text-xl text-dark">Message (Optional)</label>
@@ -51,19 +50,20 @@
 import { reactive, Ref, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { customAlphabet } from 'nanoid';
-
+import { Money3Component } from "v-money3";
 import AppBar from '@/components/AppBar.vue';
 import { useTransactions } from '@/composables/useSupabaseTrx';
 import { ref } from 'vue';
 import { supabase } from '@/services/supabase';
 import { Users } from '@/interfaces/Users';
 
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
+
 const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
 const {addTransaction} = useTransactions();
 
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
 const user: Ref<Users[]> = ref([]);
 const formAddTrx = reactive({
   flow: '',
@@ -71,6 +71,21 @@ const formAddTrx = reactive({
   wallet: '',
   message: '',
 });
+const config = reactive({
+  spinner: true,
+  step: 10,
+  min: -10,
+  precision: 0,
+  prefix: "Rp. ",
+  suffix: "",
+  decimal: '.',
+  thousands: ',',
+  template: "bootstrap",
+  masked: true,
+  disableNegative: false,
+  align: "center",
+});
+
 
 async function getOneUser() {
   const { data, error } = await supabase
@@ -78,7 +93,7 @@ async function getOneUser() {
   .select()
   .eq('user_id', userId); 
   if (error) throw error;
-  user.value = [...data];
+  user.value = data;
 }
 
 async function handleAddTransaction () {

@@ -2,9 +2,7 @@
   <div class="mx-5">
     <AppBar titleapp="List Users">
       <template #back >
-        <button class="justify-self-start">
-          
-        </button>
+        <span></span>
       </template>
       <template #exit >
         <button class="justify-self-end" @click="handleLogout" title="log out button">

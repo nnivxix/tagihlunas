@@ -3,20 +3,19 @@
     <AppBar titleapp="Details" class="mx-6">
       <template #back >
         <button class="justify-self-start" @click="$router.back()">
-          <img src="@/assets/arrow-back.svg" alt="back" srcset="">
+          <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
         </button>
       </template>
     </AppBar>
     <div class="px-4 mb-7 mx-6">
-      <div v-if="data == null">
+      <div v-if="user == null">
           <p>loading</p>
         </div>
-      <div v-else class="flex items-center my-3"  v-for="d in data" :key="d.user_id">
-      <!-- <p v-for="d in data" :key="d.user_id"> {{ d.name }}</p> -->
+      <div v-else class="flex items-center my-3"  v-for="d in user" :key="d.user_id">
         <TheAvatar 
         :name="`${d.name}`" :dimension='parseInt("64")'
         :background="d.color_profile"></TheAvatar>
-        <p class="ml-4 text-xl flex items-center">{{ d.name }} <span><font-awesome-icon icon="fa-solid fa-pen"></font-awesome-icon></span></p>
+        <p class="ml-4 text-xl flex items-center">{{ d.name }} <span><font-awesome-icon class="ml-3" icon="fa-solid fa-pen"></font-awesome-icon></span></p>
       </div>
       <p  class="text-4xl font-semibold text-dark py-4"> 
       {{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}
@@ -24,8 +23,8 @@
       <TheButton icon="fa-plus" title="Add Trx"
       @button-event="router.push({name: 'add.transaction', params: {userId: id}})" ></TheButton>
     </div>
-    <div v-if="!transactions ">
-    <p>belum ada transaction</p>
+    <div v-if="!transactions.length ">
+      <p>belum ada transaction</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
     <CardTransaction  :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
@@ -47,7 +46,7 @@ import CardTransaction from '@/components/CardTransaction.vue';
 import { Users } from '@/interfaces/Users';
 import { Transactions } from '@/interfaces/Transactions';
 
-const data: Ref<Users[]> = ref([]);
+const user: Ref<Users[]> = ref([]);
 const transactions: Ref<Transactions[]> = ref([]);
 const amount = ref(0);
 const route = useRoute();
@@ -55,13 +54,12 @@ const id = route.params.userId;
 
 const getOneUser = async () => {
   try {
-    
-    const { data: user, error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .select("*")
       .eq('user_id', id);
     if (error) throw error;
-    data.value = [...user];
+    user.value = data;
     return data;
   } catch (error) {
     return error;

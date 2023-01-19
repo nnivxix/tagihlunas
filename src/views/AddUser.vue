@@ -3,7 +3,7 @@
   <AppBar titleapp="Add User">
     <template #back >
       <button class="justify-self-start" @click="$router.push({name: 'users'})">
-        <img src="@/assets/arrow-back.svg" alt="back" srcset="">
+        <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
       </button>
     </template>
   </AppBar>

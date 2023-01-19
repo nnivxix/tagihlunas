@@ -1,6 +1,6 @@
-![tagihlunas](./public/thumbnail.png)
-
 # Tagih Lunas
+
+![tagihlunas](./public/thumbnail.png)
 
 Tagihlunas  is made to help record all bills of money borrowed by others.
 
@@ -10,7 +10,9 @@ Tagihlunas  is made to help record all bills of money borrowed by others.
 - [nanoid](https://www.npmjs.com/package/nanoid)
 - [vuelidate](https://vuelidate-next.netlify.app/)
 - [vitest](https://vitest.dev/)
+- [Money Mask for Vue 3](https://github.com/jonathanpmartins/v-money3.git)
 - [Welcome to V-Money-Spinner](https://www.npmjs.com/package/v-money-spinner)
+- [vue-dropdown-menu-search](https://github.com/sonugeogre/vue-dropdown-search-menu)
 
 ## Shots
 
@@ -27,3 +29,6 @@ Tagihlunas  is made to help record all bills of money borrowed by others.
 7. [Font Awesome with VueJS 3](https://dev.to/sabbirsobhani/font-awesome-with-vuejs-3-59ee)
 8. [Add Icons with Vue: Doc FontAwesome](https://fontawesome.com/docs/web/use-with/vue/add-icons)
 9. [Here is Vue 3 version of a simple search.](https://stackoverflow.com/a/67719932)
+10. [[Solved] Object is possibly ‘undefined’ error in TypeScript](https://itsjavascript.com/object-is-possibly-undefined-error-in-typescript)
+11. [Type 'null' is not assignable to type in TypeScript](https://bobbyhadz.com/blog/typescript-type-null-is-not-assignable-to-type)
+12. [Property does not exist on type String in TypeScript](https://bobbyhadz.com/blog/typescript-property-does-not-exist-on-type-string)

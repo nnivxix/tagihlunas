@@ -6,6 +6,6 @@ export interface NewUser {
   color_profile: string;
 }
 export interface Users extends NewUser {
-  id: number | null;
+  id: number;
   created_at: string | null;
 }
