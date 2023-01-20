@@ -7,18 +7,22 @@
       </template>
       <template #exit >
         <button class="justify-self-end" @click="handleLogout" title="log out button">
-          <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket text-lg"></font-awesome-icon>
+          <font-awesome-icon class="h-5 p-3 cursor-pointer text-dark" icon="fa-solid fa-arrow-right-from-bracket text-lg"></font-awesome-icon>
         </button>
       </template>
     </AppBar>
     <TheButton icon="fa-plus" title="Add User" @button-event="addUser" ></TheButton>
     <div class="flex items-center">
       <input type="text" name="filter users" id="#searchByName" @input="filterUser()"
-      :placeholder='users.length + " users"' v-model="name"
+      :placeholder='users.length + " users"' v-model="queryName"
       class="border p-2 rounded-md w-full my-8 border-gray-800">
-      <font-awesome-icon :class="{'hidden': !name.length}" @click="deleteQuery" class="absolute right-8 z-20" icon="fa-solid fa-xmark" />
+      <font-awesome-icon :class="{'hidden': !queryName.length}" @click="deleteQuery" class="absolute right-24 z-20 cursor-pointer text-dark" icon="fa-solid fa-xmark" />
+      <font-awesome-icon class="h-7 p-3 cursor-pointer text-dark" title="sort A to Z" icon="fa-solid fa-arrow-down-a-z" @click="sortName" />
     </div>
-    <p v-if="users === undefined"> loading </p>
+    <div v-if="!users.length"> 
+      <img src="@/assets/nouser.png" alt="no user users" srcset="">
+      <p class="text-center text-xl">There are no registered users yet. <router-link class="underline" :to="{name: 'add.user'}"> Let's create one.</router-link></p>
+    </div>
     <div v-else>
       <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
       :background="user.color_profile" :username="user.username">
@@ -42,7 +46,7 @@ import {Users} from '@/interfaces/Users';
 const { userLogout } = useAuthUser();
 const users: Ref<Users[]> = ref([]);
 const Allusers: Ref<Users[]> = ref([]);
-const name: Ref<string> = ref('');
+const queryName: Ref<string> = ref('');
 
 const getAllUsers = async () => {
   try {
@@ -62,17 +66,23 @@ const getAllUsers = async () => {
 };
 
 function deleteQuery() {
-  name.value = '';
+  queryName.value = '';
   users.value = Allusers.value;
 }
 
 function filterUser() {
-  if (name.value == '') {
+  if(queryName.value == '') {
     users.value = Allusers.value;
   } else {
-    users.value = Allusers.value.filter((n) => n.name.toLocaleLowerCase().includes(name.value.toLocaleLowerCase()));
+    users.value = Allusers.value.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
   }  
 } 
+
+function sortName() {
+  users.value.sort((a: Users,b: Users) => {
+    return a.name > b.name ? 1 : -1;
+  }); 
+}
 
 const handleLogout = async () => {
   await userLogout();

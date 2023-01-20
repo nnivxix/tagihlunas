@@ -2,7 +2,9 @@
   <div class="md:hidden">
     <router-view></router-view>
   </div>
-  <p class="hidden md:block">Sorry, currently the web-app doesn't support desktop mode, please resize your screen to mobile.</p>
+  <div  class="hidden md:flex items-center text-3xl p-7 font-bold min-h-[100vh]">
+  <p>Sorry, currently the web-app doesn't support desktop mode, please resize your screen to mobile. 🙏📱</p>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -9,9 +9,12 @@
       </template>
     </AppBar>
     <div class="px-4 mb-7 mx-6" >
-      <div v-if="user == null">
-          <p>loading</p>
-        </div>
+      <div v-if="!user.length" class="flex items-center my-3">
+        <TheAvatar
+        name="No Name" :dimension='parseInt("64")'
+        background="#9f9f9f"></TheAvatar>
+        <p  class="ml-4 text-xl flex items-center">No Name</p>
+      </div>
       <div v-else class="flex items-center my-3"  v-for="d in user" :key="d.user_id" >
         <TheAvatar  @click="isEditName = false"
         :name="currentName" :dimension='parseInt("64")'
@@ -22,7 +25,7 @@
           class="bg-light-lemon text-xl p-2 rounded-lg ml-4">
         </form>
         <p  class="ml-4 text-xl flex items-center" :class="{'hidden absolute top-0': isEditName}"
-        @dblclick="isEditName = true" ref="target">
+        @dblclick="isEditName = true">
           {{ currentName }}
           <span><font-awesome-icon :class="{'hidden absolute top-0': isEditName}" class="ml-3" icon="fa-solid fa-pen" @click="isEditName = true"></font-awesome-icon></span>
         </p>
@@ -30,11 +33,12 @@
       <p id="amount" class="text-4xl font-semibold text-dark py-4" @click="editName"> 
       {{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}
       </p>
-      <TheButton icon="fa-plus" title="Add Trx" 
+      <TheButton icon="fa-plus" title="Add transaction" 
       @button-event="router.push({name: 'add.transaction', params: {username: username}})" ></TheButton>
     </div>
     <div v-if="!transactions.length ">
-      <p>belum ada transaction</p>
+      <img :src="empty" alt="empty transaction">
+      <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'add.transaction'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
     <CardTransaction  :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
@@ -55,15 +59,14 @@ import { supabase } from '@/services/supabase';
 import CardTransaction from '@/components/CardTransaction.vue';
 import { Users } from '@/interfaces/Users';
 import { Transactions } from '@/interfaces/Transactions';
-
+import empty from '@/assets/empty.svg';
 const user: Ref<Users[]> = ref([]);
 const transactions: Ref<Transactions[]> = ref([]);
 const isEditName: Ref<boolean> = ref(false);
-const amount = ref(0);
+const amount: Ref<number> = ref(0);
 const route = useRoute();
 const username = route.params.username;
 const currentName: Ref<string> = ref('');
-const target = ref(null);
 
 const getOneUser = async () => {
   try {

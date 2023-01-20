@@ -68,7 +68,7 @@ async function HandleAddUser () {
   try {
     v$.value.$validate(); // check form
     if (!v$.value.$error) {
-      // if error is 'false'
+      // if no error 
       await addUser({
         admin_id:user?.value.id,
         user_id: userId,
@@ -79,10 +79,10 @@ async function HandleAddUser () {
       await router.push({
         name: 'users',
       });
+      window.location.reload();
     }  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    // console.log(error);
     
     erroMsg.value = error.message;
     return error;
@@ -91,7 +91,3 @@ async function HandleAddUser () {
 }
 
 </script>
-
-<style scoped>
-
-</style>
