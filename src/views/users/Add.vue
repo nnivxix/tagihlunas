@@ -10,16 +10,20 @@
   </AppBar>
     <form class="flex flex-col" @submit.prevent="HandleAddUser">
       <label for="name" class="text-xl text-dark">name</label>
-      <input type="name" name="name" id="name"
+      <input type="name" name="name" id="name" 
       class="bg-light-lemon p-2 mb-5 rounded-lg" placeholder="Ihsan Maulana"
       v-model.trim=" formAddUser.name">      
-      <p v-if="v$.name.$error" class="text-red-500">Name too short, min: 8 characters.</p>
+      <div  v-if="v$.name.$error" >
+        <p class="text-red-500" v-for="e in v$.name.$errors" :key="e.$uid">{{ e.$message }}</p>
+      </div>
 
       <label for="username" class="text-xl text-dark">username</label>
       <input type="text" name="username" id="username"
       class="bg-light-lemon p-2 mb-5 rounded-lg" placeholder="ihsan123"
       v-model.trim="formAddUser.username">
-      <p v-if="v$.username.$error" class="text-red-500">Username too short, min: 5 characters.</p>
+      <div v-if="v$.username.$error" >
+        <p class="text-red-500" v-for="e in v$.username.$errors" :key="e.$uid">{{ e.$message }}</p>
+      </div>
       <p v-if="erroMsg" class="text-red-500">Username has been taken.</p>
       <button class="bg-lemon p-3 font-bold text-dark rounded-lg">Add User</button>
     </form>
@@ -53,7 +57,7 @@ const rules = computed(() => {
     },
     name: {
       required,
-      minLength: minLength(8),
+      minLength: minLength(5),
     },
   };
 });

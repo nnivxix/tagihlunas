@@ -19,19 +19,24 @@
         class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
       </div>
       
-      <label for="flow" class="text-xl text-dark">flow</label>
-      <select v-model="formAddTrx.flow" name="flow" id="flow" class="bg-light-lemon p-2 mb-5 rounded-lg">
+      <label for="flow" class="text-xl text-dark ">flow</label>
+      <select v-model="formAddTrx.flow" name="flow" @input="v$.$validate" id="flow" class="bg-light-lemon p-2 rounded-lg">
         <option value="cash out">cash out</option>
         <option value="cash in">cash in</option>
       </select>
-      <p v-if="v$.flow.$error" class="text-red-500">Please select one!</p>
+      <div v-if="v$.flow.$error" >
+        <p class="text-red-500" v-for="e in v$.flow.$errors" :key="e.$uid">{{ e.$message }}</p>
+      </div>
+      <!-- <p v-if="v$.flow.$error" class="text-red-500">Please select one!</p> -->
       
-      <label for="amount" class="text-xl text-dark">amount</label>
-      <money-3-component v-model.number="formAddTrx.amount" v-bind="config" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 mb-5 rounded-lg"></money-3-component>
-      <p v-if="v$.amount.$error" class="text-red-500">The amount entered must be at least Rp. 2000.</p>
-      
-      <label for="wallet" class="text-xl text-dark">wallet</label>
-      <select v-model="formAddTrx.wallet" name="wallet" id="wallet" class="bg-light-lemon p-2 mb-5 rounded-lg">
+      <label for="amount" class="text-xl text-dark mt-5">amount</label>
+      <money-3-component v-model.number="formAddTrx.amount" v-bind="config" inputmode="numeric"  name="amount" id="amount" class="bg-light-lemon p-2 rounded-lg"></money-3-component>
+      <!-- <p v-if="v$.amount.$error" class="text-red-500">The amount entered must be at least Rp. 2000.</p> -->
+      <div v-if="v$.amount.$error" >
+        <p class="text-red-500" v-for="e in v$.amount.$errors" :key="e.$uid">{{ e.$message }}</p>
+      </div>
+      <label for="wallet" class="text-xl text-dark mt-5">wallet</label>
+      <select v-model="formAddTrx.wallet" name="wallet" id="wallet" class="bg-light-lemon p-2 rounded-lg">
         <option value="OVORP">OVO</option>
         <option value="GPYDR">Gopay Driver</option>
         <option value="GPYCS">Gopay Customer</option>
@@ -39,8 +44,7 @@
         <option value="CSHRP">Cash</option>
       </select>
       <p v-if="v$.wallet.$error" class="text-red-500">Please select one!</p>
-      
-      <label for="name" class="text-xl text-dark">message (Optional)</label>
+      <label for="name" class="text-xl text-dark mt-5">message (Optional)</label>
       <input type="text" name="name" id="name" v-model="formAddTrx.message"
       class="bg-light-lemon p-2 mb-5 rounded-lg">
 

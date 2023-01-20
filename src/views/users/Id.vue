@@ -67,6 +67,7 @@ const amount: Ref<number> = ref(0);
 const route = useRoute();
 const username = route.params.username;
 const currentName: Ref<string> = ref('');
+const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 
 const getOneUser = async () => {
   try {
@@ -83,13 +84,18 @@ const getOneUser = async () => {
   }
 };
 
+function pickOneColor(): string{
+  const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
+  return colorsProfile.value[indexColor];
+}
+
 async function editName() {
   if (isEditName.value) {
 
     if(currentName.value !== user.value[0].name) {
       const { error } = await supabase
       .from('users')
-      .update({ name: currentName.value})
+      .update({ name: currentName.value, color_profile: pickOneColor()})
       .eq('username', username);
       if (error) throw error;
     }
