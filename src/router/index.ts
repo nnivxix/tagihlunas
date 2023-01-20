@@ -23,6 +23,11 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
     },
+    beforeEnter() {
+      // eslint-disable-next-line no-console
+      console.log('before enter');
+      
+    },
   },
   {
     path: '/users/:username',
@@ -65,6 +70,16 @@ const routes: RouteRecordRaw[] = [
     name: 'test',
     component: () => import('@/views/Temp/TestPage.vue'),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notfound.page',
+    component: () => import('@/views/NotFound.vue'),
+  },
+  // {
+  //   path: '/users/:pathMatch(.*)*',
+  //   name: 'notfound.user',
+  //   component: () => import('@/views/users/NotFound.vue'),
+  // },
 ];
 
 const router = createRouter({

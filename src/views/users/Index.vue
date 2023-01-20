@@ -97,10 +97,12 @@ function addUser(){
   });
 }
 
-
 onBeforeMount(async () => {
   // run function to fetch all data
   await getAllUsers();
+  // eslint-disable-next-line no-console
+  console.log('before mount');
+  
 });
 
 </script>
