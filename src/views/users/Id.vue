@@ -10,10 +10,15 @@
     </AppBar>
     <div class="px-4 mb-7 mx-6" >
       <div v-if="!user.length" class="flex items-center my-3">
-        <TheAvatar
-        name="No Name" :dimension='parseInt("64")'
-        background="#9f9f9f"></TheAvatar>
-        <p  class="ml-4 text-xl flex items-center">No Name</p>
+        <content-loader
+          viewBox="0 0 476 150"
+          :speed="8"
+          primaryColor="#e8e8e8"
+          secondaryColor="#9e9e9e"
+          >
+          <rect x="107" y="34" rx="3" ry="3" width="338" height="37" /> 
+          <circle cx="46" cy="50" r="41" />
+      </content-loader>
       </div>
       <div v-else class="flex items-center my-3"  v-for="d in user" :key="d.user_id" >
         <TheAvatar  @click="isEditName = false"
@@ -41,14 +46,15 @@
       <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'add.transaction'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
-    <CardTransaction  :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
+      <CardTransaction  :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
 import type { Ref } from 'vue';
+import { ContentLoader } from "vue-content-loader";
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
@@ -64,6 +70,7 @@ const user: Ref<Users[]> = ref([]);
 const transactions: Ref<Transactions[]> = ref([]);
 const isEditName: Ref<boolean> = ref(false);
 const amount: Ref<number> = ref(0);
+const loading: Ref<boolean> = ref(false);
 const route = useRoute();
 const username = route.params.username;
 const currentName: Ref<string> = ref('');
@@ -105,18 +112,23 @@ async function editName() {
 }
 
 const getUserTransactions = async () => {
-  const { data, error } = await supabase
-    .from('transactions')
-    .select("*")
-    .eq('user_id', user.value[0].user_id); 
-
-  if (error) throw error;
-  transactions.value = [...data];
-
-  for (let i = 0; i < data.length; i++) {
-    amount.value += data[i].amount;
+  loading.value = true;
+  try {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select("*")
+      .eq('user_id', user.value[0].user_id); 
+  
+    if (error) throw error;
+    transactions.value = [...data];
+  
+    for (let i = 0; i < data.length; i++) {
+      amount.value += data[i].amount;
+    }
+    return data;
+  } catch (error) {
+    return error;
   }
-  return data;
   };  
 
 onBeforeMount( async () => {
