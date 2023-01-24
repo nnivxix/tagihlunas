@@ -4,7 +4,12 @@
     <AppBar titleapp="Details" class="mx-6">
       <template #back >
         <button class="justify-self-start" @click="$router.back()">
-          <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
+          <font-awesome-icon class="h-5" icon="fa-solid fa-arrow-left"></font-awesome-icon>
+        </button>
+      </template>
+      <template #exit >
+        <button class="justify-self-end">
+          <font-awesome-icon class="h-5" icon="fa-solid fa-ellipsis-vertical" />
         </button>
       </template>
     </AppBar>
@@ -32,7 +37,7 @@
         <p  class="ml-4 text-xl flex items-center" :class="{'hidden absolute top-0': isEditName}"
         @dblclick="isEditName = true">
           {{ currentName }}
-          <span><font-awesome-icon :class="{'hidden absolute top-0': isEditName}" class="ml-3" icon="fa-solid fa-pen" @click="isEditName = true"></font-awesome-icon></span>
+          <span><font-awesome-icon :class="{'hidden absolute top-0': isEditName}" class="ml-3 h-5 text-gray-700 " icon="fa-solid fa-pen" @click="isEditName = true"></font-awesome-icon></span>
         </p>
       </div>
       <p id="amount" class="text-4xl font-semibold text-dark py-4" @click="editName"> 
@@ -70,7 +75,6 @@ const user: Ref<Users[]> = ref([]);
 const transactions: Ref<Transactions[]> = ref([]);
 const isEditName: Ref<boolean> = ref(false);
 const amount: Ref<number> = ref(0);
-const loading: Ref<boolean> = ref(false);
 const route = useRoute();
 const username = route.params.username;
 const currentName: Ref<string> = ref('');
@@ -112,7 +116,6 @@ async function editName() {
 }
 
 const getUserTransactions = async () => {
-  loading.value = true;
   try {
     const { data, error } = await supabase
       .from('transactions')

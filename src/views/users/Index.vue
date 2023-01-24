@@ -37,7 +37,7 @@
         <p class="text-center text-xl">There are no registered users yet. <router-link class="underline" :to="{name: 'add.user'}"> Let's create one.</router-link></p>
       </div>
       <div v-else>
-        <ContactUser v-for="user in users" :key="user.user_id" :name="user.name"
+        <ContactUser v-for="user in users" :key="user.user_id" :name="user.name" :id="user.user_id"
         :background="user.color_profile" :username="user.username">
         </ContactUser>
       </div>
@@ -60,7 +60,7 @@ import {Users} from '@/interfaces/Users';
 
 const { userLogout } = useAuthUser();
 const users: Ref<Users[]> = ref([]);
-const Allusers: Ref<Users[]> = ref([]);
+const duplicateUsers: Ref<Users[]> = ref([]);
 const queryName: Ref<string> = ref('');
 const loading: Ref<boolean> = ref(false);
 
@@ -72,8 +72,8 @@ const getAllUsers = async () => {
     .select();
     if (error) throw error;
 
-    users.value = data;
-    Allusers.value = data; // duplicate
+    users.value.push(...data);
+    duplicateUsers.value.push(...data); // duplicate
 
     lengthUsers.value = data.length;
     loading.value = false;
@@ -85,14 +85,14 @@ const getAllUsers = async () => {
 
 function deleteQuery() {
   queryName.value = '';
-  users.value = Allusers.value;
+  users.value = duplicateUsers.value;
 }
 
 function filterUser() {
   if(queryName.value == '') {
-    users.value = Allusers.value;
+    users.value = duplicateUsers.value;
   } else {
-    users.value = Allusers.value.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
+    users.value = duplicateUsers.value.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
   }  
 } 
 

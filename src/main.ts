@@ -2,14 +2,14 @@ import { createApp } from 'vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {faEye, faEyeSlash, faPlus, faArrowRightFromBracket,
-        faArrowLeft, faPen, faXmark, faArrowDownAZ} from '@fortawesome/free-solid-svg-icons';
+        faArrowLeft, faPen, faXmark, faArrowDownAZ, faEllipsisVertical} from '@fortawesome/free-solid-svg-icons';
 
 import './style.css';
 import App from './App.vue';
 import router from "./router";
 
 library.add(faEye, faEyeSlash, faPlus, faArrowRightFromBracket,
-  faArrowLeft, faPen, faXmark, faArrowDownAZ);
+  faArrowLeft, faPen, faXmark, faArrowDownAZ, faEllipsisVertical);
 
 const app = createApp(App);
 
