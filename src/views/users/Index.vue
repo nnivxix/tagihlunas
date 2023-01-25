@@ -49,6 +49,7 @@
 import { ref, onBeforeMount } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
+import { useTransactionsStore } from '@/store/transactions';
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
@@ -58,6 +59,7 @@ import useAuthUser from '@/composables/AuthUser';
 import {lengthUsers} from '@/composables/useSupabaseUser';
 import {Users} from '@/interfaces/Users';
 
+const transactionStore = useTransactionsStore();
 const { userLogout } = useAuthUser();
 const users: Ref<Users[]> = ref([]);
 const duplicateUsers: Ref<Users[]> = ref([]);
@@ -115,6 +117,11 @@ function addUser(){
   });
 }
 
+//reset transactionStore 
+transactionStore.$patch({
+  amount: 0,
+  transactions: [],
+});
 onBeforeMount(async () => {
   // run function to fetch all data
   await getAllUsers();

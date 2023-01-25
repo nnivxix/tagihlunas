@@ -46,9 +46,12 @@
       <p v-if="v$.wallet.$error" class="text-red-500">Please select one!</p>
       <label for="name" class="text-xl text-dark mt-5">message (Optional)</label>
       <input type="text" name="name" id="name" v-model="formAddTrx.message"
-      class="bg-light-lemon p-2 mb-5 rounded-lg">
+      class="bg-light-lemon p-2 rounded-lg mb-2">
+      <div v-if="v$.message.$error" >
+        <p class="text-red-500 mb-5" v-for="e in v$.message.$errors" :key="e.$uid">The maximum number of characters required is 25 characters</p>
+      </div>
 
-      <button class="bg-lemon p-3 font-bold text-dark rounded-lg">
+      <button class="bg-lemon p-3 font-bold text-dark rounded-lg mt-10">
         Add Transaction
       </button>
     </form>
@@ -61,28 +64,28 @@ import { useRoute, useRouter } from 'vue-router';
 import { customAlphabet } from 'nanoid';
 import { Money3Component } from "v-money3";
 import { useVuelidate } from '@vuelidate/core';
-import { minValue, required } from '@vuelidate/validators';
+import { minValue, required, maxLength } from '@vuelidate/validators';
 
 import AppBar from '@/components/AppBar.vue';
-import { useTransactions } from '@/composables/useSupabaseTrx';
 import { ref } from 'vue';
 import { supabase } from '@/services/supabase';
 import { Users } from '@/interfaces/Users';
-
+import { useTransactionsStore } from '@/store/transactions';
 
 const route = useRoute();
 const router = useRouter();
 const username = route.params.username;
-const {addTransaction} = useTransactions();
+const transactionStore = useTransactionsStore();
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
 const user: Ref<Users[]> = ref([]);
-const formAddTrx = reactive({
+const initFormAddTrx = {
   flow: '',
   amount: '',
   wallet: '',
   message: '',
-});
+};
+const formAddTrx = reactive({...initFormAddTrx});
 const rules = computed(() => {
   return {
     flow: {
@@ -93,6 +96,9 @@ const rules = computed(() => {
     },
     wallet:{
       required,
+    },
+    message: {
+      maxLength: maxLength(25), 
     },
   };
 });
@@ -112,7 +118,9 @@ const config = reactive({
   align: "center",
 });
 
-
+function resetForm() {
+  Object.assign(formAddTrx,initFormAddTrx);
+}
 async function getOneUser() {
   const { data, error } = await supabase
   .from('users')
@@ -126,7 +134,7 @@ async function handleAddTransaction () {
   try {
     v$.value.$validate(); 
     if (!v$.value.$error) {
-      await addTransaction({
+      await transactionStore.addTransaction({
         user_id: user.value[0].user_id as string,
         flow: formAddTrx.flow,
         amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
@@ -135,9 +143,7 @@ async function handleAddTransaction () {
         message:formAddTrx.message,
       });
   
-      formAddTrx.flow = '';
-      formAddTrx.amount = '';
-      formAddTrx.wallet = '';
+      resetForm();
       router.back();
     }
   } catch (error) {

@@ -8,8 +8,16 @@
         </button>
       </template>
       <template #exit >
-        <button class="justify-self-end">
+        <button class="justify-self-end" @click="showOption">
           <font-awesome-icon class="h-5" icon="fa-solid fa-ellipsis-vertical" />
+        <ul class="border absolute right-7 text-right top-12 text-xl " :class="{'block' : isShowOption, 'hidden': !isShowOption}">
+          <li class="p-3 ">
+            <button @click="editUser">Edit</button>
+          </li>
+          <li class="p-3 text-red-600">
+            <button @click="deleteUser">Delete</button>
+          </li>
+        </ul>
         </button>
       </template>
     </AppBar>
@@ -37,7 +45,11 @@
         <p  class="ml-4 text-xl flex items-center" :class="{'hidden absolute top-0': isEditName}"
         @dblclick="isEditName = true">
           {{ currentName }}
-          <span><font-awesome-icon :class="{'hidden absolute top-0': isEditName}" class="ml-3 h-5 text-gray-700 " icon="fa-solid fa-pen" @click="isEditName = true"></font-awesome-icon></span>
+          <span>
+            <font-awesome-icon icon="fa-solid fa-pen" @click="isEditName = true"
+            :class="{'hidden absolute top-0': isEditName}" class="ml-3 h-5 text-gray-700 ">
+            </font-awesome-icon>
+          </span>
         </p>
       </div>
       <p id="amount" class="text-4xl font-semibold text-dark py-4" @click="editName"> 
@@ -51,34 +63,45 @@
       <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'add.transaction'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
-      <CardTransaction  :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
+      <CardTransaction @routeTo="detailTransaction(transaction.trx_id)" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
     </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount,  computed } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
-import router from '@/router';
+import { useTransactionsStore } from '@/store/transactions';
+// import router from '@/router';
 import { supabase } from '@/services/supabase';
 import CardTransaction from '@/components/CardTransaction.vue';
 import { Users } from '@/interfaces/Users';
-import { Transactions } from '@/interfaces/Transactions';
+
 import empty from '@/assets/empty.svg';
-const user: Ref<Users[]> = ref([]);
-const transactions: Ref<Transactions[]> = ref([]);
-const isEditName: Ref<boolean> = ref(false);
-const amount: Ref<number> = ref(0);
+
+const transactionStore = useTransactionsStore();
+const router = useRouter();
 const route = useRoute();
 const username = route.params.username;
+
+const user: Ref<Users[]> = ref([]);
+const isEditName: Ref<boolean> = ref(false);
+const isShowOption = ref<boolean>(false);
 const currentName: Ref<string> = ref('');
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
+  
+const transactions = computed(() => {
+  return transactionStore.transactions;
+});
+const amount = computed(() => {
+  return transactionStore.amount;
+});
 
 const getOneUser = async () => {
   try {
@@ -115,27 +138,40 @@ async function editName() {
   return;  
 }
 
-const getUserTransactions = async () => {
-  try {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select("*")
-      .eq('user_id', user.value[0].user_id); 
-  
-    if (error) throw error;
-    transactions.value = [...data];
-  
-    for (let i = 0; i < data.length; i++) {
-      amount.value += data[i].amount;
-    }
-    return data;
+function getUserTransactions () {
+  try {    
+    transactionStore.getTransactions(user.value[0].user_id);
   } catch (error) {
     return error;
   }
-  };  
+} 
+function showOption () {
+  isShowOption.value = !isShowOption.value;
+  
+}
+function editUser(){
+  console.log('edit user');
+  
+}
+function deleteUser() {
+  console.log('delete user');
+  
+}
 
+function detailTransaction(trxId?: string) {
+  router.push({
+    name: 'detail.transaction',
+    params: {
+      id: trxId,
+    },
+  });
+}
+// onMounted(async () => {
+//   await transactionStore.getTransaction(user.value[0].user_id);
+// });
 onBeforeMount( async () => {
   await getOneUser();
+  // await transactionStore.getTransactions(user.value[0].user_id);
   await getUserTransactions();
 });
 </script>

@@ -39,7 +39,7 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/users/adduser',
+    path: '/users/add',
     name: 'add.user',
     component: () => import('@/views/users/Add.vue'),
     meta: {
@@ -47,10 +47,18 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/transaction/:username',
+    path: '/transactions/add/:username',
     name: 'add.transaction',
     component: () => import('@/views/transactions/Add.vue'),
     // props: route => ({ query: route.query.q }),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/transactions/:id',
+    name: 'detail.transaction',
+    component: () => import('@/views/transactions/Id.vue'),
     meta: {
       requiresAuth: true,
     },

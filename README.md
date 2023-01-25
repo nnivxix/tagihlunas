@@ -32,3 +32,4 @@ Tagihlunas  is made to help record all bills of money borrowed by others.
 10. [[Solved] Object is possibly ‘undefined’ error in TypeScript](https://itsjavascript.com/object-is-possibly-undefined-error-in-typescript)
 11. [Type 'null' is not assignable to type in TypeScript](https://bobbyhadz.com/blog/typescript-type-null-is-not-assignable-to-type)
 12. [Property does not exist on type String in TypeScript](https://bobbyhadz.com/blog/typescript-property-does-not-exist-on-type-string)
+13. [How to properly reset Vue Composition Api's reactive values](https://stackoverflow.com/a/61509432)
