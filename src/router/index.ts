@@ -23,14 +23,9 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
     },
-    beforeEnter() {
-      // eslint-disable-next-line no-console
-      console.log('before enter');
-      
-    },
   },
   {
-    path: '/users/:username',
+    path: '/users/:userId',
     name: 'detail.user',
     component: () => import('@/views/users/Id.vue'),
     // props: route => ({id: route.params.id}) ,
@@ -47,21 +42,17 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/transactions/add/:username',
+    path: '/users/:userId/transactions/add/',
     name: 'add.transaction',
     component: () => import('@/views/transactions/Add.vue'),
-    // props: route => ({ query: route.query.q }),
     meta: {
       requiresAuth: true,
     },
   },
   {
-    path: '/transactions/:id',
+    path: '/users/:userId/transactions/:trxId',
     name: 'detail.transaction',
     component: () => import('@/views/transactions/Id.vue'),
-    meta: {
-      requiresAuth: true,
-    },
   },
   {
     path: '/login',

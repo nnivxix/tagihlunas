@@ -14,10 +14,10 @@
     <TheButton icon="fa-plus" title="Add User" @button-event="addUser" ></TheButton>
     <div class="flex items-center">
       <input type="text" name="filter users" id="#searchByName" @input="filterUser()"
-      :placeholder='users.length + " users"' v-model="queryName"
+      :placeholder='users.length ? users.length + " users" : "no user"' v-model="queryName"
       class="border p-2 rounded-md w-full my-8 border-gray-800">
       <font-awesome-icon :class="{'hidden': !queryName.length}" @click="deleteQuery" class="absolute right-24 z-20 cursor-pointer text-dark" icon="fa-solid fa-xmark" />
-      <font-awesome-icon class="h-7 p-3 cursor-pointer text-dark" title="sort A to Z" icon="fa-solid fa-arrow-down-a-z" @click="sortName" />
+      <font-awesome-icon class="h-7 p-3 cursor-pointer text-dark" title="sort A to Z" icon="fa-solid fa-arrow-down-a-z" @click="sortByName" />
     </div>
     <div v-if="loading">
       <content-loader
@@ -38,7 +38,7 @@
       </div>
       <div v-else>
         <ContactUser v-for="user in users" :key="user.user_id" :name="user.name" :id="user.user_id"
-        :background="user.color_profile" :username="user.username">
+        :background="user.color_profile" :userId="user.user_id">
         </ContactUser>
       </div>
     </div>
@@ -46,40 +46,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, computed, onBeforeUnmount } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
+
 import { useTransactionsStore } from '@/store/transactions';
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
 import router from '@/router';
-import { supabase } from '@/services/supabase';
 import useAuthUser from '@/composables/AuthUser';
-import {lengthUsers} from '@/composables/useSupabaseUser';
 import {Users} from '@/interfaces/Users';
+import { useUsersStore } from '@/store/users';
+
+const usersStore = useUsersStore();
 
 const transactionStore = useTransactionsStore();
 const { userLogout } = useAuthUser();
-const users: Ref<Users[]> = ref([]);
-const duplicateUsers: Ref<Users[]> = ref([]);
 const queryName: Ref<string> = ref('');
 const loading: Ref<boolean> = ref(false);
+    
+const users = computed(() => {
+  return usersStore.users;
+});
+const usersDuplicate = computed(() => {
+  return usersStore.usersDuplicate;
+});
 
 const getAllUsers = async () => {
   loading.value = true;
   try {
-    const { data, error } = await supabase
-    .from('users')
-    .select();
-    if (error) throw error;
-
-    users.value.push(...data);
-    duplicateUsers.value.push(...data); // duplicate
-
-    lengthUsers.value = data.length;
+    if (!users.value.length || !usersDuplicate.value.length) {
+      resetStateUsers();
+      usersStore.getUsers();
+    }
     loading.value = false;
-    return data;
+    return;
   } catch (error) {
     return error;
   }
@@ -87,21 +89,40 @@ const getAllUsers = async () => {
 
 function deleteQuery() {
   queryName.value = '';
-  users.value = duplicateUsers.value;
+  usersStore.users = usersStore.usersDuplicate;
 }
 
 function filterUser() {
   if(queryName.value == '') {
-    users.value = duplicateUsers.value;
+    usersStore.users = usersStore.usersDuplicate;
   } else {
-    users.value = duplicateUsers.value.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
+    usersStore.users = usersStore.usersDuplicate.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
   }  
 } 
 
-function sortName() {
+function sortByName() {
   users.value.sort((a: Users,b: Users) => {
     return a.name > b.name ? 1 : -1;
   }); 
+}
+usersStore.$patch({
+  user: [],
+  currentName: '',
+});
+function resetStateUsers() {
+  usersStore.$patch({
+    user: [],
+    currentName: '',
+    users: [],
+    usersDuplicate: [],
+  });
+}
+function resetStateTransactions() {
+  //reset transactionStore 
+  transactionStore.$patch({
+    amount: 0,
+    transactions: [],
+  });
 }
 
 const handleLogout = async () => {
@@ -117,17 +138,14 @@ function addUser(){
   });
 }
 
-//reset transactionStore 
-transactionStore.$patch({
-  amount: 0,
-  transactions: [],
-});
+
 onBeforeMount(async () => {
+  resetStateTransactions();
   // run function to fetch all data
   await getAllUsers();
-  // eslint-disable-next-line no-console
-  console.log('before mount');
   
 });
-
+onBeforeUnmount(() => {
+  usersStore.users = usersStore.usersDuplicate;
+});
 </script>

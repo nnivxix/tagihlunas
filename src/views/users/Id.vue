@@ -10,7 +10,7 @@
       <template #exit >
         <button class="justify-self-end" @click="showOption">
           <font-awesome-icon class="h-5" icon="fa-solid fa-ellipsis-vertical" />
-        <ul class="border absolute right-7 text-right top-12 text-xl " :class="{'block' : isShowOption, 'hidden': !isShowOption}">
+        <ul class="border absolute right-7 text-right top-12 text-xl bg-white" :class="{'block' : isShowOption, 'hidden': !isShowOption}">
           <li class="p-3 ">
             <button @click="editUser">Edit</button>
           </li>
@@ -35,8 +35,9 @@
       </div>
       <div v-else class="flex items-center my-3"  v-for="d in user" :key="d.user_id" >
         <TheAvatar  @click="isEditName = false"
-        :name="currentName" :dimension='parseInt("64")'
-        :background="d.color_profile"></TheAvatar>
+          :name="d.name" :dimension='parseInt("64")'
+          :background="d.color_profile">
+        </TheAvatar>
         <form @submit.prevent="editName">
           <input v-if="isEditName" id="inputCurrentName"
           type="text" v-model="currentName"
@@ -56,14 +57,14 @@
       {{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}
       </p>
       <TheButton icon="fa-plus" title="Add transaction" 
-      @button-event="router.push({name: 'add.transaction', params: {username: username}})" ></TheButton>
+      @button-event="router.push({name: 'add.transaction', params: {userId: userId}})" ></TheButton>
     </div>
     <div v-if="!transactions.length ">
       <img :src="empty" alt="empty transaction">
       <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'add.transaction'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
-      <CardTransaction @routeTo="detailTransaction(transaction.trx_id)" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
+      <CardTransaction :user-id="(userId as string)" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
     </div>
     </div>
 </template>
@@ -78,22 +79,23 @@ import TheButton from '@/components/TheButton.vue';
 import { useRoute, useRouter } from "vue-router";
 
 import { useTransactionsStore } from '@/store/transactions';
-// import router from '@/router';
 import { supabase } from '@/services/supabase';
 import CardTransaction from '@/components/CardTransaction.vue';
-import { Users } from '@/interfaces/Users';
 
 import empty from '@/assets/empty.svg';
+import { useUsersStore } from '@/store/users';
+import { storeToRefs } from 'pinia';
 
+const usersStore = useUsersStore(); 
 const transactionStore = useTransactionsStore();
 const router = useRouter();
 const route = useRoute();
-const username = route.params.username;
+const userId = route.params.userId;
 
-const user: Ref<Users[]> = ref([]);
+const { user, currentName } = storeToRefs(usersStore);
+
 const isEditName: Ref<boolean> = ref(false);
 const isShowOption = ref<boolean>(false);
-const currentName: Ref<string> = ref('');
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
   
 const transactions = computed(() => {
@@ -105,14 +107,8 @@ const amount = computed(() => {
 
 const getOneUser = async () => {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select("*")
-      .eq('username', username);
-    if (error) throw error;
-    user.value = data;
-    currentName.value = user.value[0].name;
-    return data;
+    usersStore.getOneUser(userId as string);
+    return;
   } catch (error) {
     return error;
   }
@@ -130,7 +126,7 @@ async function editName() {
       const { error } = await supabase
       .from('users')
       .update({ name: currentName.value, color_profile: pickOneColor()})
-      .eq('username', username);
+      .eq('user_id', userId);
       if (error) throw error;
     }
     isEditName.value = false;
@@ -139,8 +135,9 @@ async function editName() {
 }
 
 function getUserTransactions () {
+  
   try {    
-    transactionStore.getTransactions(user.value[0].user_id);
+    transactionStore.getTransactions(userId as string);
   } catch (error) {
     return error;
   }
@@ -155,23 +152,10 @@ function editUser(){
 }
 function deleteUser() {
   console.log('delete user');
-  
 }
 
-function detailTransaction(trxId?: string) {
-  router.push({
-    name: 'detail.transaction',
-    params: {
-      id: trxId,
-    },
-  });
-}
-// onMounted(async () => {
-//   await transactionStore.getTransaction(user.value[0].user_id);
-// });
 onBeforeMount( async () => {
   await getOneUser();
-  // await transactionStore.getTransactions(user.value[0].user_id);
   await getUserTransactions();
 });
 </script>

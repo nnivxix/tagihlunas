@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, Ref, onBeforeMount , computed} from 'vue';
+import { reactive, onBeforeMount , computed} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { customAlphabet } from 'nanoid';
 import { Money3Component } from "v-money3";
@@ -67,18 +67,19 @@ import { useVuelidate } from '@vuelidate/core';
 import { minValue, required, maxLength } from '@vuelidate/validators';
 
 import AppBar from '@/components/AppBar.vue';
-import { ref } from 'vue';
-import { supabase } from '@/services/supabase';
-import { Users } from '@/interfaces/Users';
 import { useTransactionsStore } from '@/store/transactions';
+import { useUsersStore } from '@/store/users';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
-const username = route.params.username;
+const userId = route.params.userId;
+
 const transactionStore = useTransactionsStore();
+const usersStore = useUsersStore();
+const { user } = storeToRefs(usersStore);
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
-const user: Ref<Users[]> = ref([]);
 const initFormAddTrx = {
   flow: '',
   amount: '',
@@ -122,12 +123,7 @@ function resetForm() {
   Object.assign(formAddTrx,initFormAddTrx);
 }
 async function getOneUser() {
-  const { data, error } = await supabase
-  .from('users')
-  .select()
-  .eq('username', username); 
-  if (error) throw error;
-  user.value = data;
+  usersStore.getOneUser(userId as string);
 }
 
 async function handleAddTransaction () {
