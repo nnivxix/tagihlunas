@@ -24,6 +24,7 @@
     "v-money-spinner": "^1.2.3",
     "vue": "^3.2.45",
     "vue-content-loader": "^2.0.1",
+    "vue-final-modal": "^3.4.11",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

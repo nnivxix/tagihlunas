@@ -1,8 +1,8 @@
-import { Users } from "@/interfaces/Users";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-
 import type { Ref } from "vue";
+
+import { Users } from "@/interfaces/Users";
 import { supabase } from "@/services/supabase";
 
 
