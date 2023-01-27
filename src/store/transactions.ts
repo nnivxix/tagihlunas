@@ -51,6 +51,15 @@ export const useTransactionsStore = defineStore('transaction', () => {
     if (error) throw error;
     return;
   }
+  async function deleteAllTransactionsUser(userId: string) {
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (error) throw error;
+    return;
+  }
 
   return {
     transactions,
@@ -60,5 +69,6 @@ export const useTransactionsStore = defineStore('transaction', () => {
     addTransaction,
     getTransaction,
     deleteTransaction,
+    deleteAllTransactionsUser,
   };
 });

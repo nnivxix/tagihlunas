@@ -16,8 +16,8 @@
       </button>
     </template>
     </AppBar>
-    <div class="flex flex-col justify-between h-[90vh]">
-    <div id="info" class="flex flex-col text-dark my-8">
+    <div class="flex flex-col justify-between h-[90vh] mb-4">
+    <div v-if="!loading" id="info" class="flex flex-col text-dark my-8">
       <img src="@/assets/check-circle-rounded.svg" alt="success" srcset="" class="h-32">
       <h1 class="text-center font-semibold text-2xl mt-8">Transaction Success</h1>
     </div>
@@ -45,17 +45,12 @@
 
       <!-- modal -->
       <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full"
-      min-width="190"
       >
-      <div class="w-full h-2/3 rounded-md bg-white p-6 grid grid-rows-3 grid-cols-2 gap-4">
-        <h1 class="col-span-2 font-bold text-lg text-center self-center">⚠️ Delete Confirmation ⚠️</h1>
-        <p class="col-span-2 text-center self-center">Are you sure want delete this transaction?</p>
-        <button class="p-2 bg-lemon rounded-md font-semibold text-dark text-lg" @click="showModal = false">Back</button>
-        <button class="text-lg border-2 rounded-md font-semibold border-red-600 text-red-500 p-2" @click="deleteTransaction">Delete</button>
-      </div>
+      <ModalDelete type-data="transaction" cancle="Back" confirm="Delete" grid-rows="3"
+      @clickCancle="showModal = false" @clickConfirm="deleteTransaction"> </ModalDelete>
       </vue-final-modal>
     </div>
-    <div id="action" v-if="isLoggedIn()" class=" col-span-2 mt-10 ">
+    <div id="action" v-if="isLoggedIn()" class=" col-span-2 mt-10 mb-4">
       <button @click="showModal = true" class="w-full mt-3 border border-red-600 p-3 font-bold text-red-600 rounded-lg">Delete</button>
       <button @click="$router.back()" class="w-full mt-3 bg-lemon p-3 font-bold text-dark rounded-lg">Done</button>
     </div>
@@ -68,6 +63,8 @@ import { onBeforeMount, computed, ref } from 'vue';
 import type { Ref } from 'vue';
 import { useClipboard } from '@vueuse/core';
 import { useRoute, useRouter } from 'vue-router';
+import { useBrowserLocation } from '@vueuse/core';
+
 
 import { VueFinalModal } from 'vue-final-modal';
 
@@ -75,7 +72,9 @@ import { useTransactionsStore } from '@/store/transactions';
 import { useUsersStore } from '@/store/users';
 import useAuthUser from '@/composables/AuthUser';
 import AppBar from '@/components/AppBar.vue';
+import ModalDelete from '@/components/ModalDelete.vue';
 
+const location = useBrowserLocation();
 const { copy } = useClipboard();
 const route = useRoute();
 const router = useRouter();
@@ -86,7 +85,7 @@ const usersStore = useUsersStore();
 const { isLoggedIn } = useAuthUser();
 
 const showModal: Ref<boolean> = ref(false);
-
+const loading: Ref<boolean> = ref(true);
 const transaction = computed(() => {
   return transactionStore.transaction;
 });
@@ -94,6 +93,7 @@ const transaction = computed(() => {
 async function getDetailTransaction() {
   try {
     transactionStore.getTransaction(trxId as string);
+    loading.value = false;
   } catch (error) {
     return error;
   }
@@ -101,6 +101,7 @@ async function getDetailTransaction() {
 async function getOneUser() {
   try {
     usersStore.getOneUser(userId as string);
+    loading.value = false;
   } catch (error) {
     return error;
   }
@@ -111,6 +112,7 @@ async function deleteTransaction() {
   router.back();
 }
 
+console.log(location.value.href);
 
 onBeforeMount(() => {
   getDetailTransaction();

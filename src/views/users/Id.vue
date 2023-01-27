@@ -15,7 +15,7 @@
             <button @click="editUser">Edit</button>
           </li>
           <li class="p-3 text-red-600">
-            <button @click="deleteUser">Delete</button>
+            <button @click="showModal = true">Delete</button>
           </li>
         </ul>
         </button>
@@ -66,6 +66,20 @@
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
       <CardTransaction :user-id="(userId as string)" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
     </div>
+    <!-- Modal -->
+    <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
+      <ModalDelete grid-col=""
+        type-data="user" cancle="Cancle" confirm="Sure, Delete" grid-rows="4"
+        additional-msg="and all transactions"
+        @clickCancle="showModal = false" @clickConfirm="deleteUser">
+        <div class="flex items-center  flex-col col-span-2">
+          <p v-for="u in user" :key="u.user_id" class="text-center self-center py-2">
+          Please type <b>{{ u.username }}</b> to confrim!
+          </p>
+          <input class="p-2 border border-gray-700" type="text" v-model="textConfirmation" name="confirm" @keyup.enter="deleteUser" >
+        </div>
+      </ModalDelete>
+    </vue-final-modal>
     </div>
 </template>
 
@@ -73,10 +87,13 @@
 import { ref, onBeforeMount,  computed } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
+import { useRoute, useRouter } from "vue-router";
+import { VueFinalModal } from 'vue-final-modal';
+
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
-import { useRoute, useRouter } from "vue-router";
+import ModalDelete from '@/components/ModalDelete.vue';
 
 import { useTransactionsStore } from '@/store/transactions';
 import { supabase } from '@/services/supabase';
@@ -87,7 +104,7 @@ import { useUsersStore } from '@/store/users';
 import { storeToRefs } from 'pinia';
 
 const usersStore = useUsersStore(); 
-const transactionStore = useTransactionsStore();
+const transactionsStore = useTransactionsStore();
 const router = useRouter();
 const route = useRoute();
 const userId = route.params.userId;
@@ -97,12 +114,14 @@ const { user, currentName } = storeToRefs(usersStore);
 const isEditName: Ref<boolean> = ref(false);
 const isShowOption = ref<boolean>(false);
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
-  
+const showModal: Ref<boolean> = ref(false);
+const textConfirmation: Ref<string> = ref('');
+
 const transactions = computed(() => {
-  return transactionStore.transactions;
+  return transactionsStore.transactions;
 });
 const amount = computed(() => {
-  return transactionStore.amount;
+  return transactionsStore.amount;
 });
 
 const getOneUser = async () => {
@@ -135,23 +154,33 @@ async function editName() {
 }
 
 function getUserTransactions () {
-  
   try {    
-    transactionStore.getTransactions(userId as string);
+    return transactionsStore.getTransactions(userId as string);
   } catch (error) {
     return error;
   }
 } 
 function showOption () {
-  isShowOption.value = !isShowOption.value;
-  
+  return isShowOption.value = !isShowOption.value;
+
 }
 function editUser(){
   console.log('edit user');
   
 }
 function deleteUser() {
-  console.log('delete user');
+  if(textConfirmation.value === user.value[0].username) {
+    usersStore.deleteUser(userId as string);
+    transactionsStore.deleteAllTransactionsUser(userId as string);
+    router.push({
+      name: 'users',
+    });
+    return;
+  } else {
+    showModal.value = false;
+    textConfirmation.value = '';
+    return;
+  }
 }
 
 onBeforeMount( async () => {
