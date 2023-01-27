@@ -11,7 +11,7 @@
       </button>
     </template>
     <template #exit>
-      <button class="justify-self-end">
+      <button  class="justify-self-end"  @click="startShare">
         <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" class="h-5"/>
       </button>
     </template>
@@ -59,13 +59,11 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, computed, ref } from 'vue';
+import { onBeforeMount, computed, ref, reactive } from 'vue';
 import type { Ref } from 'vue';
-import { useClipboard } from '@vueuse/core';
+import { useClipboard, useBrowserLocation, useShare } from '@vueuse/core';
+import { isClient } from '@vueuse/shared';
 import { useRoute, useRouter } from 'vue-router';
-import { useBrowserLocation } from '@vueuse/core';
-
-
 import { VueFinalModal } from 'vue-final-modal';
 
 import { useTransactionsStore } from '@/store/transactions';
@@ -74,7 +72,6 @@ import useAuthUser from '@/composables/AuthUser';
 import AppBar from '@/components/AppBar.vue';
 import ModalDelete from '@/components/ModalDelete.vue';
 
-const location = useBrowserLocation();
 const { copy } = useClipboard();
 const route = useRoute();
 const router = useRouter();
@@ -89,7 +86,23 @@ const loading: Ref<boolean> = ref(true);
 const transaction = computed(() => {
   return transactionStore.transaction;
 });
-
+const shareOption = reactive({
+  title: `This is transaction of ${usersStore.currentName}`,
+  text: `This is transaction of ${usersStore.currentName} you can check the detail transaction from ${useBrowserLocation().value.href}`,
+  url: isClient ? useBrowserLocation().value.href : '',
+});
+const {share, isSupported} = useShare(shareOption);
+const startShare = () => {
+  try {
+    if (isSupported) {
+      share().catch(e => e);
+    } else {
+      window.navigator.share(shareOption);
+    }
+  } catch (error) {
+    return;
+  }
+};
 async function getDetailTransaction() {
   try {
     transactionStore.getTransaction(trxId as string);
@@ -111,8 +124,6 @@ async function deleteTransaction() {
   await transactionStore.deleteTransaction(trxId as string);
   router.back();
 }
-
-console.log(location.value.href);
 
 onBeforeMount(() => {
   getDetailTransaction();
