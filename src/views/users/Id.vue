@@ -165,7 +165,12 @@ function showOption () {
 
 }
 function editUser(){
-  console.log('edit user');
+  router.push({
+    name: 'edit.user',
+    params: {
+      userId,
+    },
+  });
   
 }
 function deleteUser() {
