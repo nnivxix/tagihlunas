@@ -2,8 +2,9 @@ import { defineStore } from "pinia";
 import { ref } from 'vue';
 import type { Ref } from "vue";
 import _ from 'lodash';
-import { Users } from "@/interfaces/Users";
+import { Users, NewUser } from "@/interfaces/Users";
 import { supabase } from "@/services/supabase";
+import {user as admin} from '@/composables/AuthUser';
 
 export const useUsersStore = defineStore('users', () => {
   const users: Ref<Users[]> = ref([]);
@@ -15,7 +16,8 @@ export const useUsersStore = defineStore('users', () => {
   async function getUsers() {
     const { data, error } = await supabase
     .from('users')
-    .select();
+    .select()
+    .eq('admin_id',admin?.value.id);
     if (error) throw error;
     usersDuplicate.value.push(...data);
     users.value.push(...data);
@@ -31,6 +33,18 @@ export const useUsersStore = defineStore('users', () => {
     currentName.value = await _.clone(data).shift()?.name;
     currentUsername.value = await _.clone(data).shift()?.username;
     return data;
+  }
+  async function addUser({admin_id, user_id, name, username, color_profile}: NewUser) {
+    const { error } = await supabase
+    .from('users')
+    .insert({
+      admin_id,
+      user_id,
+      name,
+      username,
+      color_profile,    
+    });    
+    if (error) throw error;
   }
   async function deleteUser(userId: string) {
     const idUser = users.value.findIndex(user => user.user_id == userId);
@@ -58,6 +72,7 @@ export const useUsersStore = defineStore('users', () => {
     currentUsername,
     getUsers,
     getOneUser,
+    addUser,
     deleteUser,
     updateUser,
   };

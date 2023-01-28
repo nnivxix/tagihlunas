@@ -33,11 +33,12 @@
           <circle cx="46" cy="50" r="41" />
       </content-loader>
       </div>
-      <div v-else class="flex items-center my-3"  v-for="d in user" :key="d.user_id" >
+      <div v-else class="flex flex-col items-center my-3"  v-for="d in user" :key="d.user_id" >
         <TheAvatar  @click="isEditName = false"
           :name="d.name" :dimension='parseInt("64")'
           :background="d.color_profile">
         </TheAvatar>
+        <div class="my-4">
         <form @submit.prevent="editName">
           <input v-if="isEditName" id="inputCurrentName"
           type="text" v-model="currentName"
@@ -52,6 +53,7 @@
             </font-awesome-icon>
           </span>
         </p>
+        </div>
       </div>
       <p id="amount" class="text-4xl font-semibold text-dark py-4" @click="editName"> 
       {{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}
@@ -69,14 +71,15 @@
     <!-- Modal -->
     <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
       <ModalDelete grid-col=""
-        type-data="user" cancle="Cancle" confirm="Sure, Delete" grid-rows="4"
+        type-data="user" cancle="Cancel" confirm="Sure, Delete" grid-rows="4"
         additional-msg="and all transactions"
         @clickCancle="showModal = false" @clickConfirm="deleteUser">
-        <div class="flex items-center  flex-col col-span-2">
+        <div class="flex items-center  flex-col col-span-2 mb-3">
           <p v-for="u in user" :key="u.user_id" class="text-center self-center py-2">
           Please type <b>{{ u.username }}</b> to confrim!
           </p>
           <input class="p-2 border border-gray-700" type="text" v-model="textConfirmation" name="confirm" @keyup.enter="deleteUser" >
+          <span v-if="!isValid" class="text-red-600">command not match</span>
         </div>
       </ModalDelete>
     </vue-final-modal>
@@ -84,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount,  computed } from 'vue';
+import { ref, onBeforeMount,  computed, watch } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
 import { useRoute, useRouter } from "vue-router";
@@ -116,7 +119,7 @@ const isShowOption = ref<boolean>(false);
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 const showModal: Ref<boolean> = ref(false);
 const textConfirmation: Ref<string> = ref('');
-
+const isValid = ref(false);
 const transactions = computed(() => {
   return transactionsStore.transactions;
 });
@@ -171,21 +174,23 @@ function editUser(){
       userId,
     },
   });
-  
 }
+watch(textConfirmation, () => {
+  if(textConfirmation.value === user.value[0].username || textConfirmation.value == '') {
+    isValid.value = true;
+  } else{
+    isValid.value = false;
+  }
+});
 function deleteUser() {
-  if(textConfirmation.value === user.value[0].username) {
+  if(textConfirmation.value === user.value[0].username && isValid) {
     usersStore.deleteUser(userId as string);
     transactionsStore.deleteAllTransactionsUser(userId as string);
     router.push({
       name: 'users',
     });
     return;
-  } else {
-    showModal.value = false;
-    textConfirmation.value = '';
-    return;
-  }
+  } 
 }
 
 onBeforeMount( async () => {
