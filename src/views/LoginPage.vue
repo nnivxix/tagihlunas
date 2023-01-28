@@ -46,7 +46,7 @@ const handleLogin = async () => {
   });
   if (error == null){
     await router.push({
-      name: 'users',
+      name: 'users.index',
     });
     
     return data;

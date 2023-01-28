@@ -3,7 +3,7 @@
   <div class="mx-6">
   <AppBar titleapp="Add User">
     <template #back >
-      <button class="justify-self-start" @click="$router.push({name: 'users'})">
+      <button class="justify-self-start" @click="$router.push({name: 'users.index'})">
         <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
       </button>
     </template>
@@ -89,7 +89,7 @@ async function HandleAddUser () {
         created_at: null,
       });
       await router.push({
-        name: 'users',
+        name: 'users.index',
       });
     }  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

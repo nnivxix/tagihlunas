@@ -59,11 +59,11 @@
       {{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}
       </p>
       <TheButton icon="fa-plus" title="Add transaction" 
-      @button-event="router.push({name: 'add.transaction', params: {userId: userId}})" ></TheButton>
+      @button-event="router.push({name: 'transactions.add', params: {userId: userId}})" ></TheButton>
     </div>
     <div v-if="!transactions.length ">
       <img :src="empty" alt="empty transaction">
-      <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'add.transaction'}">create one</router-link>.</p>
+      <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'transactions.add'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
       <CardTransaction :user-id="(userId as string)" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
@@ -79,7 +79,7 @@
           Please type <b>{{ u.username }}</b> to confrim!
           </p>
           <input class="p-2 border border-gray-700" type="text" v-model="textConfirmation" name="confirm" @keyup.enter="deleteUser" >
-          <span v-if="!isValid" class="text-red-600">command not match</span>
+          <span v-if="!isValid" class="text-red-600">text not match</span>
         </div>
       </ModalDelete>
     </vue-final-modal>
@@ -119,7 +119,7 @@ const isShowOption = ref<boolean>(false);
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 const showModal: Ref<boolean> = ref(false);
 const textConfirmation: Ref<string> = ref('');
-const isValid = ref(false);
+const isValid = ref(true);
 const transactions = computed(() => {
   return transactionsStore.transactions;
 });
@@ -169,14 +169,15 @@ function showOption () {
 }
 function editUser(){
   router.push({
-    name: 'edit.user',
+    name: 'users.edit',
     params: {
       userId,
     },
   });
 }
+
 watch(textConfirmation, () => {
-  if(textConfirmation.value === user.value[0].username || textConfirmation.value == '') {
+  if(textConfirmation.value == '' || textConfirmation.value == null || textConfirmation.value === user.value[0].username) {
     isValid.value = true;
   } else{
     isValid.value = false;
@@ -187,7 +188,7 @@ function deleteUser() {
     usersStore.deleteUser(userId as string);
     transactionsStore.deleteAllTransactionsUser(userId as string);
     router.push({
-      name: 'users',
+      name: 'users.index',
     });
     return;
   } 

@@ -10,14 +10,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/TheIntro.vue'),
     beforeEnter: () => {
       if (isLoggedIn()) {
-        return {name: 'users'};
+        return {name: 'users.index'};
       }
     },
   },
   {
     path: '/users',
-    name: 'users',
-    component: () => import('@/views/users/Index.vue'),
+    name: 'users.index',
+    component: () => import('@/views/UsersIndex.vue'),
     children: [
     ],
     meta: {
@@ -26,48 +26,48 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/users/:userId',
-    name: 'detail.user',
-    component: () => import('@/views/users/Id.vue'),
+    name: 'users.show',
+    component: () => import('@/views/UsersShow.vue'),
     meta: {
       requiresAuth: true,
     },
   },
   {
     path: '/users/:userId/edit',
-    name: 'edit.user',
-    component: () => import('@/views/users/Edit.vue'),
+    name: 'users.edit',
+    component: () => import('@/views/UsersEdit.vue'),
     meta: {
       requiresAuth: true,
     },
   },
   {
     path: '/users/add',
-    name: 'add.user',
-    component: () => import('@/views/users/Add.vue'),
+    name: 'users.add',
+    component: () => import('@/views/UsersAdd.vue'),
     meta: {
       requiresAuth: true,
     },
   },
   {
     path: '/users/:userId/transactions/add/',
-    name: 'add.transaction',
-    component: () => import('@/views/transactions/Add.vue'),
+    name: 'transactions.add',
+    component: () => import('@/views/TransactionsAdd.vue'),
     meta: {
       requiresAuth: true,
     },
   },
   {
     path: '/users/:userId/transactions/:trxId',
-    name: 'detail.transaction',
-    component: () => import('@/views/transactions/Id.vue'),
+    name: 'transactions.show',
+    component: () => import('@/views/TransactionsShow.vue'),
   },
   {
     path: '/login',
-    name: 'login',
-    component: () => import('@/views/TheLogin.vue'),
+    name: 'login.page',
+    component: () => import('@/views/LoginPage.vue'),
     beforeEnter: () => {
       if (isLoggedIn()) {
-        return {name: 'users'};
+        return {name: 'users.index'};
       }
     },
   },
@@ -96,7 +96,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   if ( to.meta.requiresAuth && !isLoggedIn()  && !Object.keys(to.query).includes("fromEmail")) {
-    return {name: "login" };
+    return {name: "login.page" };
   }
 });
 

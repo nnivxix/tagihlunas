@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="{name: 'detail.transaction', params: {userId: userId, trxId: trxId}}"
+  <router-link :to="{name: 'transactions.show', params: {userId: userId, trxId: trxId}}"
   class="grid grid-rows-2 grid-cols-2 cursor-pointer bg-semi-gray-1 px-8 py-4 text-dark hover:text-gray-700 hover:bg-lemon">
     <p class="text-sm font-semibold">{{ trxId }} </p>
     <p class="text-lg font-semibold text-gray-800 text-end row-span-2 self-center">{{ amount.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) }}</p>

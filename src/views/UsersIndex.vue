@@ -34,7 +34,7 @@
     <div v-else>
       <div v-if="!users.length"> 
         <img src="@/assets/nouser.png" alt="no user users" srcset="">
-        <p class="text-center text-xl">There are no registered users yet. <router-link class="underline" :to="{name: 'add.user'}"> Let's create one.</router-link></p>
+        <p class="text-center text-xl">There are no registered users yet. <router-link class="underline" :to="{name: 'users.add'}"> Let's create one.</router-link></p>
       </div>
       <div v-else>
         <ContactUser v-for="user in users" :key="user.user_id" :name="user.name" :id="user.user_id"
@@ -128,13 +128,13 @@ function resetStateTransactions() {
 const handleLogout = async () => {
   await userLogout();
   await router.push({
-    name: 'login',
+    name: 'login.page',
   });
   window.location.reload();
 };
 function addUser(){
   router.push({
-    name: 'add.user',
+    name: 'users.add',
   });
 }
 
