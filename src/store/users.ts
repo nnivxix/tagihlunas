@@ -2,22 +2,16 @@ import { defineStore } from "pinia";
 import { reactive, ref } from 'vue';
 import type { Ref } from "vue";
 import { Users, NewUser } from "@/interfaces/Users";
+import _ from "lodash";
 // import {user as admin} from '@/composables/AuthUser';
 
 export const useUsersStore = defineStore('users', () => {
   const users: Ref<Users[]> = ref([]);
   const usersDuplicate: Ref<Users[]> = ref([]);
-  const currentUser = reactive<Users>({
-    id: 0,
-    created_at:'',
-    admin_id: '',
-    user_id: '',
-    name: '',
-    username:'',
-    color_profile: '',
-  });
+  const currentUser = ref<Users[]>([]);
   const currentName: Ref<string> = ref('');
   const currentUsername: Ref<string> = ref('');
+  const currentColor: Ref<string> = ref('');
 
   async function getUsers(data: Users[]) {
     usersDuplicate.value.push(...data);
@@ -38,12 +32,16 @@ export const useUsersStore = defineStore('users', () => {
   async function updateUser(userId: string, name : string, username: string, color_profile: string) {
     const id = users.value.findIndex(user => user.user_id == userId);
     const user: Users = {
-      id: currentUser.id,
-      admin_id: currentUser.admin_id,
-      created_at: currentUser.created_at,
-      user_id: currentUser.user_id,
+      id: currentUser.value[0].id,
+      created_at: currentUser.value[0].created_at,
+      admin_id: currentUser.value[0].admin_id,
+      user_id: currentUser.value[0].user_id,
       name, username, color_profile,
     };
+    currentUser.value.splice(0,1, user);
+    currentName.value = name;
+    currentUsername.value = username;
+    currentColor.value = color_profile;
     users.value.splice(id,1, user);
     return users;
   }
@@ -53,6 +51,7 @@ export const useUsersStore = defineStore('users', () => {
     currentName,
     currentUser,
     currentUsername,
+    currentColor,
     getUsers,
     addUser,
     deleteUser,

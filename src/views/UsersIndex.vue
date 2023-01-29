@@ -58,7 +58,7 @@ import useAuthUser from '@/composables/AuthUser';
 import {Users} from '@/interfaces/Users';
 import { useTransactionsStore } from '@/store/transactions';
 import { useUsersStore } from '@/store/users';
-import { UsersService } from '@/services/supabase/UsersServices';
+import UsersService from '@/services/supabase/UsersServices';
 import { storeToRefs } from 'pinia';
 const usersStore = useUsersStore();
 const transactionStore = useTransactionsStore();
@@ -104,13 +104,12 @@ function sortByName() {
   }); 
 }
 usersStore.$patch({
-  user: [],
   currentName: '',
 });
 function resetStateUsers() {
   usersStore.$patch({
-    user: [],
     currentName: '',
+    currentUser: [],
     users: [],
     usersDuplicate: [],
   });
@@ -138,6 +137,7 @@ function addUser(){
 
 onBeforeMount(async () => {
   resetStateTransactions();
+  resetStateUsers();
   // run function to fetch all data
   await getAllUsers();
   

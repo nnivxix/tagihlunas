@@ -22,7 +22,7 @@
       </template>
     </AppBar>
     <div class="px-4 mb-7 mx-6" >
-      <div v-if="!user.length" class="flex items-center my-3">
+      <div v-if="!currentUser.length" class="flex items-center my-3">
         <content-loader
           viewBox="0 0 476 150"
           :speed="8"
@@ -33,7 +33,7 @@
           <circle cx="46" cy="50" r="41" />
       </content-loader>
       </div>
-      <div v-else class="flex flex-col items-center my-3"  v-for="d in user" :key="d.user_id" >
+      <div v-else class="flex flex-col items-center my-3"  v-for="d in currentUser" :key="d.user_id" >
         <TheAvatar  @click="isEditName = false"
           :name="d.name" :dimension='parseInt("64")'
           :background="d.color_profile">
@@ -75,7 +75,7 @@
         additional-msg="and all transactions"
         @clickCancle="showModal = false" @clickConfirm="deleteUser">
         <div class="flex items-center  flex-col col-span-2 mb-3">
-          <p v-for="u in user" :key="u.user_id" class="text-center self-center py-2">
+          <p v-for="u in currentUser" :key="u.user_id"  class="text-center self-center py-2">
           Please type <b>{{ u.username }}</b> to confrim!
           </p>
           <input class="p-2 border border-gray-700" type="text" v-model="textConfirmation" name="confirm" @keyup.enter="deleteUser" >
@@ -99,12 +99,14 @@ import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
 import ModalDelete from '@/components/ModalDelete.vue';
 import TransactionsService  from '@/services/supabase/TransactionsService';
+import UsersService from '@/services/supabase/UsersServices';
 import { useTransactionsStore } from '@/store/transactions';
 import { supabase } from '@/helpers/supabase';
 import CardTransaction from '@/components/CardTransaction.vue';
 
 import empty from '@/assets/empty.svg';
 import { useUsersStore } from '@/store/users';
+import _ from 'lodash';
 
 const usersStore = useUsersStore(); 
 const transactionsStore = useTransactionsStore();
@@ -112,7 +114,7 @@ const router = useRouter();
 const route = useRoute();
 const userId = route.params.userId;
 
-const { user, currentName } = storeToRefs(usersStore);
+const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(usersStore);
 
 const isEditName: Ref<boolean> = ref(false);
 const isShowOption = ref<boolean>(false);
@@ -126,7 +128,18 @@ const {transactions, amount} = storeToRefs(transactionsStore);
 
 const getOneUser = async () => {
   try {
-    usersStore.getOneUser(userId as string);
+    if(!currentUser.value.length) {
+      UsersService().getUserById(userId as string).then(result => {
+        // const user = result.shift();
+        currentUser.value = [];
+        currentUsername.value = _.clone(result).shift()?.username;
+        currentName.value = _.clone(result).shift()?.name;
+        currentColor.value = _.clone(result).shift()?.color_profile;
+        currentUser.value.push(...result);
+        return;
+      });
+    }
+
     return;
   } catch (error) {
     return error;
@@ -141,7 +154,7 @@ function pickOneColor(): string{
 async function editName() {
   if (isEditName.value) {
 
-    if(currentName.value !== user.value[0].name) {
+    if(currentName.value !== currentUser.value[0].name) {
       const { error } = await supabase
       .from('users')
       .update({ name: currentName.value, color_profile: pickOneColor()})
@@ -180,14 +193,14 @@ function editUser(){
 }
 
 watch(textConfirmation, () => {
-  if(textConfirmation.value == '' || textConfirmation.value == null || textConfirmation.value === user.value[0].username) {
+  if(textConfirmation.value == '' || textConfirmation.value == null || textConfirmation.value === currentUser.value[0].username) {
     isValid.value = true;
   } else{
     isValid.value = false;
   }
 });
 function deleteUser() {
-  if(textConfirmation.value === user.value[0].username && isValid) {
+  if(textConfirmation.value === currentUser.value[0].username && isValid) {
     usersStore.deleteUser(userId as string);
     TransactionsService().deleteTransactionsByUserId(userId as string);
     router.push({

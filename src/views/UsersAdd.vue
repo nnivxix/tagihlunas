@@ -41,6 +41,7 @@ import { AddUser } from '@/interfaces/Form';
 import router from '@/router';
 import { useUsersStore } from '@/store/users';
 import { storeToRefs } from 'pinia';
+import UsersService from '@/services/supabase/UsersServices';
 
 const usersStore = useUsersStore();
 const { users } = storeToRefs(usersStore);
@@ -82,7 +83,7 @@ async function HandleAddUser () {
     v$.value.$validate(); // check form
     if (!v$.value.$error) {
       // if no error 
-      await usersStore.addUser({...result});
+      await UsersService().addUser({...result});
       users.value.push({
         ...result,
         id: 0,

@@ -2,7 +2,7 @@ import { supabase } from "@/helpers/supabase";
 import {user as admin} from '@/composables/AuthUser';
 import { NewUser } from "@/interfaces/Users";
 
-export const UsersService = () => {
+const UsersService = () => {
   async function addUser({admin_id, user_id, name, username, color_profile}: NewUser) {
     const { error } = await supabase
     .from('users')
@@ -55,3 +55,5 @@ export const UsersService = () => {
     deleteUser,
   };
 };
+
+export default UsersService;

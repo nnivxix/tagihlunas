@@ -25,7 +25,7 @@
         <p class="text-red-500" v-for="e in v$.username.$errors" :key="e.$uid">{{ e.$message }}</p>
       </div>
       <p v-if="erroMsg" class="text-red-500">Username has been taken.</p>
-      <button  :class="{'bg-gray-300': !isChange, 'text-gray-400': !isChange}" class="bg-lemon p-3 font-bold text-dark rounded-lg">Update User</button>
+      <button title="update user" :disabled="!isChange"  :class="{'bg-gray-300': !isChange, 'text-gray-400': !isChange}" class="bg-lemon p-3 font-bold text-dark rounded-lg">Update User</button>
     </form>
   </div>
 </template>
@@ -40,11 +40,13 @@ import AppBar from '@/components/AppBar.vue';
 import { AddUser } from '@/interfaces/Form';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import UsersService from '@/services/supabase/UsersServices';
+import _ from 'lodash';
 
 const router = useRouter();
 const userId = useRoute().params.userId;
 const usersStore = useUsersStore();
-const { currentName, currentUsername } = storeToRefs(usersStore);
+const { currentName, currentUsername, currentColor } = storeToRefs(usersStore);
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 const formUpdateUser: AddUser = reactive({
   username: currentUsername.value,
@@ -72,10 +74,20 @@ function pickOneColor(): string{
 const getOneUser = async () => {
   try {
     if (currentName.value == '' || currentUsername.value == '') {
-      usersStore.getOneUser(userId as string);
+      UsersService().getUserById(userId as string).then(result => {
+        
+        currentName.value = _.clone(result).shift()?.name;
+        currentUsername.value = _.clone(result).shift()?.username;
+        currentColor.value = _.clone(result).shift()?.color_profile;
+
+        return result;
+      });
+      return;
+      // updateUser(userId as string, formUpdateUser.name, formUpdateUser.username, pickOneColor());
     }
     return;
   } catch (error) {
+    
     return error;
   }
 };
@@ -95,6 +107,7 @@ async function HandleUpdateUser () {
     v$.value.$validate(); // check form
     if (!v$.value.$error) {
       // if no error 
+      await UsersService().updateUser(userId as string, formUpdateUser.name, formUpdateUser.username, pickOneColor());
       await usersStore.updateUser(userId as string, formUpdateUser.name, formUpdateUser.username, pickOneColor());
       router.back();
       
