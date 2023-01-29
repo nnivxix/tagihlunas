@@ -66,7 +66,7 @@
       <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'transactions.add'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
-      <CardTransaction :user-id="(userId as string)" :trx-id="transaction.trx_id" :amount="transaction.amount" :date="transaction.created_at" ></CardTransaction>
+      <CardTransaction :user-id="(userId as string)" :trxId="transaction.trx_id" :amount="transaction.amount" :dateTrx="(transaction.created_at as string)" ></CardTransaction>
     </div>
     <!-- Modal -->
     <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
@@ -87,24 +87,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount,  computed, watch } from 'vue';
+import { ref, onBeforeMount,  watch } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from 'vue-final-modal';
+import { storeToRefs } from 'pinia';
 
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
 import ModalDelete from '@/components/ModalDelete.vue';
-
+import TransactionsService  from '@/services/supabase/TransactionsService';
 import { useTransactionsStore } from '@/store/transactions';
-import { supabase } from '@/services/supabase';
+import { supabase } from '@/helpers/supabase';
 import CardTransaction from '@/components/CardTransaction.vue';
 
 import empty from '@/assets/empty.svg';
 import { useUsersStore } from '@/store/users';
-import { storeToRefs } from 'pinia';
 
 const usersStore = useUsersStore(); 
 const transactionsStore = useTransactionsStore();
@@ -120,12 +120,9 @@ const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367',
 const showModal: Ref<boolean> = ref(false);
 const textConfirmation: Ref<string> = ref('');
 const isValid = ref(true);
-const transactions = computed(() => {
-  return transactionsStore.transactions;
-});
-const amount = computed(() => {
-  return transactionsStore.amount;
-});
+
+const {transactions, amount} = storeToRefs(transactionsStore);
+
 
 const getOneUser = async () => {
   try {
@@ -157,8 +154,14 @@ async function editName() {
 }
 
 function getUserTransactions () {
-  try {    
-    return transactionsStore.getTransactions(userId as string);
+  try {
+    if (transactions.value.length == 0) {
+      TransactionsService().getTransactionsByUserId(userId as string).then(result => {
+        transactions.value = [];
+        transactions.value.push(...result);
+        transactionsStore.calculateAmount(result);
+      });
+    }
   } catch (error) {
     return error;
   }
@@ -186,7 +189,7 @@ watch(textConfirmation, () => {
 function deleteUser() {
   if(textConfirmation.value === user.value[0].username && isValid) {
     usersStore.deleteUser(userId as string);
-    transactionsStore.deleteAllTransactionsUser(userId as string);
+    TransactionsService().deleteTransactionsByUserId(userId as string);
     router.push({
       name: 'users.index',
     });

@@ -46,39 +46,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, computed, onBeforeUnmount } from 'vue';
+import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
 
-import { useTransactionsStore } from '@/store/transactions';
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
 import router from '@/router';
 import useAuthUser from '@/composables/AuthUser';
 import {Users} from '@/interfaces/Users';
+import { useTransactionsStore } from '@/store/transactions';
 import { useUsersStore } from '@/store/users';
-
+import { UsersService } from '@/services/supabase/UsersServices';
+import { storeToRefs } from 'pinia';
 const usersStore = useUsersStore();
-
 const transactionStore = useTransactionsStore();
 const { userLogout } = useAuthUser();
+
 const queryName: Ref<string> = ref('');
 const loading: Ref<boolean> = ref(false);
     
-const users = computed(() => {
-  return usersStore.users;
-});
-const usersDuplicate = computed(() => {
-  return usersStore.usersDuplicate;
-});
+const { users, usersDuplicate }  = storeToRefs(usersStore);
 
 const getAllUsers = async () => {
   loading.value = true;
   try {
     if (!users.value.length || !usersDuplicate.value.length) {
-      resetStateUsers();
-      usersStore.getUsers();
+      UsersService().getUsers().then(result => {
+        users.value.push(...result);
+        usersDuplicate.value.push(...result);
+      });
     }
     loading.value = false;
     return;
@@ -89,14 +87,14 @@ const getAllUsers = async () => {
 
 function deleteQuery() {
   queryName.value = '';
-  usersStore.users = usersStore.usersDuplicate;
+  users.value = usersDuplicate.value;
 }
 
 function filterUser() {
   if(queryName.value == '') {
-    usersStore.users = usersStore.usersDuplicate;
+    users.value = usersDuplicate.value;
   } else {
-    usersStore.users = usersStore.usersDuplicate.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
+    users.value = usersDuplicate.value.filter((n) => n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()));
   }  
 } 
 
@@ -120,7 +118,6 @@ function resetStateUsers() {
 function resetStateTransactions() {
   //reset transactionStore 
   transactionStore.$patch({
-    amount: 0,
     transactions: [],
   });
 }
@@ -146,6 +143,6 @@ onBeforeMount(async () => {
   
 });
 onBeforeUnmount(() => {
-  usersStore.users = usersStore.usersDuplicate;
+  users.value = usersDuplicate.value;
 });
 </script>

@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="mx-6 ">
     <AppBar titleapp="Detail" >
@@ -106,6 +105,7 @@ const startShare = () => {
 async function getDetailTransaction() {
   try {
     transactionStore.getTransaction(trxId as string);
+    
     loading.value = false;
   } catch (error) {
     return error;

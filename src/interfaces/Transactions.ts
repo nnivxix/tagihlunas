@@ -1,7 +1,7 @@
 export interface NewTransaction {
   user_id?: string;
   flow?: string;
-  amount?: number;
+  amount: number;
   wallet?: string ;
   trx_id?: string ;
   message?: string ;

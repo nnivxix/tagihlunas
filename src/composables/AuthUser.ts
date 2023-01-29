@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { supabase } from "@/services/supabase";
+import { supabase } from "@/helpers/supabase";
 import { SignIn } from "@/interfaces/Form";
 
 export const user = ref();

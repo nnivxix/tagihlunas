@@ -3,33 +3,23 @@ import { ref } from 'vue';
 import type { Ref } from "vue";
 import _ from 'lodash';
 import { Users, NewUser } from "@/interfaces/Users";
-import { supabase } from "@/services/supabase";
+import { supabase } from "@/helpers/supabase";
 import {user as admin} from '@/composables/AuthUser';
 
 export const useUsersStore = defineStore('users', () => {
   const users: Ref<Users[]> = ref([]);
   const usersDuplicate: Ref<Users[]> = ref([]);
-  const user: Ref<Users[]> = ref([]);
+  const currentUser = ref({});
   const currentName: Ref<string> = ref('');
   const currentUsername: Ref<string> = ref('');
 
-  async function getUsers() {
-    const { data, error } = await supabase
-    .from('users')
-    .select()
-    .eq('admin_id',admin?.value.id);
-    if (error) throw error;
+  async function getUsers(data: Users[]) {
     usersDuplicate.value.push(...data);
     users.value.push(...data);
   }
   async function getOneUser(userId: string) {
-    const { data, error } = await supabase
-      .from('users')
-      .select("*")
-      .eq('user_id', userId);
-    if (error) throw error;
-    user.value = [];
-    user.value.push(...data);
+    currentUser.value = [];
+    currentUser.value.push(...data);
     currentName.value = await _.clone(data).shift()?.name;
     currentUsername.value = await _.clone(data).shift()?.username;
     return data;

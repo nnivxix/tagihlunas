@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import useAuthUser from "@/composables/AuthUser";
-import { supabase } from "./services/supabase";
+import { supabase } from "@/helpers/supabase";
 
 supabase.auth.onAuthStateChange((event, session) => {
   // the "event" is a string indicating what trigger the state change (ie. SIGN_IN, SIGN_OUT, etc)

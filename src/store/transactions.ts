@@ -1,74 +1,55 @@
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { NewTransaction, Transactions } from '@/interfaces/Transactions';
-import { supabase } from '@/services/supabase';
+import { TransactionsType } from '@/types/Transactions';
+import _ from 'lodash';
 
 export const useTransactionsStore = defineStore('transaction', () => {
   const transactions: Ref<Transactions[]> = ref([]);
-  const transaction: Ref<Transactions[]> = ref([]);
-  const amount: Ref<number> = ref(0);
+  const transaction = reactive<TransactionsType>({
+    id : 0,
+    created_at : new Date(),
+    user_id: '',
+    flow: '',
+    amount: 0,
+    wallet: '',
+    trx_id: '',
+    message: '',
+  });
+  const amount = ref<number>(0);
 
-  async function getTransactions(user_id: string) {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select("*")
-      .eq('user_id', user_id); 
-  
-    if (error) throw error;
+  function calculateAmount(transactions: Transactions[]) {
+    amount.value =  _.reduce(transactions, function(sum, n): number{
+      return sum + n.amount;
+    },0);
+    return amount.value;
+  }
+  async function getTransactions(data: Transactions[]) {
     transactions.value = []; // empty first then add from supabase
     transactions.value.push(...data);
-    
-    amount.value = 0;
-    for (let i = 0; i < data.length; i++) {
-      amount.value += data[i].amount;
-    }
-    return data;
   }
   async function addTransaction({user_id, flow, amount, wallet, trx_id, message }: NewTransaction) {
-    const { error } = await supabase
-      .from('transactions')
-      .insert({user_id, flow, amount, wallet, trx_id, message });
-      if (error) throw error;
-  }
-  async function getTransaction(trxId: string) {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select("*")
-      .eq('trx_id', trxId); 
-  
-    if (error) throw error;
-    transaction.value = []; // empty first then add from supabase
-    transaction.value.push(...data);
-    return data;
+    transactions.value.push({
+      id: 0,
+      // id: transactions.value.findLastIndex((e : Transactions) => e.id) + 1,
+      created_at: '',
+      user_id, flow, amount, wallet, trx_id, message,
+    });
   }
   async function deleteTransaction(trxId: string) {
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('trx_id', trxId);
-    
-    if (error) throw error;
-    return;
-  }
-  async function deleteAllTransactionsUser(userId: string) {
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (error) throw error;
-    return;
+    const id = transactions.value.findIndex(transaction => transaction.trx_id == trxId);
+    transactions.value.splice(id,1);
+    return transactions;
   }
 
   return {
     transactions,
     transaction,
     amount,
+    calculateAmount,
     getTransactions,
     addTransaction,
-    getTransaction,
     deleteTransaction,
-    deleteAllTransactionsUser,
   };
 });
