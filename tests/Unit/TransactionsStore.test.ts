@@ -9,7 +9,9 @@ describe('Transactions Store', () => {
 
   test('Calculate Amount', () => {
     const transactionsStore = useTransactionsStore();
-    const amount = transactionsStore.calculateAmount([{amount: 1}, {amount: 2}]);
+    const amount = transactionsStore.calculateAmount([
+      {id: 0,trx_id: 'asa', created_at: '', flow: 'cash-out', wallet: 'ovo', amount: 1},
+      {id: 0,trx_id: 'asa', created_at: '', flow: 'cash-out', wallet: 'ovo', amount: 2}]);
     expect(amount).toBe(3);
   });
   test('Delete Transactions', () => {
@@ -17,16 +19,10 @@ describe('Transactions Store', () => {
     const { transactions } = storeToRefs(transactionsStore);
 
     transactions.value = [
-      {
-        trx_id: '1213',
-        wallet: 'Ovo',
-      },
-      {
-        trx_id: '1234',
-        wallet: 'Gopay',
-      },
+      {id: 0,trx_id: 'ada', created_at: '', flow: 'cash-out', wallet: 'ovo', amount: 1},
+      {id: 0,trx_id: 'asa', created_at: '', flow: 'cash-out', wallet: 'ovo', amount: 2},
     ];
-    transactionsStore.deleteTransaction('1213');
+    transactionsStore.deleteTransaction('ada');
     assert.equal(transactions.value.length, 1);
   });
 });

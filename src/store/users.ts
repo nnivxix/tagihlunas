@@ -1,15 +1,21 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import type { Ref } from "vue";
-import _ from 'lodash';
 import { Users, NewUser } from "@/interfaces/Users";
-import { supabase } from "@/helpers/supabase";
-import {user as admin} from '@/composables/AuthUser';
+// import {user as admin} from '@/composables/AuthUser';
 
 export const useUsersStore = defineStore('users', () => {
   const users: Ref<Users[]> = ref([]);
   const usersDuplicate: Ref<Users[]> = ref([]);
-  const currentUser = ref({});
+  const currentUser = reactive<Users>({
+    id: 0,
+    created_at:'',
+    admin_id: '',
+    user_id: '',
+    name: '',
+    username:'',
+    color_profile: '',
+  });
   const currentName: Ref<string> = ref('');
   const currentUsername: Ref<string> = ref('');
 
@@ -17,51 +23,37 @@ export const useUsersStore = defineStore('users', () => {
     usersDuplicate.value.push(...data);
     users.value.push(...data);
   }
-  async function getOneUser(userId: string) {
-    currentUser.value = [];
-    currentUser.value.push(...data);
-    currentName.value = await _.clone(data).shift()?.name;
-    currentUsername.value = await _.clone(data).shift()?.username;
-    return data;
-  }
   async function addUser({admin_id, user_id, name, username, color_profile}: NewUser) {
-    const { error } = await supabase
-    .from('users')
-    .insert({
-      admin_id,
-      user_id,
-      name,
-      username,
-      color_profile,    
-    });    
-    if (error) throw error;
+    users.value.push({
+      admin_id, user_id, name, username, color_profile,
+      id: 0,
+      created_at: null,
+    });
   }
   async function deleteUser(userId: string) {
-    const idUser = users.value.findIndex(user => user.user_id == userId);
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('user_id', userId);
-      
-      if (error) throw error;
-    users.value.splice(idUser,1);
-    return;
+    const id = users.value.findIndex(user => user.user_id == userId);
+    users.value.splice(id,1);
+    return users;
   }
   async function updateUser(userId: string, name : string, username: string, color_profile: string) {
-    const { error } = await supabase
-      .from('users')
-      .update({ name, username, color_profile })
-      .eq('user_id', userId);
-      if (error) throw error;
+    const id = users.value.findIndex(user => user.user_id == userId);
+    const user: Users = {
+      id: currentUser.id,
+      admin_id: currentUser.admin_id,
+      created_at: currentUser.created_at,
+      user_id: currentUser.user_id,
+      name, username, color_profile,
+    };
+    users.value.splice(id,1, user);
+    return users;
   }
   return {
     users,
     usersDuplicate,
-    user,
     currentName,
+    currentUser,
     currentUsername,
     getUsers,
-    getOneUser,
     addUser,
     deleteUser,
     updateUser,
