@@ -1,7 +1,7 @@
 <template>
   <div :class='`w-${dimension} h-${dimension}`' :style='`background-color:${background}; border-radius:100%;`'
   class=" text-gray-100 p-5 min-w-[75px] flex flex-col justify-center  items-center ">
-    <p class="font-semibold text-2xl">{{ init }}</p>
+    <p id="initial" class="font-semibold text-2xl">{{ init }}</p>
   </div>
 </template>
 

@@ -18,7 +18,7 @@ defineProps({
 <template>
   <router-link :to="{name: 'users.show', params: {userId: userId}}" class="flex items-center my-3">
     <TheAvatar :name="name" :background="background"></TheAvatar>
-    <p class="ml-4 text-xl name">{{ name }}</p>
+    <p id="name" class="ml-4 text-xl name">{{ name }}</p>
   </router-link>
 </template>
 

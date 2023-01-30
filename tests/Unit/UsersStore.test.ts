@@ -1,6 +1,6 @@
 import { useUsersStore } from './../../src/store/users';
 import { createPinia, setActivePinia, storeToRefs } from 'pinia';
-import { beforeEach, describe, expect, test, assert } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
 
 describe('Users Store', () => {
