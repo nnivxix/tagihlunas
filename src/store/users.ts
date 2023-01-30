@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
-import { reactive, ref } from 'vue';
+import {  ref } from 'vue';
 import type { Ref } from "vue";
 import { Users, NewUser } from "@/interfaces/Users";
-import _ from "lodash";
-// import {user as admin} from '@/composables/AuthUser';
 
 export const useUsersStore = defineStore('users', () => {
   const users: Ref<Users[]> = ref([]);

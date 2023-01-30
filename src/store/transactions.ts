@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 export const useTransactionsStore = defineStore('transaction', () => {
   const transactions: Ref<Transactions[]> = ref([]);
-  const transaction = reactive<TransactionsType>({
+  const initTransaction = {
     id : 0,
     created_at : new Date(),
     user_id: '',
@@ -16,7 +16,8 @@ export const useTransactionsStore = defineStore('transaction', () => {
     wallet: '',
     trx_id: '',
     message: '',
-  });
+  };
+  const transaction = reactive<TransactionsType>({...initTransaction});
   const amount = ref<number>(0);
 
   function calculateAmount(transactions: Transactions[]) {
@@ -45,6 +46,7 @@ export const useTransactionsStore = defineStore('transaction', () => {
 
   return {
     transactions,
+    initTransaction,
     transaction,
     amount,
     calculateAmount,

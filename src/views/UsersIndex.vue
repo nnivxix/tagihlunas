@@ -108,7 +108,6 @@ usersStore.$patch({
 });
 function resetStateUsers() {
   usersStore.$patch({
-    currentName: '',
     currentUser: [],
     users: [],
     usersDuplicate: [],

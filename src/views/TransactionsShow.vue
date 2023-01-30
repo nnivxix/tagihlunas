@@ -20,25 +20,25 @@
       <img src="@/assets/check-circle-rounded.svg" alt="success" srcset="" class="h-32">
       <h1 class="text-center font-semibold text-2xl mt-8">Transaction Success</h1>
     </div>
-    <div id="detail" class="px-2 text-dark grid grid-cols-2" v-for="t in transaction" :key="t.id">
+    <div id="detail" class="px-2 text-dark grid grid-cols-2">
       <p class=" pt-2 ">Name</p>
       <p class=" pt-2 text-right font-semibold">{{ usersStore.currentName }}</p>
       <p class=" pt-2 ">Due date</p>
-      <p class=" pt-2 text-right font-semibold">{{ new Date(t.created_at).getDate() }}-{{ new Date(t.created_at).getMonth()+1 }}-{{ new Date(t.created_at).getFullYear() }}</p>
+      <p class=" pt-2 text-right font-semibold">{{new Date(transaction.created_at).getDate() }}-{{ new Date(transaction.created_at).getMonth()+1 }}-{{ new Date(transaction.created_at).getFullYear() }}</p>
       <p class=" pt-2 ">Time</p>
-      <p class=" pt-2 text-right font-semibold">{{ new Date(t.created_at).getHours() }}:{{ new Date(t.created_at).getMinutes() }}:{{ new Date(t.created_at).getSeconds() }}</p>
+      <p class=" pt-2 text-right font-semibold">{{ new Date(transaction.created_at).getHours() }}:{{ new Date(transaction.created_at).getMinutes() }}:{{ new Date(transaction.created_at).getSeconds() }}</p>
       <p class=" pt-2">Transaction id</p>
 
-      <p class="text-sm pt-2 text-right font-semibold" @click="copy(t.trx_id as string)">
+      <p class="text-sm pt-2 text-right font-semibold" @click="copy(transaction.trx_id as string)">
         <font-awesome-icon icon="fa-solid fa-copy"> </font-awesome-icon> 
-        {{ t.trx_id }}
+        {{ transaction.trx_id }}
       </p>
 
       <p class=" pt-2 ">Message</p>
-      <p class=" pt-2 text-right font-semibold">{{ t.message || 'null' }}</p>
+      <p class=" pt-2 text-right font-semibold">{{ transaction.message || 'null' }}</p>
       <div class="col-span-2 flex border p-2 mt-8">
         <p class="text-lg w-1/2">Total transaction</p>
-        <p class="text-lg w-1/2 text-right font-semibold"> {{t.amount?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})}} </p>
+        <p class="text-lg w-1/2 text-right font-semibold"> {{transaction.amount?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})}} </p>
       </div>
       
 
@@ -58,18 +58,22 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, computed, ref, reactive } from 'vue';
+import { onBeforeMount, ref, reactive, onBeforeUnmount } from 'vue';
 import type { Ref } from 'vue';
 import { useClipboard, useBrowserLocation, useShare } from '@vueuse/core';
 import { isClient } from '@vueuse/shared';
 import { useRoute, useRouter } from 'vue-router';
 import { VueFinalModal } from 'vue-final-modal';
 
+import TransactionsService from '@/services/supabase/TransactionsService';
 import { useTransactionsStore } from '@/store/transactions';
 import { useUsersStore } from '@/store/users';
 import useAuthUser from '@/composables/AuthUser';
 import AppBar from '@/components/AppBar.vue';
 import ModalDelete from '@/components/ModalDelete.vue';
+import { storeToRefs } from 'pinia';
+import UsersService from '@/services/supabase/UsersServices';
+import _ from 'lodash';
 
 const { copy } = useClipboard();
 const route = useRoute();
@@ -82,12 +86,12 @@ const { isLoggedIn } = useAuthUser();
 
 const showModal: Ref<boolean> = ref(false);
 const loading: Ref<boolean> = ref(true);
-const transaction = computed(() => {
-  return transactionStore.transaction;
-});
+const {transaction, initTransaction} = storeToRefs(transactionStore);
+const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(usersStore);
+
 const shareOption = reactive({
-  title: `This is transaction of ${usersStore.currentName}`,
-  text: `This is transaction of ${usersStore.currentName} you can check the detail transaction from ${useBrowserLocation().value.href}`,
+  title: `This is transaction of ${currentName.value}`,
+  text: `This is transaction of ${currentName.value} you can check the detail transaction from ${useBrowserLocation().value.href}`,
   url: isClient ? useBrowserLocation().value.href : '',
 });
 const {share, isSupported} = useShare(shareOption);
@@ -104,7 +108,10 @@ const startShare = () => {
 };
 async function getDetailTransaction() {
   try {
-    transactionStore.getTransaction(trxId as string);
+    TransactionsService().getTransactionById(trxId as string).then(result => {
+      Object.assign(transaction.value, result[0]);
+    })
+    ;
     
     loading.value = false;
   } catch (error) {
@@ -113,7 +120,13 @@ async function getDetailTransaction() {
 }
 async function getOneUser() {
   try {
-    usersStore.getOneUser(userId as string);
+    UsersService().getUserById(userId as string).then(result => {
+      currentUser.value = [];
+        currentUsername.value = _.clone(result).shift()?.username;
+        currentName.value = _.clone(result).shift()?.name;
+        currentColor.value = _.clone(result).shift()?.color_profile;
+        currentUser.value.push(...result);
+    });
     loading.value = false;
   } catch (error) {
     return error;
@@ -128,6 +141,9 @@ async function deleteTransaction() {
 onBeforeMount(() => {
   getDetailTransaction();
   getOneUser();
+});
+onBeforeUnmount(() => {
+  Object.assign(transaction, initTransaction);
 });
 </script>
 

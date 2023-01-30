@@ -123,7 +123,7 @@ const showModal: Ref<boolean> = ref(false);
 const textConfirmation: Ref<string> = ref('');
 const isValid = ref(true);
 
-const {transactions, amount} = storeToRefs(transactionsStore);
+const {transactions, transaction, initTransaction, amount} = storeToRefs(transactionsStore);
 
 
 const getOneUser = async () => {
@@ -211,6 +211,7 @@ function deleteUser() {
 }
 
 onBeforeMount( async () => {
+  Object.assign(transaction.value, initTransaction);
   await getOneUser();
   await getUserTransactions();
 });
