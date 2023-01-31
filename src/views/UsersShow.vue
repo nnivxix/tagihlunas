@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount,  watch } from 'vue';
+import { ref, onBeforeMount,  watch, onBeforeUnmount } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
 import { useRoute, useRouter } from "vue-router";
@@ -132,11 +132,19 @@ const getOneUser = async () => {
     if(!currentUser.value.length) {
       UsersService().getUserById(userId as string).then(result => {
         // const user = result.shift();
+        // useStorage('currentUser', {
+        //   name:"",
+        //   username: "",
+        // });
         currentUser.value = [];
         currentUsername.value = _.clone(result).shift()?.username;
         currentName.value = _.clone(result).shift()?.name;
         currentColor.value = _.clone(result).shift()?.color_profile;
         currentUser.value.push(...result);
+        localStorage.setItem('currentUser', JSON.stringify({
+          name: _.clone(result).shift()?.name,
+          username: _.clone(result).shift()?.username,
+        }));
         return;
       });
     }
@@ -218,6 +226,10 @@ onBeforeMount( async () => {
   await getUserTransactions();
   transactionsStore.calculateAmount(transactions.value);
 });
+onBeforeUnmount(async () => {
+  await getOneUser();
+
+})
 </script>
 
 <style scoped>

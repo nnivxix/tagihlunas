@@ -31,27 +31,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, Ref, onBeforeMount, watch } from 'vue';
+import { ref, computed, Ref, onBeforeMount, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { minLength, required } from '@vuelidate/validators';
+import { useLocalStorage } from '@vueuse/core';
+import { useRoute, useRouter } from 'vue-router';
+import _ from 'lodash';
+import { storeToRefs } from 'pinia';
+
 import { useUsersStore } from '@/store/users';
 import AppBar from '@/components/AppBar.vue';
-
-import { AddUser } from '@/interfaces/Form';
-import { useRoute, useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
 import UsersService from '@/services/supabase/UsersServices';
-import _ from 'lodash';
-
+import { AddUser } from '@/interfaces/Form';
 const router = useRouter();
 const userId = useRoute().params.userId;
 const usersStore = useUsersStore();
-const { currentName, currentUsername, currentColor } = storeToRefs(usersStore);
+const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(usersStore);
+
 const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
-const formUpdateUser: AddUser = reactive({
-  username: currentUsername.value,
+const formUpdateUser = ref(
+  useLocalStorage('currentUser',<AddUser> {
+  username: currentUsername.value ,
   name: currentName.value,
-});
+  }),
+);
+
 const erroMsg: Ref<string> = ref('');
 const isChange: Ref<boolean> = ref(false);
 const rules = computed(() => {
@@ -71,20 +75,23 @@ function pickOneColor(): string{
   const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
   return colorsProfile.value[indexColor];
 }
+
 const getOneUser = async () => {
   try {
-    if (currentName.value == '' || currentUsername.value == '') {
       UsersService().getUserById(userId as string).then(result => {
-        
+        currentUser.value = [];
+        currentUser.value.push(...result);
         currentName.value = _.clone(result).shift()?.name;
         currentUsername.value = _.clone(result).shift()?.username;
         currentColor.value = _.clone(result).shift()?.color_profile;
 
+        localStorage.setItem('currentUser', JSON.stringify({
+          name: currentName.value,
+          username: currentUsername.value,
+        }));
+
         return result;
       });
-      return;
-      // updateUser(userId as string, formUpdateUser.name, formUpdateUser.username, pickOneColor());
-    }
     return;
   } catch (error) {
     
@@ -92,14 +99,10 @@ const getOneUser = async () => {
   }
 };
 watch(formUpdateUser, () =>{
-  if (formUpdateUser.username !== currentUsername.value || formUpdateUser.name !== currentName.value) {
+  if (formUpdateUser.value.username !== currentUsername.value || formUpdateUser.value.name !== currentName.value) {
     isChange.value = true;    
   } else {
     isChange.value = false;
-  }
-
-  if (formUpdateUser.name == '') {
-    getOneUser();
   }
 });
 async function HandleUpdateUser () {
@@ -107,8 +110,8 @@ async function HandleUpdateUser () {
     v$.value.$validate(); // check form
     if (!v$.value.$error) {
       // if no error 
-      await UsersService().updateUser(userId as string, formUpdateUser.name, formUpdateUser.username, pickOneColor());
-      await usersStore.updateUser(userId as string, formUpdateUser.name, formUpdateUser.username, pickOneColor());
+      await UsersService().updateUser(userId as string, formUpdateUser.value.name, formUpdateUser.value.username, pickOneColor());
+      await usersStore.updateUser(userId as string, formUpdateUser.value.name, formUpdateUser.value.username, pickOneColor());
       router.back();
       
     }  

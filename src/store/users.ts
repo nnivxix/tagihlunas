@@ -29,7 +29,6 @@ export const useUsersStore = defineStore('users', () => {
   }
   async function updateUser(userId: string, name : string, username: string, color_profile: string) {
     const id = users.value.findIndex(user => user.user_id == userId);
-    currentUser.value.push(users.value[id]);
     const user: Users = {
       id: currentUser.value[0].id,
       created_at: currentUser.value[0].created_at,
@@ -37,10 +36,10 @@ export const useUsersStore = defineStore('users', () => {
       user_id: currentUser.value[0].user_id,
       name, username, color_profile,
     };
-    currentUser.value.splice(0,1, user);
     currentName.value = name;
     currentUsername.value = username;
     currentColor.value = color_profile;
+    currentUser.value.splice(0,1, user);
     users.value.splice(id,1, user);
     return users;
   }

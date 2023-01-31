@@ -96,11 +96,11 @@ async function HandleAddUser () {
         id: 0,
         created_at: null,
       });
-      await router.push({
+      return router.push({
         path: '/users',
         name: 'users.index',
       });
-      window.location.reload();
+      // window.location.reload();
     }  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
