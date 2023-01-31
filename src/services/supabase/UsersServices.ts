@@ -38,7 +38,7 @@ const UsersService = () => {
       .eq('user_id', userId);
       if (error) throw error;
   }
-  async function deleteUser(userId: string) {
+  async function deleteUserByUserId(userId: string) {
     const { error } = await supabase
       .from('users')
       .delete()
@@ -52,7 +52,7 @@ const UsersService = () => {
     getUsers,
     getUserById,
     updateUser,
-    deleteUser,
+    deleteUserByUserId,
   };
 };
 

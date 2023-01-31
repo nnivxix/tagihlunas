@@ -109,9 +109,7 @@ const startShare = () => {
 async function getDetailTransaction() {
   try {
     TransactionsService().getTransactionById(trxId as string).then(result => {
-      Object.assign(transaction.value, result[0]);
-      console.log(result);
-      
+      Object.assign(transaction.value, result[0]);      
     })
     ;
     
@@ -137,6 +135,7 @@ async function getOneUser() {
 
 async function deleteTransaction() {
   await transactionStore.deleteTransaction(trxId as string);
+  await TransactionsService().deleteTransactionById(trxId as string);
   router.back();
 }
 

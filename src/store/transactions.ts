@@ -43,6 +43,11 @@ export const useTransactionsStore = defineStore('transaction', () => {
     transactions.value.splice(id,1);
     return transactions;
   }
+  async function deleteTransactionsByUserId(userId: string) {
+    _.remove(transactions.value, (n: TransactionsType) => {
+      return n.user_id == userId;
+    });
+  }
 
   return {
     transactions,
@@ -53,5 +58,6 @@ export const useTransactionsStore = defineStore('transaction', () => {
     getTransactions,
     addTransaction,
     deleteTransaction,
+    deleteTransactionsByUserId,
   };
 });

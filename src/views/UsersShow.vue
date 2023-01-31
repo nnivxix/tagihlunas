@@ -69,7 +69,8 @@
       <CardTransaction :user-id="(userId as string)" :trxId="transaction.trx_id" :amount="transaction.amount" :dateTrx="(transaction.created_at as string)" ></CardTransaction>
     </div>
     <!-- Modal -->
-    <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
+    <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full"
+    @before-close="textConfirmation = ''">
       <ModalDelete grid-col=""
         type-data="user" cancle="Cancel" confirm="Sure, Delete" grid-rows="4"
         additional-msg="and all transactions"
@@ -139,7 +140,6 @@ const getOneUser = async () => {
         return;
       });
     }
-
     return;
   } catch (error) {
     return error;
@@ -150,7 +150,19 @@ function pickOneColor(): string{
   const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
   return colorsProfile.value[indexColor];
 }
+async function deleteUser() {
+  if(textConfirmation.value === currentUser.value[0].username && isValid) {
+    await TransactionsService().deleteTransactionsByUserId(userId as string);
+    await UsersService().deleteUserByUserId(userId as string);
 
+    await transactionsStore.deleteTransaction(userId as string);
+    await usersStore.deleteUser(userId as string);
+    await router.push({
+      name: 'users.index',
+    });
+    return;
+  } 
+}
 async function editName() {
   if (isEditName.value) {
 
@@ -199,16 +211,6 @@ watch(textConfirmation, () => {
     isValid.value = false;
   }
 });
-function deleteUser() {
-  if(textConfirmation.value === currentUser.value[0].username && isValid) {
-    usersStore.deleteUser(userId as string);
-    TransactionsService().deleteTransactionsByUserId(userId as string);
-    router.push({
-      name: 'users.index',
-    });
-    return;
-  } 
-}
 
 onBeforeMount( async () => {
   Object.assign(transaction.value, initTransaction);
