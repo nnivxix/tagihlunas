@@ -34,7 +34,7 @@ export const useTransactionsStore = defineStore('transaction', () => {
     transactions.value.push({
       id: 0,
       // id: transactions.value.findLastIndex((e : Transactions) => e.id) + 1,
-      created_at: '',
+      created_at: new Date().toString(),
       user_id, flow, amount, wallet, trx_id, message,
     });
   }

@@ -49,6 +49,7 @@
 import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
 import type { Ref } from 'vue';
 import { ContentLoader } from "vue-content-loader";
+import { storeToRefs } from 'pinia';
 
 import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
@@ -59,7 +60,7 @@ import {Users} from '@/interfaces/Users';
 import { useTransactionsStore } from '@/store/transactions';
 import { useUsersStore } from '@/store/users';
 import UsersService from '@/services/supabase/UsersServices';
-import { storeToRefs } from 'pinia';
+
 const usersStore = useUsersStore();
 const transactionStore = useTransactionsStore();
 const { userLogout } = useAuthUser();
@@ -74,8 +75,7 @@ const getAllUsers = async () => {
   try {
     if (!users.value.length || !usersDuplicate.value.length) {
       UsersService().getUsers().then(result => {
-        users.value.push(...result);
-        usersDuplicate.value.push(...result);
+        usersStore.getUsers(result);
       });
     }
     loading.value = false;

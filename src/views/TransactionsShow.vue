@@ -110,6 +110,8 @@ async function getDetailTransaction() {
   try {
     TransactionsService().getTransactionById(trxId as string).then(result => {
       Object.assign(transaction.value, result[0]);
+      console.log(result);
+      
     })
     ;
     

@@ -214,6 +214,7 @@ onBeforeMount( async () => {
   Object.assign(transaction.value, initTransaction);
   await getOneUser();
   await getUserTransactions();
+  transactionsStore.calculateAmount(transactions.value);
 });
 </script>
 

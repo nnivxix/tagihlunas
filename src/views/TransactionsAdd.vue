@@ -9,7 +9,7 @@
       </template>
     </AppBar>
     <form class="flex flex-col" @submit.prevent="handleAddTransaction">
-      <div v-for="u in user" :key="u.user_id" class="flex flex-col" >
+      <div v-for="u in currentUser" :key="u.user_id" class="flex flex-col" >
         <label for="username" class="text-xl text-dark">username</label>
         <input type="text" name="username" id="username" v-model="u.username"
         class="bg-light-lemon p-2 mb-5 rounded-lg" readonly>
@@ -70,6 +70,8 @@ import AppBar from '@/components/AppBar.vue';
 import { useTransactionsStore } from '@/store/transactions';
 import { useUsersStore } from '@/store/users';
 import { storeToRefs } from 'pinia';
+import UsersService from '@/services/supabase/UsersServices';
+import TransactionsService from '@/services/supabase/TransactionsService';
 
 const route = useRoute();
 const router = useRouter();
@@ -77,7 +79,7 @@ const userId = route.params.userId;
 
 const transactionStore = useTransactionsStore();
 const usersStore = useUsersStore();
-const { user } = storeToRefs(usersStore);
+const { currentUser } = storeToRefs(usersStore);
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
 const initFormAddTrx = {
@@ -123,22 +125,28 @@ function resetForm() {
   Object.assign(formAddTrx,initFormAddTrx);
 }
 async function getOneUser() {
-  usersStore.getOneUser(userId as string);
+  if (!currentUser.value.length) {
+    UsersService().getUserById(userId as string).then(result => {
+      currentUser.value.push(...result);
+    });
+  }
+  return;
 }
 
 async function handleAddTransaction () {
   try {
     v$.value.$validate(); 
-    if (!v$.value.$error) {
-      await transactionStore.addTransaction({
-        user_id: user.value[0].user_id as string,
+    const trx = {
+        user_id: currentUser.value[0].user_id as string,
         flow: formAddTrx.flow,
         amount: formAddTrx.flow == 'cash out' ? parseInt(formAddTrx.amount) * -1 : parseInt(formAddTrx.amount) * 1,
         wallet: formAddTrx.wallet,
         trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(8).toLocaleUpperCase()}-${new Date().getHours()}${new Date().getMinutes()}`,
         message:formAddTrx.message,
-      });
-  
+      };
+    if (!v$.value.$error) {
+      await transactionStore.addTransaction({...trx});
+      await TransactionsService().addTransaction({...trx});
       resetForm();
       router.back();
     }
