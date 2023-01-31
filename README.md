@@ -1,6 +1,6 @@
-# Tagih Lunas (in development) ⚙️
-
 ![tagihlunas](./public/thumbnail.png)
+
+# Tagih Lunas (in development) ⚙️
 
 ![GitHub issues](https://img.shields.io/github/issues/nnivxix/tagihlunas?style=flat-square)![GitHub closed issues](https://img.shields.io/github/issues-closed/nnivxix/tagihlunas?style=flat-square)![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/nnivxix/tagihlunas/main?style=flat-square)![GitHub package.json version (branch)](https://img.shields.io/github/package-json/v/nnivxix/tagihlunas/main?style=flat-square)![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/nnivxix/tagihlunas?style=flat-square)![GitHub language count](https://img.shields.io/github/languages/count/nnivxix/tagihlunas?style=flat-square)![GitHub top language](https://img.shields.io/github/languages/top/nnivxix/tagihlunas?color=42b883&label=Vue.js&style=flat-square)
 
@@ -10,13 +10,10 @@ Tagihlunas  is made to help record all bills of money borrowed by others.
 
 ## List Packages
 
-- [avatar-initials](https://www.npmjs.com/package/avatar-initials)
 - [nanoid](https://www.npmjs.com/package/nanoid)
 - [vuelidate](https://vuelidate-next.netlify.app/)
 - [vitest](https://vitest.dev/)
-- [Money Mask for Vue 3](https://github.com/jonathanpmartins/v-money3.git)
 - [Welcome to V-Money-Spinner](https://www.npmjs.com/package/v-money-spinner)
-- [vue-dropdown-menu-search](https://github.com/sonugeogre/vue-dropdown-search-menu)
 
 ## Shots
 
