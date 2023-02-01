@@ -67,8 +67,8 @@ import { useVuelidate } from '@vuelidate/core';
 import { minValue, required, maxLength } from '@vuelidate/validators';
 
 import AppBar from '@/components/AppBar.vue';
-import { useTransactionsStore } from '@/store/transactions';
-import { useUsersStore } from '@/store/users';
+import { useTransactionsStore } from '@/stores/transactions';
+import { useUsersStore } from '@/stores/users';
 import { storeToRefs } from 'pinia';
 import UsersService from '@/services/supabase/UsersServices';
 import TransactionsService from '@/services/supabase/TransactionsService';

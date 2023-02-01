@@ -33,10 +33,10 @@
           <circle cx="46" cy="50" r="41" />
       </content-loader>
       </div>
-      <div v-else class="flex flex-col items-center my-3"  v-for="d in currentUser" :key="d.user_id" >
+      <div v-else class="flex flex-col items-center my-3" >
         <TheAvatar  @click="isEditName = false"
-          :name="d.name" :dimension='parseInt("64")'
-          :background="d.color_profile">
+          :name="currentName" :dimension='parseInt("64")'
+          :background="currentColor">
         </TheAvatar>
         <div class="my-4">
         <form @submit.prevent="editName">
@@ -62,7 +62,7 @@
       @button-event="router.push({name: 'transactions.add', params: {userId: userId}})" ></TheButton>
     </div>
     <div v-if="!transactions.length ">
-      <img :src="empty" alt="empty transaction">
+      <img src="@/assets/empty.svg" alt="empty transaction">
       <p class="text-center text-2xl">No transactions yet, let's <router-link class="underline" :to="{name: 'transactions.add'}">create one</router-link>.</p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
@@ -84,7 +84,7 @@
         </div>
       </ModalDelete>
     </vue-final-modal>
-    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -94,52 +94,45 @@ import { ContentLoader } from "vue-content-loader";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from 'vue-final-modal';
 import { storeToRefs } from 'pinia';
+import _ from 'lodash';
 
 import AppBar from '@/components/AppBar.vue';
 import TheAvatar from '@/components/TheAvatar.vue';
 import TheButton from '@/components/TheButton.vue';
 import ModalDelete from '@/components/ModalDelete.vue';
+import CardTransaction from '@/components/CardTransaction.vue';
 import TransactionsService  from '@/services/supabase/TransactionsService';
 import UsersService from '@/services/supabase/UsersServices';
-import { useTransactionsStore } from '@/store/transactions';
-import { supabase } from '@/helpers/supabase';
-import CardTransaction from '@/components/CardTransaction.vue';
+import { useTransactionsStore } from '@/stores/transactions';
+import { useUsersStore } from '@/stores/users';
 
-import empty from '@/assets/empty.svg';
-import { useUsersStore } from '@/store/users';
-import _ from 'lodash';
-
-const usersStore = useUsersStore(); 
-const transactionsStore = useTransactionsStore();
 const router = useRouter();
 const route = useRoute();
 const userId = route.params.userId;
-
+const usersStore = useUsersStore(); 
+const transactionsStore = useTransactionsStore();
 const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(usersStore);
+const { transactions, transaction, initTransaction, amount } = storeToRefs(transactionsStore);
 
 const isEditName: Ref<boolean> = ref(false);
 const isShowOption = ref<boolean>(false);
-const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 const showModal: Ref<boolean> = ref(false);
 const textConfirmation: Ref<string> = ref('');
 const isValid = ref(true);
 
-const {transactions, transaction, initTransaction, amount} = storeToRefs(transactionsStore);
 
+function showOption () {
+  return isShowOption.value = !isShowOption.value;
+}
 
-const getOneUser = async () => {
+async function getOneUser() {
   try {
     if(!currentUser.value.length) {
-      UsersService().getUserById(userId as string).then(result => {
-        // const user = result.shift();
-        // useStorage('currentUser', {
-        //   name:"",
-        //   username: "",
-        // });
+      await UsersService().getUserById(userId as string).then(async (result) => {
         currentUser.value = [];
-        currentUsername.value = _.clone(result).shift()?.username;
-        currentName.value = _.clone(result).shift()?.name;
-        currentColor.value = _.clone(result).shift()?.color_profile;
+        currentUsername.value = await _.clone(result).shift()?.username;
+        currentName.value = await _.clone(result).shift()?.name;
+        currentColor.value = await _.clone(result).shift()?.color_profile;
         currentUser.value.push(...result);
         localStorage.setItem('currentUser', JSON.stringify({
           name: _.clone(result).shift()?.name,
@@ -152,11 +145,6 @@ const getOneUser = async () => {
   } catch (error) {
     return error;
   }
-};
-
-function pickOneColor(): string{
-  const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
-  return colorsProfile.value[indexColor];
 }
 async function deleteUser() {
   if(textConfirmation.value === currentUser.value[0].username && isValid) {
@@ -165,6 +153,7 @@ async function deleteUser() {
 
     await transactionsStore.deleteTransaction(userId as string);
     await usersStore.deleteUser(userId as string);
+    
     await router.push({
       name: 'users.index',
     });
@@ -173,23 +162,18 @@ async function deleteUser() {
 }
 async function editName() {
   if (isEditName.value) {
-
     if(currentName.value !== currentUser.value[0].name) {
-      const { error } = await supabase
-      .from('users')
-      .update({ name: currentName.value, color_profile: pickOneColor()})
-      .eq('user_id', userId);
-      if (error) throw error;
+      UsersService().updateName(currentName.value, userId as string);
     }
     isEditName.value = false;
   }
   return;  
 }
 
-function getUserTransactions () {
+async function getUserTransactions () {
   try {
     if (transactions.value.length == 0) {
-      TransactionsService().getTransactionsByUserId(userId as string).then(result => {
+      await TransactionsService().getTransactionsByUserId(userId as string).then(result => {
         transactions.value = [];
         transactions.value.push(...result);
         transactionsStore.calculateAmount(result);
@@ -199,10 +183,7 @@ function getUserTransactions () {
     return error;
   }
 } 
-function showOption () {
-  return isShowOption.value = !isShowOption.value;
 
-}
 function editUser(){
   router.push({
     name: 'users.edit',
@@ -213,7 +194,10 @@ function editUser(){
 }
 
 watch(textConfirmation, () => {
-  if(textConfirmation.value == '' || textConfirmation.value == null || textConfirmation.value === currentUser.value[0].username) {
+  if(textConfirmation.value == '' ||
+    textConfirmation.value == null ||
+    textConfirmation.value === currentUser.value[0].username
+  ) {
     isValid.value = true;
   } else{
     isValid.value = false;
@@ -224,12 +208,12 @@ onBeforeMount( async () => {
   Object.assign(transaction.value, initTransaction);
   await getOneUser();
   await getUserTransactions();
-  transactionsStore.calculateAmount(transactions.value);
+  await transactionsStore.calculateAmount(transactions.value);
 });
 onBeforeUnmount(async () => {
   await getOneUser();
 
-})
+});
 </script>
 
 <style scoped>

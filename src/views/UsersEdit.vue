@@ -39,65 +39,71 @@ import { useRoute, useRouter } from 'vue-router';
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 
-import { useUsersStore } from '@/store/users';
+import { useUsersStore } from '@/stores/users';
 import AppBar from '@/components/AppBar.vue';
 import UsersService from '@/services/supabase/UsersServices';
 import { AddUser } from '@/interfaces/Form';
+import usePickColor from '@/composables/usePickColor';
+
 const router = useRouter();
 const userId = useRoute().params.userId;
 const usersStore = useUsersStore();
 const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(usersStore);
 
-const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
 const formUpdateUser = ref(
   useLocalStorage('currentUser',<AddUser> {
   username: currentUsername.value ,
   name: currentName.value,
   }),
 );
-
 const erroMsg: Ref<string> = ref('');
 const isChange: Ref<boolean> = ref(false);
-const rules = computed(() => {
-  return {
-    username: { required,
-      minLength: minLength(5),
-    },
-    name: {
-      required,
-      minLength: minLength(5),
-    },
-  };
-});
+const rules = computed(() => ({
+  username: { required,
+    minLength: minLength(5),
+  },
+  name: {
+    required,
+    minLength: minLength(5),
+  },
+}));
 const v$ = useVuelidate(rules, formUpdateUser);
 
-function pickOneColor(): string{
-  const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
-  return colorsProfile.value[indexColor];
-}
-
-const getOneUser = async () => {
+async function HandleUpdateUser () {
   try {
-      UsersService().getUserById(userId as string).then(result => {
-        currentUser.value = [];
-        currentUser.value.push(...result);
-        currentName.value = _.clone(result).shift()?.name;
-        currentUsername.value = _.clone(result).shift()?.username;
-        currentColor.value = _.clone(result).shift()?.color_profile;
-
-        localStorage.setItem('currentUser', JSON.stringify({
-          name: currentName.value,
-          username: currentUsername.value,
-        }));
-
-        return result;
-      });
-    return;
-  } catch (error) {
-    
+    v$.value.$validate();
+    if (!v$.value.$error) {
+      const color_profile = usePickColor();
+      await UsersService().updateUser(userId as string, formUpdateUser.value.name, formUpdateUser.value.username, color_profile);
+      await usersStore.updateUser(userId as string, formUpdateUser.value.name, formUpdateUser.value.username, color_profile);
+      router.back();
+    }  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    erroMsg.value = error.message;
     return error;
   }
-};
+}
+async function getOneUser() {
+  try {
+    await UsersService().getUserById(userId as string).then(async (result) => {
+      currentUser.value = [];
+      currentUser.value.push(...result);
+      currentName.value = _.clone(result).shift()?.name;
+      currentUsername.value = _.clone(result).shift()?.username;
+      currentColor.value = _.clone(result).shift()?.color_profile;
+
+      localStorage.setItem('currentUser', JSON.stringify({
+        name: currentName.value,
+        username: currentUsername.value,
+      }));
+      return result;
+    });
+    return;
+  } catch (error) {
+    return error;
+  }
+}
 watch(formUpdateUser, () =>{
   if (formUpdateUser.value.username !== currentUsername.value || formUpdateUser.value.name !== currentName.value) {
     isChange.value = true;    
@@ -105,24 +111,7 @@ watch(formUpdateUser, () =>{
     isChange.value = false;
   }
 });
-async function HandleUpdateUser () {
-  try {
-    v$.value.$validate(); // check form
-    if (!v$.value.$error) {
-      // if no error 
-      await UsersService().updateUser(userId as string, formUpdateUser.value.name, formUpdateUser.value.username, pickOneColor());
-      await usersStore.updateUser(userId as string, formUpdateUser.value.name, formUpdateUser.value.username, pickOneColor());
-      router.back();
-      
-    }  
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    erroMsg.value = error.message;
-    return error;
-    
-  }
-}
-onBeforeMount(() => {
-  getOneUser();
+onBeforeMount(async () => {
+  await getOneUser();
 });
 </script>

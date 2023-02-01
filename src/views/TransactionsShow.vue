@@ -24,7 +24,7 @@
       <p class=" pt-2 ">Name</p>
       <p class=" pt-2 text-right font-semibold">{{ usersStore.currentName }}</p>
       <p class=" pt-2 ">Due date</p>
-      <p class=" pt-2 text-right font-semibold">{{new Date(transaction.created_at).getDate() }}-{{ new Date(transaction.created_at).getMonth()+1 }}-{{ new Date(transaction.created_at).getFullYear() }}</p>
+      <p class=" pt-2 text-right font-semibold">{{ useMonth(new Date(transaction.created_at).getMonth()+1) }}, {{new Date(transaction.created_at).getDate() }}-{{ new Date(transaction.created_at).getFullYear() }}</p>
       <p class=" pt-2 ">Time</p>
       <p class=" pt-2 text-right font-semibold">{{ new Date(transaction.created_at).getHours() }}:{{ new Date(transaction.created_at).getMinutes() }}:{{ new Date(transaction.created_at).getSeconds() }}</p>
       <p class=" pt-2">Transaction id</p>
@@ -66,14 +66,15 @@ import { useRoute, useRouter } from 'vue-router';
 import { VueFinalModal } from 'vue-final-modal';
 
 import TransactionsService from '@/services/supabase/TransactionsService';
-import { useTransactionsStore } from '@/store/transactions';
-import { useUsersStore } from '@/store/users';
-import useAuthUser from '@/composables/AuthUser';
+import { useTransactionsStore } from '@/stores/transactions';
+import { useUsersStore } from '@/stores/users';
+import useAuthUser from '@/composables/useAuthUser';
 import AppBar from '@/components/AppBar.vue';
 import ModalDelete from '@/components/ModalDelete.vue';
 import { storeToRefs } from 'pinia';
 import UsersService from '@/services/supabase/UsersServices';
 import _ from 'lodash';
+import useMonth from '@/composables/useMonth';
 
 const { copy } = useClipboard();
 const route = useRoute();

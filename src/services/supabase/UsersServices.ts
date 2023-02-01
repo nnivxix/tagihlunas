@@ -1,5 +1,5 @@
 import { supabase } from "@/helpers/supabase";
-import {user as admin} from '@/composables/AuthUser';
+import {user as admin} from '@/composables/useAuthUser';
 import { NewUser } from "@/interfaces/Users";
 
 const UsersService = () => {
@@ -38,6 +38,13 @@ const UsersService = () => {
       .eq('user_id', userId);
       if (error) throw error;
   }
+  async function updateName(currentName: string,  userId: string){
+    const { error } = await supabase
+      .from('users')
+      .update({ name: currentName })
+      .eq('user_id', userId);
+      if (error) throw error;
+  }
   async function deleteUserByUserId(userId: string) {
     const { error } = await supabase
       .from('users')
@@ -52,6 +59,7 @@ const UsersService = () => {
     getUsers,
     getUserById,
     updateUser,
+    updateName,
     deleteUserByUserId,
   };
 };

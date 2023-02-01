@@ -55,10 +55,10 @@ import AppBar from '@/components/AppBar.vue';
 import ContactUser from '@/components/ContactUser.vue';
 import TheButton from '@/components/TheButton.vue';
 import router from '@/router';
-import useAuthUser from '@/composables/AuthUser';
+import useAuthUser from '@/composables/useAuthUser';
 import {Users} from '@/interfaces/Users';
-import { useTransactionsStore } from '@/store/transactions';
-import { useUsersStore } from '@/store/users';
+import { useTransactionsStore } from '@/stores/transactions';
+import { useUsersStore } from '@/stores/users';
 import UsersService from '@/services/supabase/UsersServices';
 
 const usersStore = useUsersStore();

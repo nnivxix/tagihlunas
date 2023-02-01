@@ -6,16 +6,8 @@
     <div class="flex flex-col mx-4 text-center">
       <router-link to="#" class="p-4 bg-lemon text-dark font-bold rounded-xl">Try now</router-link>
       <router-link to="/login" class="py-8 underline">Sign in</router-link>
-      <img src="../assets/main-illustration.png" alt="main illustration" srcset="">
+      <img src="@/assets/main-illustration.png" alt="main illustration" srcset="">
     </div>
     
   </div>
 </template>
-
-<script setup lang="ts">
-
-</script>
-
-<style lang="scss" scoped>
-
-</style>

@@ -8,7 +8,7 @@
       </button>
     </template>
   </AppBar>
-    <form class="flex flex-col" @submit.prevent="HandleAddUser">
+    <form class="flex flex-col" @submit.prevent="HandleAddUser" action="/users" method="POST">
       <label for="name" class="text-xl text-dark">name</label>
       <input type="name" name="name" id="name" 
       class="bg-light-lemon p-2 rounded-lg" placeholder="John"
@@ -33,21 +33,22 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, Ref, watch } from 'vue';
-import {customAlphabet} from 'nanoid';
 import { useVuelidate } from '@vuelidate/core';
 import { minLength, required } from '@vuelidate/validators';
+import { storeToRefs } from 'pinia';
+
 import AppBar from '@/components/AppBar.vue';
-import {user as admin} from '@/composables/AuthUser';
+import {user as admin} from '@/composables/useAuthUser';
 import { AddUser } from '@/interfaces/Form';
 import router from '@/router';
-import { useUsersStore } from '@/store/users';
-import { storeToRefs } from 'pinia';
+import { useUsersStore } from '@/stores/users';
 import UsersService from '@/services/supabase/UsersServices';
+import usePickColor from '@/composables/usePickColor';
+import nanoid from '@/composables/useNanoid';
 
 const usersStore = useUsersStore();
 const { users } = storeToRefs(usersStore);
-const colorsProfile = ref<string[]>(['#66999B', '#FE5D9F', '#647AA3', '#5A9367', '#E08E45', '#26408B', '#63372C', '#FF7D00', '#C3423F', '#912F56', '#17BEBB', '#A50104', '#6A6262', '#EC058E', '#3772FF', '#DF2935']);
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10);
+
 const userId = `u-${nanoid(8)}${new Date().getDate()}${new Date().getMonth()+1}${new Date().getFullYear()}`;
 const isValid: Ref<boolean> = ref(false);
 const textButton = ref<string>('Add User');
@@ -56,33 +57,24 @@ const formAddUser: AddUser = reactive({
   name: '',
 });
 const erroMsg: Ref<string> = ref('');
-const rules = computed(() => {
-  return {
-    username: { required,
-      minLength: minLength(5),
-    },
-    name: {
-      required,
-      minLength: minLength(5),
-    },
-  };
-});
+const rules = computed(() => ({
+  username: { required,
+    minLength: minLength(5),
+  },
+  name: {
+    required,
+    minLength: minLength(5),
+  },
+}));
 const v$ = useVuelidate(rules, formAddUser);
-
-function pickOneColor(): string{
-  const indexColor: number = Math.floor(Math.random() * colorsProfile.value.length);
-  return colorsProfile.value[indexColor];
-}
-
 async function HandleAddUser () {
-
   try {
     const result = {
       admin_id:admin?.value.id,
       user_id: userId,
       name: formAddUser.name,
       username: formAddUser.username,
-      color_profile: pickOneColor(),
+      color_profile: usePickColor(),
       };
     v$.value.$validate(); // check form
     if (!v$.value.$error) {
@@ -100,7 +92,6 @@ async function HandleAddUser () {
         path: '/users',
         name: 'users.index',
       });
-      // window.location.reload();
     }  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

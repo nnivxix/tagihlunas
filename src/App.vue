@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import useAuthUser from "@/composables/AuthUser";
+import useAuthUser from "@/composables/useAuthUser";
 import { supabase } from "@/helpers/supabase";
 
 supabase.auth.onAuthStateChange((event, session) => {

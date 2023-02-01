@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
-import useAuthUser from '@/composables/AuthUser';
+import useAuthUser from '@/composables/useAuthUser';
 
 const { isLoggedIn } = useAuthUser();
 
@@ -70,11 +70,6 @@ const routes: RouteRecordRaw[] = [
         return {name: 'users.index'};
       }
     },
-  },
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('@/views/Temp/TestPage.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
