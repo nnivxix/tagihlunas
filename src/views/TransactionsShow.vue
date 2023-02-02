@@ -36,7 +36,7 @@
 
       <p class=" pt-2 ">Message</p>
       <p class=" pt-2 text-right font-semibold">{{ transaction.message || 'null' }}</p>
-      <div class="col-span-2 flex border p-2 mt-8">
+      <div class="col-span-2 flex border p-2 mt-8 items-center">
         <p class="text-lg w-1/2">Total transaction</p>
         <p class="text-lg w-1/2 text-right font-semibold"> {{transaction.amount?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})}} </p>
       </div>

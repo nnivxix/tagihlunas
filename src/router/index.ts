@@ -72,6 +72,16 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/register',
+    name: 'register.page',
+    component: () => import('@/views/RegisterPage.vue'),
+    beforeEnter: () => {
+      if (isLoggedIn()) {
+        return {name: 'users.index'};
+      }
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'notfound.page',
     component: () => import('@/views/NotFound.vue'),

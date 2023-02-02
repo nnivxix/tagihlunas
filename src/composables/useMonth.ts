@@ -1,32 +1,41 @@
-/* eslint-disable no-octal */
 const useMonth = (nmr: number) => {
   let month :string|null = '';
-  if(nmr === 1){
+  switch(nmr) {
+    case 1:
       month = 'January';
-  }else if(nmr === 2){
+      break;
+    case 2:
       month = 'February';
-  }else if(nmr === 3){
+      break;
+    case 3:
       month = 'March';
-  }else if(nmr === 4){
+      break;
+    case 4:
       month = 'April';
-  }else if(nmr === 5){
+      break;
+    case 5:
       month = 'May';
-  }else if(nmr === 6){
-      month = 'Juny';
-  }else if(nmr === 7){
+      break;
+    case 6:
+      month = 'June';
+      break;
+    case 7:
       month = 'July';
-  }else if(nmr === 8){
+      break;
+    case 8:
       month = 'August';
-  }else if(nmr === 9){
+      break;
+    case 9:
       month = 'September';
-  }else if(nmr === 10){
+      break;
+    case 10:
       month = 'October';
-  }else if(nmr === 11){
+      break;
+    case 11:
       month = 'November';
-  }else if(nmr ===12){
-      month = 'Desember';
-  }else{
-      month = null;
+      break;
+    default:
+      month = 'December';
   }
   return month;
 };

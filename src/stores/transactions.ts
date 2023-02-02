@@ -3,7 +3,7 @@ import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { NewTransaction, Transactions } from '@/interfaces/Transactions';
 import { TransactionsType } from '@/types/Transactions';
-import _ from 'lodash';
+import {reduce, remove} from 'lodash';
 
 export const useTransactionsStore = defineStore('transaction', () => {
   const transactions: Ref<Transactions[]> = ref([]);
@@ -21,7 +21,7 @@ export const useTransactionsStore = defineStore('transaction', () => {
   const amount = ref<number>(0);
 
   function calculateAmount(transactions: Transactions[]) {
-    amount.value =  _.reduce(transactions, function(sum, n): number{
+    amount.value =  reduce(transactions, function(sum, n): number{
       return sum + n.amount;
     },0);
     return amount.value;
@@ -44,7 +44,7 @@ export const useTransactionsStore = defineStore('transaction', () => {
     return transactions;
   }
   async function deleteTransactionsByUserId(userId: string) {
-    _.remove(transactions.value, (n: TransactionsType) => {
+    remove(transactions.value, (n: TransactionsType) => {
       return n.user_id == userId;
     });
   }
