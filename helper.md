@@ -22,3 +22,4 @@
 13. [How to properly reset Vue Composition Api's reactive values](https://stackoverflow.com/a/61509432)
 14. [Vue 3 and Vite: ignore custom components code example](https://dev.to/greggcbs/vue-3-and-vite-ignore-custom-components-code-example-24nn)
 15. [Documentation for vueCompilerOptions on Vite 2 #1312](https://github.com/vitejs/vite/issues/1312)
+16. [Date.prototype.toLocaleDateString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString) 
