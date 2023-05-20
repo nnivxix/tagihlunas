@@ -16,7 +16,7 @@
       }}
     </p>
     <p class="text-sm text-gray-400">
-      {{ timeFormated(dateTrx as string, "YYYY-MM-DD HH:mm:ss") }}
+      {{ timeFormated(dateTrx as string, "DD-MM-YYYY HH:mm:ss") }}
     </p>
   </router-link>
 </template>
