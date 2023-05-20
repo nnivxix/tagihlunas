@@ -96,7 +96,6 @@
 <script setup lang="ts">
 import { reactive, onBeforeMount, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { customAlphabet } from "nanoid";
 import { Money3Component } from "v-money3";
 import { useVuelidate } from "@vuelidate/core";
 import { minValue, required, maxLength } from "@vuelidate/validators";
@@ -107,18 +106,17 @@ import { useUsersStore } from "@/stores/users";
 import { storeToRefs } from "pinia";
 import UsersService from "@/services/supabase/UsersServices";
 import TransactionsService from "@/services/supabase/TransactionsService";
+import { useNanoId } from "@/composables/useNanoid";
 
 const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
-
+const { transactionId } = useNanoId();
 const { addTransaction } = TransactionsService();
 const { getUserById } = UsersService();
 const { addTransaction: addTransactionStore } = useTransactionsStore();
 const usersStore = useUsersStore();
 const { currentUser } = storeToRefs(usersStore);
-
-const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 10);
 const initFormAddTrx = {
   flow: "",
   amount: "",
@@ -181,9 +179,7 @@ async function handleAddTransaction() {
           ? parseInt(formAddTrx.amount) * -1
           : parseInt(formAddTrx.amount) * 1,
       wallet: formAddTrx.wallet,
-      trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${nanoid(
-        8,
-      ).toLocaleUpperCase()}-${new Date().getHours()}${new Date().getMinutes()}`,
+      trx_id: `${formAddTrx.wallet.toLocaleUpperCase()}-${transactionId}`,
       message: formAddTrx.message,
     };
     if (!v$.value.$error) {

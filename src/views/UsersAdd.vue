@@ -63,16 +63,13 @@ import router from "@/router";
 import { useUsersStore } from "@/stores/users";
 import UsersService from "@/services/supabase/UsersServices";
 import { usePickColor } from "@/composables/usePickColor";
-import nanoid from "@/composables/useNanoid";
+import { useNanoId } from "@/composables/useNanoid";
 
+const { userId } = useNanoId();
 const { pickColor } = usePickColor();
 const { addUser } = UsersService();
 const usersStore = useUsersStore();
 const { users } = storeToRefs(usersStore);
-
-const userId = `u-${nanoid(8)}${new Date().getDate()}${
-  new Date().getMonth() + 1
-}${new Date().getFullYear()}`;
 
 const isValid: Ref<boolean> = ref(false);
 const textButton = ref<string>("Add User");
