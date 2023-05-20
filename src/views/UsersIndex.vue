@@ -84,8 +84,8 @@ import AppBar from "@/components/AppBar.vue";
 import ContactUser from "@/components/ContactUser.vue";
 import TheButton from "@/components/TheButton.vue";
 import router from "@/router";
-import useAuthUser from "@/composables/useAuthUser";
-import { Users } from "@/interfaces/Users";
+import { useAuthUser } from "@/composables/useAuthUser";
+import { User } from "@/schema";
 import { useTransactionsStore } from "@/stores/transactions";
 import { useUsersStore } from "@/stores/users";
 import UsersService from "@/services/supabase/UsersServices";
@@ -131,7 +131,7 @@ function filterUser() {
 }
 
 function sortByName() {
-  users.value.sort((a: Users, b: Users) => {
+  users.value.sort((a: User, b: User) => {
     return a.name > b.name ? 1 : -1;
   });
 }

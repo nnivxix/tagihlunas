@@ -62,7 +62,7 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AppBar from "@/components/AppBar.vue";
-import useAuthUser from "@/composables/useAuthUser";
+import { useAuthUser } from "@/composables/useAuthUser";
 
 const { userRegister } = useAuthUser();
 const router = useRouter();

@@ -1,15 +1,15 @@
 import { ref } from "vue";
 import { supabase } from "@/helpers/supabase";
-import { Register, SignIn } from "@/interfaces/Form";
+import { Auth } from "@/schema";
 
-export const user = ref();
-export default function useAuthUser() {
-  const userLogin = async ({email, password}: SignIn ) => {
-    const { data, error } = await supabase
-    .auth.signInWithPassword({
+const user = ref();
+export function useAuthUser() {
+  const userLogin = async ({ email, password }: Auth) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
     if (error) throw error;
     return data;
   };
@@ -19,7 +19,7 @@ export default function useAuthUser() {
   const isLoggedIn = () => {
     return !!user.value;
   };
-  const userRegister = async ({email, password, name}: Register) => {
+  const userRegister = async ({ email, password, name }: Auth) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -29,7 +29,7 @@ export default function useAuthUser() {
         },
       },
     });
-    if (error == null){
+    if (error == null) {
       return data;
     } else {
       return error;

@@ -57,14 +57,14 @@ import { minLength, required } from "@vuelidate/validators";
 import { storeToRefs } from "pinia";
 
 import AppBar from "@/components/AppBar.vue";
-import { user as admin } from "@/composables/useAuthUser";
-import { AddUser } from "@/interfaces/Form";
+import { useAuthUser } from "@/composables/useAuthUser";
 import router from "@/router";
 import { useUsersStore } from "@/stores/users";
 import UsersService from "@/services/supabase/UsersServices";
 import { usePickColor } from "@/composables/usePickColor";
 import { useNanoId } from "@/composables/useNanoid";
 
+const { user: admin } = useAuthUser();
 const { userId } = useNanoId();
 const { pickColor } = usePickColor();
 const { addUser } = UsersService();
@@ -73,7 +73,7 @@ const { users } = storeToRefs(usersStore);
 
 const isValid: Ref<boolean> = ref(false);
 const textButton = ref<string>("Add User");
-const formAddUser: AddUser = reactive({
+const formAddUser = reactive({
   username: "",
   name: "",
 });
@@ -104,7 +104,7 @@ async function HandleAddUser() {
       users.value.push({
         ...result,
         id: 0,
-        created_at: null,
+        created_at: "",
       });
       return router.push({
         path: "/users",
