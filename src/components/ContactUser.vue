@@ -1,27 +1,23 @@
 <script setup lang="ts">
-import TheAvatar from './TheAvatar.vue';
-defineProps({
-  name: {
-    type: String,
-    default: 'User Hello',
-  },
-  background: {
-    type: String,
-  },
-  userId: {
-    type: String,
-  },
-
-});
+import TheAvatar from "./TheAvatar.vue";
+// eslint-disable-next-line vue/no-setup-props-destructure
+const { user, background } = defineProps<{
+  user: {
+    name: string;
+    user_id: string;
+  };
+  background: string;
+}>();
 </script>
 
 <template>
-  <router-link :to="{name: 'users.show', params: {userId: userId}}" class="flex items-center my-3">
-    <TheAvatar :name="name" :background="background"></TheAvatar>
-    <p id="name" class="ml-4 text-xl name">{{ name }}</p>
+  <router-link
+    :to="{ name: 'users.show', params: { userId: user.user_id } }"
+    class="flex items-center my-3"
+  >
+    <TheAvatar :name="user.name" :background="background"></TheAvatar>
+    <p id="name" class="ml-4 text-xl name">{{ user.name }}</p>
   </router-link>
 </template>
 
-<style>
-
-</style>
+<style></style>

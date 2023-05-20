@@ -61,7 +61,7 @@
         <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
           <ModalDelete
             type-data="transaction"
-            cancle="Back"
+            cancel="Back"
             confirm="Delete"
             grid-rows="3"
             @clickCancle="showModal = false"
