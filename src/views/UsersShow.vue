@@ -89,12 +89,7 @@
       </p>
     </div>
     <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
-      <CardTransaction
-        :user-id="(userId as string)"
-        :trxId="transaction.trx_id"
-        :amount="transaction.amount"
-        :dateTrx="(transaction.created_at as string)"
-      ></CardTransaction>
+      <CardTransaction :user_id="(userId as string)" :transaction="transaction"></CardTransaction>
     </div>
     <!-- Modal -->
     <vue-final-modal
@@ -105,7 +100,7 @@
       <ModalDelete
         grid-col=""
         type-data="user"
-        cancle="Cancel"
+        cancel="Cancel"
         confirm="Sure, Delete"
         grid-rows="4"
         additional-msg="and all transactions"

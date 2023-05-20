@@ -63,10 +63,8 @@
         <ContactUser
           v-for="user in users"
           :key="user.user_id"
-          :name="user.name"
-          :id="user.user_id"
+          :user="user"
           :background="user.color_profile"
-          :userId="user.user_id"
         >
         </ContactUser>
       </div>
