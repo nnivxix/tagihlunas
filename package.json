@@ -12,6 +12,8 @@
     "lint-fix": "eslint ./src --fix"
   },
   "dependencies": {
+    "@capacitor/android": "^5.0.3",
+    "@capacitor/core": "^5.0.3",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/vue-fontawesome": "^3.0.2",
@@ -30,6 +32,7 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@capacitor/cli": "^5.0.3",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "@vitejs/plugin-vue": "^4.0.0",
