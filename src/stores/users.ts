@@ -34,10 +34,10 @@ export const useUsersStore = defineStore("users", () => {
   async function updateUser(userId: string, name: string, username: string, color_profile: string) {
     const id = users.value.findIndex((user) => user.user_id == userId);
     const user: User = {
-      id: currentUser.value[0].id,
-      created_at: currentUser.value[0].created_at,
-      admin_id: currentUser.value[0].admin_id,
-      user_id: currentUser.value[0].user_id,
+      id: currentUser.value[0]?.id,
+      created_at: currentUser.value[0]?.created_at,
+      admin_id: currentUser.value[0]?.admin_id,
+      user_id: currentUser.value[0]?.user_id,
       name,
       username,
       color_profile,
