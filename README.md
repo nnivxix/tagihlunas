@@ -1,6 +1,7 @@
-![tagihlunas](./public/thumbnail.png)
 
 # Tagih Lunas (in development) ⚙️
+
+![tagihlunas](./public/thumbnail.png)
 
 ![GitHub issues](https://img.shields.io/github/issues/nnivxix/tagihlunas?style=flat-square)![GitHub closed issues](https://img.shields.io/github/issues-closed/nnivxix/tagihlunas?style=flat-square)![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/nnivxix/tagihlunas/main?style=flat-square)![GitHub package.json version (branch)](https://img.shields.io/github/package-json/v/nnivxix/tagihlunas/main?style=flat-square)![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/nnivxix/tagihlunas?style=flat-square)![GitHub language count](https://img.shields.io/github/languages/count/nnivxix/tagihlunas?style=flat-square)![GitHub top language](https://img.shields.io/github/languages/top/nnivxix/tagihlunas?color=42b883&label=Vue.js&style=flat-square)![Website](https://img.shields.io/website?down_color=red&down_message=offline&style=flat-square&up_color=blue&up_message=online&url=https%3A%2F%2Ftagihlunas.vercel.app)
 
@@ -19,7 +20,6 @@ pswd: `tagihlunas123`
 ![tagih lunas preview](./public/shot.jpg)
 
 # Postgresql Definitions
-
 
 ## Table Users
 
