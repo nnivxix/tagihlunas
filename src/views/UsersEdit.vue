@@ -66,11 +66,12 @@ import UsersService from "@/services/supabase/UsersServices";
 import { AddUser } from "@/interfaces/Form";
 import { usePickColor } from "@/composables/usePickColor";
 
+const { getUserById, updateUser } = UsersService();
 const { pickColor } = usePickColor();
 const router = useRouter();
 const userId = useRoute().params.userId;
-const usersStore = useUsersStore();
-const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(usersStore);
+const { updateUser: updateUserStore } = useUsersStore();
+const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(useUsersStore());
 
 const formUpdateUser = ref(
   useLocalStorage("currentUser", <AddUser>{
@@ -94,13 +95,13 @@ async function HandleUpdateUser() {
     v$.value.$validate();
     if (!v$.value.$error) {
       const color_profile = pickColor();
-      await UsersService().updateUser(
+      await updateUser(
         userId as string,
         formUpdateUser.value.name,
         formUpdateUser.value.username,
         color_profile,
       );
-      await usersStore.updateUser(
+      await updateUserStore(
         userId as string,
         formUpdateUser.value.name,
         formUpdateUser.value.username,
@@ -116,24 +117,22 @@ async function HandleUpdateUser() {
 }
 async function getOneUser() {
   try {
-    await UsersService()
-      .getUserById(userId as string)
-      .then(async (result) => {
-        currentUser.value = [];
-        currentUser.value.push(...result);
-        currentName.value = clone(result).shift()?.name;
-        currentUsername.value = clone(result).shift()?.username;
-        currentColor.value = clone(result).shift()?.color_profile;
+    await getUserById(userId as string).then(async (result) => {
+      currentUser.value = [];
+      currentUser.value.push(...result);
+      currentName.value = clone(result).shift()?.name;
+      currentUsername.value = clone(result).shift()?.username;
+      currentColor.value = clone(result).shift()?.color_profile;
 
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({
-            name: currentName.value,
-            username: currentUsername.value,
-          }),
-        );
-        return result;
-      });
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          name: currentName.value,
+          username: currentUsername.value,
+        }),
+      );
+      return result;
+    });
     return;
   } catch (error) {
     return error;

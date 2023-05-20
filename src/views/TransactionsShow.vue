@@ -2,35 +2,21 @@
   <div class="mx-6">
     <AppBar titleapp="Detail">
       <template #back>
-        <button
-          v-if="isLoggedIn()"
-          class="justify-self-start"
-          @click="$router.back()"
-        >
+        <button v-if="isLoggedIn()" class="justify-self-start" @click="$router.back()">
           <font-awesome-icon icon="fa-solid fa-x" class="h-5" />
         </button>
         <button v-else class="justify-self-start"></button>
       </template>
       <template #exit>
         <button class="justify-self-end" @click="startShare">
-          <font-awesome-icon
-            icon="fa-solid fa-arrow-up-from-bracket"
-            class="h-5"
-          />
+          <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" class="h-5" />
         </button>
       </template>
     </AppBar>
     <div class="flex flex-col justify-between h-[90vh] mb-4">
       <div v-if="!loading" id="info" class="flex flex-col text-dark my-8">
-        <img
-          src="@/assets/check-circle-rounded.svg"
-          alt="success"
-          srcset=""
-          class="h-32"
-        />
-        <h1 class="text-center font-semibold text-2xl mt-8">
-          Transaction Success
-        </h1>
+        <img src="@/assets/check-circle-rounded.svg" alt="success" srcset="" class="h-32" />
+        <h1 class="text-center font-semibold text-2xl mt-8">Transaction Success</h1>
       </div>
       <div id="detail" class="px-2 text-dark grid grid-cols-2">
         <p class="pt-2">Name</p>
@@ -72,10 +58,7 @@
         </div>
 
         <!-- modal -->
-        <vue-final-modal
-          v-model="showModal"
-          classes="flex justify-center items-center w-full"
-        >
+        <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
           <ModalDelete
             type-data="transaction"
             cancle="Back"
@@ -124,26 +107,24 @@ import ModalDelete from "@/components/ModalDelete.vue";
 import UsersService from "@/services/supabase/UsersServices";
 import { timeFormated } from "@/composables/useTime";
 
+const { getTransactionById, deleteTransactionById } = TransactionsService();
 const { copy } = useClipboard();
 const route = useRoute();
 const router = useRouter();
 const trxId = route.params.trxId;
 const userId = route.params.userId;
-const transactionStore = useTransactionsStore();
+const { deleteTransaction: deleteTransactionStore } = useTransactionsStore();
 const usersStore = useUsersStore();
 const { isLoggedIn } = useAuthUser();
 
 const showModal: Ref<boolean> = ref(false);
 const loading: Ref<boolean> = ref(true);
-const { transaction, initTransaction } = storeToRefs(transactionStore);
-const { currentUser, currentName, currentUsername, currentColor } =
-  storeToRefs(usersStore);
+const { transaction, initTransaction } = storeToRefs(useTransactionsStore());
+const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(usersStore);
 
 const shareOption = reactive({
   title: `This is transaction of ${currentName.value}`,
-  text: `This is transaction of ${
-    currentName.value
-  } you can check the detail transaction from ${
+  text: `This is transaction of ${currentName.value} you can check the detail transaction from ${
     useBrowserLocation().value.href
   }`,
   url: isClient ? useBrowserLocation().value.href : "",
@@ -163,11 +144,9 @@ const startShare = () => {
 
 async function getDetailTransaction() {
   try {
-    TransactionsService()
-      .getTransactionById(trxId as string)
-      .then((result) => {
-        Object.assign(transaction.value, result[0]);
-      });
+    getTransactionById(trxId as string).then((result) => {
+      Object.assign(transaction.value, result[0]);
+    });
 
     loading.value = false;
   } catch (error) {
@@ -192,8 +171,8 @@ async function getOneUser() {
 }
 
 async function deleteTransaction() {
-  await transactionStore.deleteTransaction(trxId as string);
-  await TransactionsService().deleteTransactionById(trxId as string);
+  await deleteTransactionStore(trxId as string);
+  await deleteTransactionById(trxId as string);
   router.back();
 }
 

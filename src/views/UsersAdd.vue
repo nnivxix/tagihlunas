@@ -3,20 +3,12 @@
   <div class="mx-6">
     <AppBar titleapp="Add User">
       <template #back>
-        <button
-          class="justify-self-start"
-          @click="$router.push({ name: 'users.index' })"
-        >
+        <button class="justify-self-start" @click="$router.push({ name: 'users.index' })">
           <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
         </button>
       </template>
     </AppBar>
-    <form
-      class="flex flex-col"
-      @submit.prevent="HandleAddUser"
-      action="/users"
-      method="POST"
-    >
+    <form class="flex flex-col" @submit.prevent="HandleAddUser" action="/users" method="POST">
       <label for="name" class="text-xl text-dark">name</label>
       <input
         type="name"
@@ -74,7 +66,7 @@ import { usePickColor } from "@/composables/usePickColor";
 import nanoid from "@/composables/useNanoid";
 
 const { pickColor } = usePickColor();
-
+const { addUser } = UsersService();
 const usersStore = useUsersStore();
 const { users } = storeToRefs(usersStore);
 
@@ -111,7 +103,7 @@ async function HandleAddUser() {
       isValid.value = false;
       textButton.value = "loading";
       // if no error
-      await UsersService().addUser({ ...result });
+      await addUser({ ...result });
       users.value.push({
         ...result,
         id: 0,
