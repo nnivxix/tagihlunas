@@ -1,50 +1,58 @@
-import { reactive, ref } from 'vue';
-import type { Ref } from 'vue';
-import { defineStore } from 'pinia';
-import { NewTransaction, Transactions } from '@/interfaces/Transactions';
-import { TransactionsType } from '@/types/Transactions';
-import {reduce, remove} from 'lodash';
+import { reactive, ref } from "vue";
+import type { Ref } from "vue";
+import { defineStore } from "pinia";
+import { Transaction } from "@/schema";
+import { reduce, remove } from "lodash";
 
-export const useTransactionsStore = defineStore('transaction', () => {
-  const transactions: Ref<Transactions[]> = ref([]);
+export const useTransactionsStore = defineStore("transaction", () => {
+  const transactions: Ref<Transaction[]> = ref([]);
   const initTransaction = {
-    id : 0,
-    created_at : new Date(),
-    user_id: '',
-    flow: '',
+    id: 0,
+    created_at: new Date().toDateString(),
+    user_id: "",
+    flow: "",
     amount: 0,
-    wallet: '',
-    trx_id: '',
-    message: '',
+    wallet: "",
+    trx_id: "",
+    message: "",
   };
-  const transaction = reactive<TransactionsType>({...initTransaction});
+  const transaction = reactive<Transaction>({ ...initTransaction });
   const amount = ref<number>(0);
 
-  function calculateAmount(transactions: Transactions[]) {
-    amount.value =  reduce(transactions, function(sum, n): number{
-      return sum + n.amount;
-    },0);
+  function calculateAmount(transactions: Transaction[]) {
+    amount.value = reduce(
+      transactions,
+      function (sum, n): number {
+        return sum + n.amount;
+      },
+      0,
+    );
     return amount.value;
   }
-  async function getTransactions(data: Transactions[]) {
+  async function getTransactions(data: Transaction[]) {
     transactions.value = []; // empty first then add from supabase
     transactions.value.push(...data);
   }
-  async function addTransaction({user_id, flow, amount, wallet, trx_id, message }: NewTransaction) {
+  async function addTransaction({ user_id, flow, amount, wallet, trx_id, message }: Transaction) {
     transactions.value.push({
       id: 0,
       // id: transactions.value.findLastIndex((e : Transactions) => e.id) + 1,
       created_at: new Date().toString(),
-      user_id, flow, amount, wallet, trx_id, message,
+      user_id,
+      flow,
+      amount,
+      wallet,
+      trx_id,
+      message,
     });
   }
   async function deleteTransaction(trxId: string) {
-    const id = transactions.value.findIndex(transaction => transaction.trx_id == trxId);
-    transactions.value.splice(id,1);
+    const id = transactions.value.findIndex((transaction) => transaction.trx_id == trxId);
+    transactions.value.splice(id, 1);
     return transactions;
   }
   async function deleteTransactionsByUserId(userId: string) {
-    remove(transactions.value, (n: TransactionsType) => {
+    remove(transactions.value, (n: Transaction) => {
       return n.user_id == userId;
     });
   }

@@ -63,7 +63,7 @@ import { storeToRefs } from "pinia";
 import { useUsersStore } from "@/stores/users";
 import AppBar from "@/components/AppBar.vue";
 import UsersService from "@/services/supabase/UsersServices";
-import { AddUser } from "@/interfaces/Form";
+import { User } from "@/schema";
 import { usePickColor } from "@/composables/usePickColor";
 
 const { getUserById, updateUser } = UsersService();
@@ -74,7 +74,7 @@ const { updateUser: updateUserStore } = useUsersStore();
 const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(useUsersStore());
 
 const formUpdateUser = ref(
-  useLocalStorage("currentUser", <AddUser>{
+  useLocalStorage("currentUser", <User>{
     username: currentUsername.value,
     name: currentName.value,
   }),

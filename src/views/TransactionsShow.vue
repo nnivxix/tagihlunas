@@ -101,12 +101,13 @@ import { storeToRefs } from "pinia";
 import TransactionsService from "@/services/supabase/TransactionsService";
 import { useTransactionsStore } from "@/stores/transactions";
 import { useUsersStore } from "@/stores/users";
-import useAuthUser from "@/composables/useAuthUser";
+import { useAuthUser } from "@/composables/useAuthUser";
 import AppBar from "@/components/AppBar.vue";
 import ModalDelete from "@/components/ModalDelete.vue";
 import UsersService from "@/services/supabase/UsersServices";
 import { timeFormated } from "@/composables/useTime";
 
+const { getUserById } = UsersService();
 const { getTransactionById, deleteTransactionById } = TransactionsService();
 const { copy } = useClipboard();
 const route = useRoute();
@@ -155,15 +156,13 @@ async function getDetailTransaction() {
 }
 async function getOneUser() {
   try {
-    UsersService()
-      .getUserById(userId as string)
-      .then((result) => {
-        currentUser.value = [];
-        currentUsername.value = clone(result).shift()?.username;
-        currentName.value = clone(result).shift()?.name;
-        currentColor.value = clone(result).shift()?.color_profile;
-        currentUser.value.push(...result);
-      });
+    getUserById(userId as string).then((result) => {
+      currentUser.value = [];
+      currentUsername.value = clone(result).shift()?.username;
+      currentName.value = clone(result).shift()?.name;
+      currentColor.value = clone(result).shift()?.color_profile;
+      currentUser.value.push(...result);
+    });
     loading.value = false;
   } catch (error) {
     return error;
