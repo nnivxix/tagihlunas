@@ -138,7 +138,16 @@ usersStore.$patch({
 });
 function resetStateUsers() {
   usersStore.$patch({
-    currentUser: [],
+    currentUser: {
+      id: 1,
+      admin_id: "",
+      user_id: "",
+      name: "",
+      username: "",
+      color_profile: "",
+      created_at: "",
+      transactions: [],
+    },
     users: [],
     usersDuplicate: [],
   });
