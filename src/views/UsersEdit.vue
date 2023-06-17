@@ -57,7 +57,6 @@ import { useVuelidate } from "@vuelidate/core";
 import { minLength, required } from "@vuelidate/validators";
 import { useLocalStorage } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
-import { clone } from "lodash";
 import { storeToRefs } from "pinia";
 
 import { useUsersStore } from "@/stores/users";
@@ -65,8 +64,9 @@ import AppBar from "@/components/AppBar.vue";
 import UsersService from "@/services/supabase/UsersServices";
 import { User } from "@/schema";
 import { usePickColor } from "@/composables/usePickColor";
+import { supabase } from "@/helpers/supabase";
 
-const { getUserById, updateUser } = UsersService();
+const { updateUser } = UsersService();
 const { pickColor } = usePickColor();
 const router = useRouter();
 const userId = useRoute().params.userId;
@@ -117,23 +117,23 @@ async function HandleUpdateUser() {
 }
 async function getOneUser() {
   try {
-    await getUserById(userId as string).then(async (result) => {
-      currentUser.value = [];
-      currentUser.value.push(...result);
-      currentName.value = clone(result).shift()?.name;
-      currentUsername.value = clone(result).shift()?.username;
-      currentColor.value = clone(result).shift()?.color_profile;
+    const { data } = await supabase
+      .from("users")
+      .select(`id, admin_id, created_at, name, user_id, username, color_profile`)
+      .eq("user_id", userId)
+      .single();
+    currentUser.value = data as User;
+    currentName.value = currentUser.value.name;
+    currentUsername.value = currentUser.value.username;
+    currentColor.value = currentUser.value.color_profile;
 
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          name: currentName.value,
-          username: currentUsername.value,
-        }),
-      );
-      return result;
-    });
-    return;
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify({
+        name: currentName.value,
+        username: currentUsername.value,
+      }),
+    );
   } catch (error) {
     return error;
   }
