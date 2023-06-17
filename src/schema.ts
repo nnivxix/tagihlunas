@@ -16,12 +16,12 @@ export interface User {
 }
 
 export interface Transaction {
-  id: number;
+  id?: number;
   user_id: string;
   flow: string;
   amount: number;
   wallet: string;
   trx_id: string;
   message?: string;
-  created_at: string;
+  created_at?: string;
 }

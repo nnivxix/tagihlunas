@@ -9,27 +9,25 @@
       </template>
     </AppBar>
     <form class="flex flex-col" @submit.prevent="handleAddTransaction">
-      <div v-for="u in currentUser" :key="u.user_id" class="flex flex-col">
-        <label for="username" class="text-xl text-dark">username</label>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          v-model="u.username"
-          class="bg-light-lemon p-2 mb-5 rounded-lg"
-          readonly
-        />
+      <label for="username" class="text-xl text-dark">username</label>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        v-model="currentUser.username"
+        class="bg-light-lemon p-2 mb-5 rounded-lg"
+        readonly
+      />
 
-        <label for="name" class="text-xl text-dark">name</label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          v-model="u.name"
-          class="bg-light-lemon p-2 mb-5 rounded-lg"
-          readonly
-        />
-      </div>
+      <label for="name" class="text-xl text-dark">name</label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        v-model="currentUser.name"
+        class="bg-light-lemon p-2 mb-5 rounded-lg"
+        readonly
+      />
 
       <label for="flow" class="text-xl text-dark">flow</label>
       <select
@@ -43,7 +41,9 @@
         <option value="cash in">cash in</option>
       </select>
       <div v-if="v$.flow.$error">
-        <p class="text-red-500" v-for="e in v$.flow.$errors" :key="e.$uid">{{ e.$message }}</p>
+        <p class="text-red-500" v-for="e in v$.flow.$errors" :key="e.$uid">
+          {{ e.$message }}
+        </p>
       </div>
       <!-- <p v-if="v$.flow.$error" class="text-red-500">Please select one!</p> -->
 
@@ -58,7 +58,9 @@
       ></money-3-component>
       <!-- <p v-if="v$.amount.$error" class="text-red-500">The amount entered must be at least Rp. 2000.</p> -->
       <div v-if="v$.amount.$error">
-        <p class="text-red-500" v-for="e in v$.amount.$errors" :key="e.$uid">{{ e.$message }}</p>
+        <p class="text-red-500" v-for="e in v$.amount.$errors" :key="e.$uid">
+          {{ e.$message }}
+        </p>
       </div>
       <label for="wallet" class="text-xl text-dark mt-5">wallet</label>
       <select
@@ -104,16 +106,16 @@ import AppBar from "@/components/AppBar.vue";
 import { useTransactionsStore } from "@/stores/transactions";
 import { useUsersStore } from "@/stores/users";
 import { storeToRefs } from "pinia";
-import UsersService from "@/services/supabase/UsersServices";
 import TransactionsService from "@/services/supabase/TransactionsService";
 import { useNanoId } from "@/composables/useNanoid";
+import { supabase } from "@/helpers/supabase";
+import { User } from "@/schema";
 
 const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
 const { transactionId } = useNanoId();
 const { addTransaction } = TransactionsService();
-const { getUserById } = UsersService();
 const { addTransaction: addTransactionStore } = useTransactionsStore();
 const usersStore = useUsersStore();
 const { currentUser } = storeToRefs(usersStore);
@@ -160,10 +162,21 @@ function resetForm() {
   Object.assign(formAddTrx, initFormAddTrx);
 }
 async function getOneUser() {
-  if (!currentUser.value.length) {
-    getUserById(userId as string).then((result) => {
-      currentUser.value.push(...result);
-    });
+  if (!currentUser.value) {
+    const { data, error } = await supabase
+      .from("users")
+      .select(
+        `id, admin_id, created_at, name, user_id, username, color_profile,
+        transactions (
+          id, user_id, flow, amount, wallet, trx_id, message, created_at
+          )`,
+      )
+      .eq("user_id", userId)
+      .single();
+    if (error) throw error;
+    if (data) {
+      currentUser.value = data as User;
+    }
   }
   return;
 }
@@ -172,7 +185,7 @@ async function handleAddTransaction() {
   try {
     v$.value.$validate();
     const trx = {
-      user_id: currentUser.value[0].user_id as string,
+      user_id: currentUser.value.user_id as string,
       flow: formAddTrx.flow,
       amount:
         formAddTrx.flow == "cash out"

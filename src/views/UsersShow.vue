@@ -5,7 +5,6 @@ import { ContentLoader } from "vue-content-loader";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
-import { clone } from "lodash";
 
 import AppBar from "@/components/AppBar.vue";
 import TheAvatar from "@/components/TheAvatar.vue";
@@ -21,13 +20,12 @@ import { User } from "@/schema";
 import { Transaction } from "@/schema";
 
 const { deleteTransactionsByUserId } = TransactionsService();
-const { getUserById, deleteUserByUserId, updateName } = UsersService();
+const { deleteUserByUserId, updateName } = UsersService();
 const router = useRouter();
 const route = useRoute();
 const { deleteUser: deleteUserStore } = useUsersStore();
 const { calculateAmount, deleteTransaction } = useTransactionsStore();
 const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(useUsersStore());
-// const transactions = ref([]);
 const { transaction, initTransaction, amount, transactions } = storeToRefs(useTransactionsStore());
 const userId = route.params.userId;
 
@@ -117,7 +115,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   await getOneUser();
 
-  await calculateAmount(currentUser.value.transactions);
+  calculateAmount(transactions.value);
 });
 </script>
 <template>
