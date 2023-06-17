@@ -38,37 +38,13 @@
         @click="sortByName"
       />
     </div>
-    <div v-if="loading">
-      <content-loader
-        viewBox="0 0 476 150"
-        :speed="8"
-        primaryColor="#e8e8e8"
-        secondaryColor="#9e9e9e"
-      >
-        <rect x="114" y="38" rx="3" ry="3" width="200" height="32" />
-        <circle cx="53" cy="57" r="48" />
-      </content-loader>
-    </div>
-    <div v-else>
-      <div v-if="!users.length">
-        <img src="@/assets/nouser.png" alt="no user users" srcset="" />
-        <p class="text-center text-xl">
-          There are no registered users yet.
-          <router-link class="underline" :to="{ name: 'users.add' }">
-            Let's create one.</router-link
-          >
-        </p>
-      </div>
-      <div v-else>
-        <ContactUser
-          v-for="user in users"
-          :key="user.user_id"
-          :user="user"
-          :background="user.color_profile"
-        >
-        </ContactUser>
-      </div>
-    </div>
+    <ContactUser
+      v-for="user in users"
+      :key="user.user_id"
+      :user="user"
+      :background="user.color_profile"
+    >
+    </ContactUser>
   </div>
 </template>
 
