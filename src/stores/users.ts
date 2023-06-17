@@ -6,7 +6,16 @@ import { User } from "@/schema";
 export const useUsersStore = defineStore("users", () => {
   const users: Ref<User[]> = ref([]);
   const usersDuplicate: Ref<User[]> = ref([]);
-  const currentUser = ref<User[]>([]);
+  const currentUser = ref<User>({
+    id: 1,
+    admin_id: "",
+    user_id: "",
+    name: "",
+    username: "",
+    color_profile: "",
+    created_at: "",
+    transactions: [],
+  });
   const currentName: Ref<string> = ref("");
   const currentUsername: Ref<string> = ref("");
   const currentColor: Ref<string> = ref("");
@@ -34,10 +43,10 @@ export const useUsersStore = defineStore("users", () => {
   async function updateUser(userId: string, name: string, username: string, color_profile: string) {
     const id = users.value.findIndex((user) => user.user_id == userId);
     const user: User = {
-      id: currentUser.value[0]?.id,
-      created_at: currentUser.value[0]?.created_at,
-      admin_id: currentUser.value[0]?.admin_id,
-      user_id: currentUser.value[0]?.user_id,
+      id: currentUser.value?.id,
+      created_at: currentUser.value.created_at,
+      admin_id: currentUser.value.admin_id,
+      user_id: currentUser.value.user_id,
       name,
       username,
       color_profile,
@@ -45,7 +54,7 @@ export const useUsersStore = defineStore("users", () => {
     currentName.value = name;
     currentUsername.value = username;
     currentColor.value = color_profile;
-    currentUser.value.splice(0, 1, user);
+    // currentUser.value.splice(0, 1, user);
     users.value.splice(id, 1, user);
     return users;
   }

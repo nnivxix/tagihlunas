@@ -1,4 +1,125 @@
-<!-- eslint-disable vue/multi-word-component-names -->
+<script setup lang="ts">
+import { ref, onBeforeMount, watch, onMounted } from "vue";
+import type { Ref } from "vue";
+import { ContentLoader } from "vue-content-loader";
+import { useRoute, useRouter } from "vue-router";
+import { VueFinalModal } from "vue-final-modal";
+import { storeToRefs } from "pinia";
+import { clone } from "lodash";
+
+import AppBar from "@/components/AppBar.vue";
+import TheAvatar from "@/components/TheAvatar.vue";
+import TheButton from "@/components/TheButton.vue";
+import ModalDelete from "@/components/ModalDelete.vue";
+import CardTransaction from "@/components/CardTransaction.vue";
+import TransactionsService from "@/services/supabase/TransactionsService";
+import UsersService from "@/services/supabase/UsersServices";
+import { useTransactionsStore } from "@/stores/transactions";
+import { useUsersStore } from "@/stores/users";
+import { supabase } from "@/helpers/supabase";
+import { User } from "@/schema";
+import { Transaction } from "@/schema";
+
+const { deleteTransactionsByUserId } = TransactionsService();
+const { getUserById, deleteUserByUserId, updateName } = UsersService();
+const router = useRouter();
+const route = useRoute();
+const { deleteUser: deleteUserStore } = useUsersStore();
+const { calculateAmount, deleteTransaction } = useTransactionsStore();
+const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(useUsersStore());
+// const transactions = ref([]);
+const { transaction, initTransaction, amount, transactions } = storeToRefs(useTransactionsStore());
+const userId = route.params.userId;
+
+const isEditName: Ref<boolean> = ref(false);
+const isShowOption = ref<boolean>(false);
+const showModal: Ref<boolean> = ref(false);
+const textConfirmation: Ref<string> = ref("");
+const isValid = ref(true);
+
+function showOption() {
+  return (isShowOption.value = !isShowOption.value);
+}
+
+async function getOneUser() {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select(
+        `id, admin_id, created_at, name, user_id, username, color_profile,
+        transactions (
+          id, user_id, flow, amount, wallet, trx_id, message, created_at
+          )`,
+      )
+      .eq("user_id", userId)
+      .single();
+    if (error) throw error;
+    if (data) {
+      currentUser.value = data as User;
+      currentName.value = data.name;
+      currentUsername.value = data.username;
+      currentColor.value = data.color_profile;
+      transactions.value = [...(data.transactions as Transaction[])];
+    }
+  } catch (error) {
+    return error;
+  }
+}
+async function deleteUser() {
+  if (textConfirmation.value === currentUser.value.username && isValid) {
+    await deleteTransactionsByUserId(userId as string);
+    await deleteUserByUserId(userId as string);
+
+    await deleteTransaction(userId as string);
+    await deleteUserStore(userId as string);
+
+    await router.push({
+      name: "users.index",
+    });
+    return;
+  }
+}
+async function editName() {
+  if (isEditName.value) {
+    if (currentName.value !== currentUser.value.name) {
+      updateName(currentName.value, userId as string);
+    }
+    isEditName.value = false;
+  }
+  return;
+}
+
+function editUser() {
+  router.push({
+    name: "users.edit",
+    params: {
+      userId,
+    },
+  });
+}
+
+watch(textConfirmation, () => {
+  if (
+    textConfirmation.value == "" ||
+    textConfirmation.value == null ||
+    textConfirmation.value === currentUser.value.username
+  ) {
+    isValid.value = true;
+  } else {
+    isValid.value = false;
+  }
+});
+
+onBeforeMount(async () => {
+  Object.assign(transaction.value, initTransaction);
+});
+
+onMounted(async () => {
+  await getOneUser();
+
+  await calculateAmount(currentUser.value.transactions);
+});
+</script>
 <template>
   <div>
     <AppBar titleapp="Details" class="mx-6">
@@ -25,7 +146,7 @@
       </template>
     </AppBar>
     <div class="px-4 mb-7 mx-6">
-      <div v-if="!currentUser.length" class="flex items-center my-3">
+      <div v-if="!currentUser" class="flex items-center my-3">
         <content-loader
           viewBox="0 0 476 150"
           :speed="8"
@@ -81,14 +202,14 @@
         @button-event="router.push({ name: 'transactions.add', params: { userId: userId } })"
       ></TheButton>
     </div>
-    <div v-if="!transactions.length">
+    <div v-if="!currentUser.transactions?.length">
       <img src="@/assets/empty.svg" alt="empty transaction" />
       <p class="text-center text-2xl">
         No transactions yet, let's
         <router-link class="underline" :to="{ name: 'transactions.add' }">create one</router-link>.
       </p>
     </div>
-    <div v-else v-for="transaction in transactions" :key="transaction.trx_id">
+    <div v-else v-for="transaction in currentUser.transactions" :key="transaction.trx_id">
       <CardTransaction :user_id="(userId as string)" :transaction="transaction"></CardTransaction>
     </div>
     <!-- Modal -->
@@ -108,8 +229,8 @@
         @clickConfirm="deleteUser"
       >
         <div class="flex items-center flex-col col-span-2 mb-3">
-          <p v-for="u in currentUser" :key="u.user_id" class="text-center self-center py-2">
-            Please type <b>{{ u.username }}</b> to confrim!
+          <p class="text-center self-center py-2">
+            Please type <b>{{ currentUser.username }}</b> to confrim!
           </p>
           <input
             class="p-2 border border-gray-700"
@@ -124,138 +245,5 @@
     </vue-final-modal>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onBeforeMount, watch, onBeforeUnmount } from "vue";
-import type { Ref } from "vue";
-import { ContentLoader } from "vue-content-loader";
-import { useRoute, useRouter } from "vue-router";
-import { VueFinalModal } from "vue-final-modal";
-import { storeToRefs } from "pinia";
-import _ from "lodash";
-
-import AppBar from "@/components/AppBar.vue";
-import TheAvatar from "@/components/TheAvatar.vue";
-import TheButton from "@/components/TheButton.vue";
-import ModalDelete from "@/components/ModalDelete.vue";
-import CardTransaction from "@/components/CardTransaction.vue";
-import TransactionsService from "@/services/supabase/TransactionsService";
-import UsersService from "@/services/supabase/UsersServices";
-import { useTransactionsStore } from "@/stores/transactions";
-import { useUsersStore } from "@/stores/users";
-
-const { deleteTransactionsByUserId, getTransactionsByUserId } = TransactionsService();
-const { getUserById, deleteUserByUserId, updateName } = UsersService();
-const router = useRouter();
-const route = useRoute();
-const { deleteUser: deleteUserStore } = useUsersStore();
-const { calculateAmount, deleteTransaction } = useTransactionsStore();
-const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(useUsersStore());
-const { transactions, transaction, initTransaction, amount } = storeToRefs(useTransactionsStore());
-const userId = route.params.userId;
-
-const isEditName: Ref<boolean> = ref(false);
-const isShowOption = ref<boolean>(false);
-const showModal: Ref<boolean> = ref(false);
-const textConfirmation: Ref<string> = ref("");
-const isValid = ref(true);
-
-function showOption() {
-  return (isShowOption.value = !isShowOption.value);
-}
-
-async function getOneUser() {
-  try {
-    if (!currentUser.value.length) {
-      await getUserById(userId as string).then(async (result) => {
-        currentUser.value = [];
-        currentUsername.value = await _.clone(result).shift()?.username;
-        currentName.value = await _.clone(result).shift()?.name;
-        currentColor.value = await _.clone(result).shift()?.color_profile;
-        currentUser.value.push(...result);
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({
-            name: _.clone(result).shift()?.name,
-            username: _.clone(result).shift()?.username,
-          }),
-        );
-        return;
-      });
-    }
-    return;
-  } catch (error) {
-    return error;
-  }
-}
-async function deleteUser() {
-  if (textConfirmation.value === currentUser.value[0].username && isValid) {
-    await deleteTransactionsByUserId(userId as string);
-    await deleteUserByUserId(userId as string);
-
-    await deleteTransaction(userId as string);
-    await deleteUserStore(userId as string);
-
-    await router.push({
-      name: "users.index",
-    });
-    return;
-  }
-}
-async function editName() {
-  if (isEditName.value) {
-    if (currentName.value !== currentUser.value[0].name) {
-      updateName(currentName.value, userId as string);
-    }
-    isEditName.value = false;
-  }
-  return;
-}
-
-async function getUserTransactions() {
-  try {
-    if (transactions.value.length == 0) {
-      await getTransactionsByUserId(userId as string).then((result) => {
-        transactions.value = [];
-        transactions.value.push(...result);
-        calculateAmount(result);
-      });
-    }
-  } catch (error) {
-    return error;
-  }
-}
-
-function editUser() {
-  router.push({
-    name: "users.edit",
-    params: {
-      userId,
-    },
-  });
-}
-
-watch(textConfirmation, () => {
-  if (
-    textConfirmation.value == "" ||
-    textConfirmation.value == null ||
-    textConfirmation.value === currentUser.value[0].username
-  ) {
-    isValid.value = true;
-  } else {
-    isValid.value = false;
-  }
-});
-
-onBeforeMount(async () => {
-  Object.assign(transaction.value, initTransaction);
-  await getOneUser();
-  await getUserTransactions();
-  await calculateAmount(transactions.value);
-});
-onBeforeUnmount(async () => {
-  await getOneUser();
-});
-</script>
 
 <style scoped></style>

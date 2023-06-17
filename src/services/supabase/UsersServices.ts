@@ -21,7 +21,16 @@ const UsersService = () => {
     return data;
   }
   async function getUserById(userId: string) {
-    const { data, error } = await supabase.from("users").select("*").eq("user_id", userId);
+    const { data, error } = await supabase
+      .from("users")
+      .select(
+        `id, admin_id, created_at, name, user_id, username, color_profile,
+        transactions (
+          id, user_id, flow, amount, wallet, trx_id, message, created_at
+          )`,
+      )
+      .eq("user_id", userId)
+      .single();
     if (error) throw error;
     return data;
   }
