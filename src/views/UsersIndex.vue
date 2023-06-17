@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, onBeforeUnmount } from "vue";
+import { ref, onBeforeMount, onMounted, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
 import { ContentLoader } from "vue-content-loader";
 import { storeToRefs } from "pinia";
@@ -163,7 +163,7 @@ function addUser() {
   });
 }
 
-onBeforeMount(async () => {
+onMounted(async () => {
   resetStateTransactions();
   resetStateUsers();
   // run function to fetch all data
