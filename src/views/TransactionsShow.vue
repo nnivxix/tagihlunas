@@ -111,7 +111,6 @@ const { copy } = useClipboard();
 const route = useRoute();
 const router = useRouter();
 const trxId = route.params.trxId;
-const userId = route.params.userId;
 const { deleteTransaction: deleteTransactionStore } = useTransactionsStore();
 const usersStore = useUsersStore();
 const { isLoggedIn } = useAuthUser();
@@ -144,7 +143,7 @@ const startShare = () => {
 
 async function getDetailTransaction() {
   try {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("transactions")
       .select(
         `id, user_id, flow, amount, wallet, trx_id, message, created_at, 

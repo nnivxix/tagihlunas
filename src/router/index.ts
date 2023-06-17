@@ -56,7 +56,7 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: "/users/:userId/transactions/:trxId",
+    path: "/transactions/:trxId",
     name: "transactions.show",
     component: () => import("@/views/TransactionsShow.vue"),
   },

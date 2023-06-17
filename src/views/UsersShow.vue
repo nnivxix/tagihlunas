@@ -208,7 +208,7 @@ onMounted(async () => {
       </p>
     </div>
     <div v-else v-for="transaction in currentUser.transactions" :key="transaction.trx_id">
-      <CardTransaction :user_id="(userId as string)" :transaction="transaction"></CardTransaction>
+      <CardTransaction :transaction="transaction"></CardTransaction>
     </div>
     <!-- Modal -->
     <vue-final-modal
