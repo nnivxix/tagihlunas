@@ -107,7 +107,6 @@ const getAllUsers = async () => {
     usersDuplicate.value = data as User[];
 
     loading.value = false;
-    return;
   } catch (error) {
     return error;
   }
