@@ -21,35 +21,35 @@
       <div id="detail" class="px-2 text-dark grid grid-cols-2">
         <p class="pt-2">Name</p>
         <p class="pt-2 text-right font-semibold">
-          {{ usersStore.currentName }}
+          {{ detailTransaction?.users.name }}
         </p>
         <p class="pt-2">Due date</p>
         <p class="pt-2 text-right font-semibold">
-          {{ timeFormated(transaction.created_at as string, "YYYY-MM-DD") }}
+          {{ timeFormated(detailTransaction?.created_at as string, "YYYY-MM-DD") }}
         </p>
         <p class="pt-2">Time</p>
         <p class="pt-2 text-right font-semibold">
-          {{ timeFormated(transaction.created_at as string, "HH:mm:ss") }}
+          {{ timeFormated(detailTransaction?.created_at as string, "HH:mm:ss") }}
         </p>
         <p class="pt-2">Transaction id</p>
 
         <p
           class="text-sm pt-2 text-right font-semibold"
-          @click="copy(transaction.trx_id as string)"
+          @click="copy(detailTransaction?.trx_id as string)"
         >
           <font-awesome-icon icon="fa-solid fa-copy"> </font-awesome-icon>
-          {{ transaction.trx_id }}
+          {{ detailTransaction?.trx_id }}
         </p>
 
         <p class="pt-2">Message</p>
         <p class="pt-2 text-right font-semibold">
-          {{ transaction.message || "null" }}
+          {{ detailTransaction?.message ?? "" }}
         </p>
         <div class="col-span-2 flex border p-2 mt-8 items-center">
           <p class="text-lg w-1/2">Total transaction</p>
           <p class="text-lg w-1/2 text-right font-semibold">
             {{
-              transaction.amount?.toLocaleString("id-ID", {
+              detailTransaction?.amount?.toLocaleString("id-ID", {
                 style: "currency",
                 currency: "IDR",
               })
@@ -95,7 +95,6 @@ import { useClipboard, useBrowserLocation, useShare } from "@vueuse/core";
 import { isClient } from "@vueuse/shared";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from "vue-final-modal";
-import { clone } from "lodash";
 import { storeToRefs } from "pinia";
 
 import TransactionsService from "@/services/supabase/TransactionsService";
@@ -104,11 +103,10 @@ import { useUsersStore } from "@/stores/users";
 import { useAuthUser } from "@/composables/useAuthUser";
 import AppBar from "@/components/AppBar.vue";
 import ModalDelete from "@/components/ModalDelete.vue";
-import UsersService from "@/services/supabase/UsersServices";
 import { timeFormated } from "@/composables/useTime";
+import { supabase } from "@/helpers/supabase";
 
-const { getUserById } = UsersService();
-const { getTransactionById, deleteTransactionById } = TransactionsService();
+const { deleteTransactionById } = TransactionsService();
 const { copy } = useClipboard();
 const route = useRoute();
 const router = useRouter();
@@ -120,8 +118,9 @@ const { isLoggedIn } = useAuthUser();
 
 const showModal: Ref<boolean> = ref(false);
 const loading: Ref<boolean> = ref(true);
+const detailTransaction = ref();
 const { transaction, initTransaction } = storeToRefs(useTransactionsStore());
-const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(usersStore);
+const { currentName } = storeToRefs(usersStore);
 
 const shareOption = reactive({
   title: `This is transaction of ${currentName.value}`,
@@ -145,24 +144,19 @@ const startShare = () => {
 
 async function getDetailTransaction() {
   try {
-    getTransactionById(trxId as string).then((result) => {
-      Object.assign(transaction.value, result[0]);
-    });
+    const { data, error } = await supabase
+      .from("transactions")
+      .select(
+        `id, user_id, flow, amount, wallet, trx_id, message, created_at, 
+      users (
+        id, admin_id, created_at, name, user_id, username, color_profile
+      )
+    `,
+      )
+      .eq("trx_id", trxId)
+      .single();
+    detailTransaction.value = data;
 
-    loading.value = false;
-  } catch (error) {
-    return error;
-  }
-}
-async function getOneUser() {
-  try {
-    getUserById(userId as string).then((result) => {
-      currentUser.value = [];
-      currentUsername.value = clone(result).shift()?.username;
-      currentName.value = clone(result).shift()?.name;
-      currentColor.value = clone(result).shift()?.color_profile;
-      currentUser.value.push(...result);
-    });
     loading.value = false;
   } catch (error) {
     return error;
@@ -177,7 +171,6 @@ async function deleteTransaction() {
 
 onBeforeMount(() => {
   getDetailTransaction();
-  getOneUser();
 });
 onBeforeUnmount(() => {
   Object.assign(transaction, initTransaction);
