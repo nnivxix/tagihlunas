@@ -104,7 +104,8 @@ const getAllUsers = async () => {
     if (!users.value.length || !usersDuplicate.value.length) {
       const { data } = await supabase.from("users").select().eq("admin_id", admin?.value.id);
 
-      usersStore.getUsers(data as User[]);
+      users.value = data as User[];
+      usersDuplicate.value = data as User[];
     }
     loading.value = false;
     return;
