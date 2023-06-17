@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
 import { ContentLoader } from "vue-content-loader";
 import { storeToRefs } from "pinia";
@@ -101,12 +101,11 @@ const { users, usersDuplicate } = storeToRefs(usersStore);
 const getAllUsers = async () => {
   loading.value = true;
   try {
-    if (!users.value.length || !usersDuplicate.value.length) {
-      const { data } = await supabase.from("users").select().eq("admin_id", admin?.value.id);
+    const { data } = await supabase.from("users").select().eq("admin_id", admin?.value.id);
 
-      users.value = data as User[];
-      usersDuplicate.value = data as User[];
-    }
+    users.value = data as User[];
+    usersDuplicate.value = data as User[];
+
     loading.value = false;
     return;
   } catch (error) {
