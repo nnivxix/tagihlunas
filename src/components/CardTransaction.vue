@@ -2,7 +2,7 @@
   <router-link
     :to="{
       name: 'transactions.show',
-      params: { userId: user_id, trxId: transaction.trx_id },
+      params: { trxId: transaction.trx_id },
     }"
     class="grid grid-rows-2 grid-cols-2 cursor-pointer bg-semi-gray-1 px-8 py-4 text-dark hover:text-gray-700 hover:bg-lemon"
   >
@@ -25,12 +25,11 @@
 import { timeFormated } from "@/composables/useTime";
 
 // eslint-disable-next-line vue/no-setup-props-destructure
-const { user_id, transaction } = defineProps<{
+const { transaction } = defineProps<{
   transaction: {
     trx_id?: string;
     amount?: number;
     created_at?: string;
   };
-  user_id?: string;
 }>();
 </script>

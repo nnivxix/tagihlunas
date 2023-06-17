@@ -12,15 +12,16 @@ export interface User {
   username: string;
   color_profile: string;
   created_at?: string;
+  transactions?: Transaction[] | [];
 }
 
 export interface Transaction {
   id?: number;
-  user_id?: string;
-  flow?: string;
+  user_id: string;
+  flow: string;
   amount: number;
-  wallet?: string;
-  trx_id?: string;
+  wallet: string;
+  trx_id: string;
   message?: string;
   created_at?: string;
 }
