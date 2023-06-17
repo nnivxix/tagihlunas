@@ -86,9 +86,9 @@ import { useAuthUser } from "@/composables/useAuthUser";
 import { User } from "@/schema";
 import { useTransactionsStore } from "@/stores/transactions";
 import { useUsersStore } from "@/stores/users";
-import UsersService from "@/services/supabase/UsersServices";
+import { supabase } from "@/helpers/supabase";
 
-const { getUsers } = UsersService();
+const { user: admin } = useAuthUser();
 const usersStore = useUsersStore();
 const transactionStore = useTransactionsStore();
 const { userLogout } = useAuthUser();
@@ -102,9 +102,9 @@ const getAllUsers = async () => {
   loading.value = true;
   try {
     if (!users.value.length || !usersDuplicate.value.length) {
-      getUsers().then((result) => {
-        usersStore.getUsers(result);
-      });
+      const { data } = await supabase.from("users").select().eq("admin_id", admin?.value.id);
+
+      usersStore.getUsers(data as User[]);
     }
     loading.value = false;
     return;
