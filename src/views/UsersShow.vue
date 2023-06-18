@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch, onMounted } from "vue";
+import { ref, onBeforeMount, watch, onMounted, defineAsyncComponent, computed } from "vue";
 import type { Ref } from "vue";
-import { ContentLoader } from "vue-content-loader";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 
 import AppBar from "@/components/AppBar.vue";
-import TheAvatar from "@/components/TheAvatar.vue";
 import TheButton from "@/components/TheButton.vue";
 import ModalDelete from "@/components/ModalDelete.vue";
 import CardTransaction from "@/components/CardTransaction.vue";
@@ -18,6 +16,7 @@ import { useUsersStore } from "@/stores/users";
 import { supabase } from "@/helpers/supabase";
 import { User } from "@/schema";
 import { Transaction } from "@/schema";
+import useInitialName from "@/composables/useInitialName";
 
 const { deleteTransactionsByUserId } = TransactionsService();
 const { deleteUserByUserId, updateName } = UsersService();
@@ -28,12 +27,15 @@ const { calculateAmount, deleteTransaction } = useTransactionsStore();
 const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(useUsersStore());
 const { transaction, initTransaction, amount, transactions } = storeToRefs(useTransactionsStore());
 const userId = route.params.userId;
+const { getInitial } = useInitialName();
+const Avatar = defineAsyncComponent(() => import("@/components/TheAvatar.vue"));
 
 const isEditName: Ref<boolean> = ref(false);
 const isShowOption = ref<boolean>(false);
 const showModal: Ref<boolean> = ref(false);
 const textConfirmation: Ref<string> = ref("");
 const isValid = ref(true);
+const user = ref();
 
 function showOption() {
   return (isShowOption.value = !isShowOption.value);
@@ -53,16 +55,23 @@ async function getOneUser() {
       .single();
     if (error) throw error;
     if (data) {
+      user.value = data as User;
       currentUser.value = data as User;
       currentName.value = data.name;
       currentUsername.value = data.username;
       currentColor.value = data.color_profile;
       transactions.value = [...(data.transactions as Transaction[])];
+      return;
     }
+    return;
   } catch (error) {
     return error;
   }
 }
+const initName = computed(() => {
+  return getInitial(currentName.value);
+});
+
 async function deleteUser() {
   if (textConfirmation.value === currentUser.value.username && isValid) {
     await deleteTransactionsByUserId(userId as string);
@@ -114,7 +123,6 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   await getOneUser();
-
   calculateAmount(transactions.value);
 });
 </script>
@@ -144,25 +152,15 @@ onMounted(async () => {
       </template>
     </AppBar>
     <div class="px-4 mb-7 mx-6">
-      <div v-if="!currentUser" class="flex items-center my-3">
-        <content-loader
-          viewBox="0 0 476 150"
-          :speed="8"
-          primaryColor="#e8e8e8"
-          secondaryColor="#9e9e9e"
-        >
-          <rect x="107" y="34" rx="3" ry="3" width="338" height="37" />
-          <circle cx="46" cy="50" r="41" />
-        </content-loader>
-      </div>
-      <div v-else class="flex flex-col items-center my-3">
-        <TheAvatar
+      <div class="flex flex-col items-center my-3">
+        <Avatar
           @click="isEditName = false"
+          :init="initName"
           :name="currentName"
           :dimension="parseInt('64')"
           :background="currentColor"
         >
-        </TheAvatar>
+        </Avatar>
         <div class="my-4">
           <form @submit.prevent="editName">
             <input
@@ -207,8 +205,12 @@ onMounted(async () => {
         <router-link class="underline" :to="{ name: 'transactions.add' }">create one</router-link>.
       </p>
     </div>
-    <div v-else v-for="transaction in currentUser.transactions" :key="transaction.trx_id">
-      <CardTransaction :transaction="transaction"></CardTransaction>
+    <div v-else>
+      <CardTransaction
+        v-for="transaction in currentUser.transactions"
+        :key="transaction.trx_id"
+        :transaction="transaction"
+      ></CardTransaction>
     </div>
     <!-- Modal -->
     <vue-final-modal

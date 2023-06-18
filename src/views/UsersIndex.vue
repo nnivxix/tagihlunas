@@ -38,44 +38,19 @@
         @click="sortByName"
       />
     </div>
-    <div v-if="loading">
-      <content-loader
-        viewBox="0 0 476 150"
-        :speed="8"
-        primaryColor="#e8e8e8"
-        secondaryColor="#9e9e9e"
-      >
-        <rect x="114" y="38" rx="3" ry="3" width="200" height="32" />
-        <circle cx="53" cy="57" r="48" />
-      </content-loader>
-    </div>
-    <div v-else>
-      <div v-if="!users.length">
-        <img src="@/assets/nouser.png" alt="no user users" srcset="" />
-        <p class="text-center text-xl">
-          There are no registered users yet.
-          <router-link class="underline" :to="{ name: 'users.add' }">
-            Let's create one.</router-link
-          >
-        </p>
-      </div>
-      <div v-else>
-        <ContactUser
-          v-for="user in users"
-          :key="user.user_id"
-          :user="user"
-          :background="user.color_profile"
-        >
-        </ContactUser>
-      </div>
-    </div>
+    <ContactUser
+      v-for="user in users"
+      :key="user.user_id"
+      :user="user"
+      :background="user.color_profile"
+    >
+    </ContactUser>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
-import { ContentLoader } from "vue-content-loader";
 import { storeToRefs } from "pinia";
 
 import AppBar from "@/components/AppBar.vue";
@@ -86,9 +61,9 @@ import { useAuthUser } from "@/composables/useAuthUser";
 import { User } from "@/schema";
 import { useTransactionsStore } from "@/stores/transactions";
 import { useUsersStore } from "@/stores/users";
-import UsersService from "@/services/supabase/UsersServices";
+import { supabase } from "@/helpers/supabase";
 
-const { getUsers } = UsersService();
+const { user: admin } = useAuthUser();
 const usersStore = useUsersStore();
 const transactionStore = useTransactionsStore();
 const { userLogout } = useAuthUser();
@@ -101,13 +76,12 @@ const { users, usersDuplicate } = storeToRefs(usersStore);
 const getAllUsers = async () => {
   loading.value = true;
   try {
-    if (!users.value.length || !usersDuplicate.value.length) {
-      getUsers().then((result) => {
-        usersStore.getUsers(result);
-      });
-    }
+    const { data } = await supabase.from("users").select().eq("admin_id", admin?.value.id);
+
+    users.value = data as User[];
+    usersDuplicate.value = data as User[];
+
     loading.value = false;
-    return;
   } catch (error) {
     return error;
   }
@@ -138,16 +112,6 @@ usersStore.$patch({
 });
 function resetStateUsers() {
   usersStore.$patch({
-    currentUser: {
-      id: 1,
-      admin_id: "",
-      user_id: "",
-      name: "",
-      username: "",
-      color_profile: "",
-      created_at: "",
-      transactions: [],
-    },
     users: [],
     usersDuplicate: [],
   });
@@ -172,7 +136,7 @@ function addUser() {
   });
 }
 
-onBeforeMount(async () => {
+onMounted(async () => {
   resetStateTransactions();
   resetStateUsers();
   // run function to fetch all data
