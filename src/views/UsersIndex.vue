@@ -114,6 +114,19 @@ function resetStateUsers() {
   usersStore.$patch({
     users: [],
     usersDuplicate: [],
+    currentUser: {
+      id: 1,
+      admin_id: "",
+      user_id: "",
+      name: "",
+      username: "",
+      color_profile: "",
+      created_at: "",
+      transactions: [],
+    },
+    currentName: "",
+    currentUsername: "",
+    currentColor: "",
   });
 }
 function resetStateTransactions() {
