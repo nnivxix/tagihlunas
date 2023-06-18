@@ -51,7 +51,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
-import { ContentLoader } from "vue-content-loader";
 import { storeToRefs } from "pinia";
 
 import AppBar from "@/components/AppBar.vue";
