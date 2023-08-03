@@ -29,7 +29,9 @@
           class="bg-light-lemon p-3 rounded-lg w-full"
         />
         <span class="absolute right-11 mt-3 z-20" @click="hidePswd = !hidePswd">
-          <font-awesome-icon :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'" />
+          <font-awesome-icon
+            :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
+          />
         </span>
       </div>
       <p v-if="errorMsg" class="text-red-700 py-2">{{ errorMsg }}</p>
@@ -43,8 +45,8 @@
     </form>
     <div class="text-center mt-5">
       <p>
-        Haven't you registered yet?
-        <router-link class="underline" to="/register"> register new account</router-link>
+        Want to use demo account?
+        <button @click="useDemoAccount" class="text-blue-700">click here</button>
       </p>
     </div>
   </div>
@@ -79,6 +81,11 @@ const handleLogin = async () => {
     errorMsg.value = "Check again email or password!";
     return error;
   }
+};
+
+const useDemoAccount = () => {
+  formSignIn.email = import.meta.env.VITE_DEMO_EMAIL;
+  formSignIn.password = import.meta.env.VITE_DEMO_PASSWORD;
 };
 
 watch(formSignIn, () => {
