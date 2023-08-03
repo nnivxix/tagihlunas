@@ -13,9 +13,15 @@
         </button>
       </template>
     </AppBar>
+    <p v-if="isError">error</p>
     <div class="flex flex-col justify-between h-[90vh] mb-4">
       <div v-if="!loading" id="info" class="flex flex-col text-dark my-8">
-        <img src="@/assets/check-circle-rounded.svg" alt="success" srcset="" class="h-32" />
+        <img
+          src="@/assets/check-circle-rounded.svg"
+          alt="success"
+          srcset=""
+          class="h-32"
+        />
         <h1 class="text-center font-semibold text-2xl mt-8">Transaction Success</h1>
       </div>
       <div id="detail" class="px-2 text-dark grid grid-cols-2">
@@ -58,7 +64,10 @@
         </div>
 
         <!-- modal -->
-        <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
+        <vue-final-modal
+          v-model="showModal"
+          classes="flex justify-center items-center w-full"
+        >
           <ModalDelete
             type-data="transaction"
             cancel="Back"
@@ -117,15 +126,16 @@ const { isLoggedIn } = useAuthUser();
 
 const showModal: Ref<boolean> = ref(false);
 const loading: Ref<boolean> = ref(true);
+const isError = ref(false);
 const detailTransaction = ref();
 const { transaction, initTransaction } = storeToRefs(useTransactionsStore());
 const { currentName } = storeToRefs(usersStore);
 
 const shareOption = reactive({
   title: `This is transaction of ${currentName.value}`,
-  text: `This is transaction of ${currentName.value} you can check the detail transaction from ${
-    useBrowserLocation().value.href
-  }`,
+  text: `This is transaction of ${
+    currentName.value
+  } you can check the detail transaction from ${useBrowserLocation().value.href}`,
   url: isClient ? useBrowserLocation().value.href : "",
 });
 const { share, isSupported } = useShare(shareOption);
@@ -143,21 +153,28 @@ const startShare = () => {
 
 async function getDetailTransaction() {
   try {
-    const { data } = await supabase
+    const { data, error, status } = await supabase
       .from("transactions")
       .select(
-        `id, user_id, flow, amount, wallet, trx_id, message, created_at, 
+        `id, user_id, flow, amount, wallet, trx_id, message, created_at,
       users (
         id, admin_id, created_at, name, user_id, username, color_profile
       )
-    `,
+    `
       )
       .eq("trx_id", trxId)
       .single();
+    if (status === 406) {
+      isError.value = true;
+      throw error;
+    }
     detailTransaction.value = data;
-
     loading.value = false;
   } catch (error) {
+    // console.log(status);
+    // router.push({
+    //   name: "notfound.page",
+    // });
     return error;
   }
 }

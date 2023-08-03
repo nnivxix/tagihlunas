@@ -23,7 +23,6 @@
     ],
     "rules": {
         "no-console": "error",
-        "semi": "error",
-        "comma-dangle": ["error", "always-multiline"]
+        "semi": "error"
     }
 }

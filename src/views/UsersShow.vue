@@ -43,7 +43,7 @@ function showOption() {
 
 async function getOneUser() {
   try {
-    const { data, error } = await supabase
+    const { data, error, status } = await supabase
       .from("users")
       .select(
         `id, admin_id, created_at, name, user_id, username, color_profile,
@@ -53,6 +53,7 @@ async function getOneUser() {
       )
       .eq("user_id", userId)
       .single();
+    console.log(status);
     if (error) throw error;
     if (data) {
       user.value = data as User;
@@ -65,6 +66,9 @@ async function getOneUser() {
     }
     return;
   } catch (error) {
+    // router.push({
+    //   name: "notfound.page",
+    // });
     return error;
   }
 }
