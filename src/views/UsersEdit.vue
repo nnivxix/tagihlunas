@@ -55,7 +55,6 @@
 import { ref, reactive, computed, Ref, onBeforeMount, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { minLength, required } from "@vuelidate/validators";
-import { useLocalStorage } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 
