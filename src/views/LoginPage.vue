@@ -89,11 +89,6 @@ const useDemoAccount = () => {
   const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD;
   formSignIn.email = DEMO_EMAIL;
   formSignIn.password = DEMO_PASSWORD;
-
-  console.log({
-    DEMO_EMAIL,
-    DEMO_PASSWORD,
-  });
 };
 
 watch(formSignIn, () => {
