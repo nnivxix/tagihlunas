@@ -10,8 +10,7 @@ export function useAuthUser() {
       password,
     });
 
-    if (error) throw error;
-    return data;
+    return { data, error };
   };
   const userLogout = async () => {
     await supabase.auth.signOut();
