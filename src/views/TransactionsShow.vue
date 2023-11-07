@@ -15,7 +15,12 @@
     </AppBar>
     <div class="flex flex-col justify-between h-[90vh] mb-4">
       <div v-if="!loading" id="info" class="flex flex-col text-dark my-8">
-        <img src="@/assets/check-circle-rounded.svg" alt="success" srcset="" class="h-32" />
+        <img
+          src="@/assets/check-circle-rounded.svg"
+          alt="success"
+          srcset=""
+          class="h-32"
+        />
         <h1 class="text-center font-semibold text-2xl mt-8">Transaction Success</h1>
       </div>
       <div id="detail" class="px-2 text-dark grid grid-cols-2">
@@ -25,11 +30,15 @@
         </p>
         <p class="pt-2">Due date</p>
         <p class="pt-2 text-right font-semibold">
-          {{ timeFormated(detailTransaction?.created_at as string, "YYYY-MM-DD") }}
+          {{
+            timeFormated(detailTransaction?.created_at as string, "YYYY-MM-DD")
+          }}
         </p>
         <p class="pt-2">Time</p>
         <p class="pt-2 text-right font-semibold">
-          {{ timeFormated(detailTransaction?.created_at as string, "HH:mm:ss") }}
+          {{
+            timeFormated(detailTransaction?.created_at as string, "HH:mm:ss")
+          }}
         </p>
         <p class="pt-2">Transaction id</p>
 
@@ -58,7 +67,10 @@
         </div>
 
         <!-- modal -->
-        <vue-final-modal v-model="showModal" classes="flex justify-center items-center w-full">
+        <vue-final-modal
+          v-model="showModal"
+          classes="flex justify-center items-center w-full"
+        >
           <ModalDelete
             type-data="transaction"
             cancel="Back"
@@ -92,7 +104,6 @@
 import { onBeforeMount, ref, reactive, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
 import { useClipboard, useBrowserLocation, useShare } from "@vueuse/core";
-import { isClient } from "@vueuse/shared";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
@@ -123,10 +134,10 @@ const { currentName } = storeToRefs(usersStore);
 
 const shareOption = reactive({
   title: `This is transaction of ${currentName.value}`,
-  text: `This is transaction of ${currentName.value} you can check the detail transaction from ${
-    useBrowserLocation().value.href
-  }`,
-  url: isClient ? useBrowserLocation().value.href : "",
+  text: `This is transaction of ${
+    currentName.value
+  } you can check the detail transaction from ${useBrowserLocation().value.href}`,
+  url: useBrowserLocation().value.href ?? "",
 });
 const { share, isSupported } = useShare(shareOption);
 const startShare = () => {
@@ -146,11 +157,11 @@ async function getDetailTransaction() {
     const { data } = await supabase
       .from("transactions")
       .select(
-        `id, user_id, flow, amount, wallet, trx_id, message, created_at, 
+        `id, user_id, flow, amount, wallet, trx_id, message, created_at,
       users (
         id, admin_id, created_at, name, user_id, username, color_profile
       )
-    `,
+    `
       )
       .eq("trx_id", trxId)
       .single();
