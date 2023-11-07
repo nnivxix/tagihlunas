@@ -2,7 +2,8 @@
   <div class="mx-6">
     <AppBar titleapp="tagihlunas" />
     <h1 class="text-2xl py-5 text-dark">
-      Welcome back, please sign in to <span class="font-medium">tagihlunas</span>
+      Welcome back, please sign in to
+      <span class="font-medium">tagihlunas</span>
     </h1>
 
     <form class="flex flex-col" @submit.prevent="handleLogin">
@@ -84,8 +85,10 @@ const handleLogin = async () => {
 };
 
 const useDemoAccount = () => {
-  formSignIn.email = import.meta.env.VITE_DEMO_EMAIL;
-  formSignIn.password = import.meta.env.VITE_DEMO_PASSWORD;
+  const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL;
+  const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD;
+  formSignIn.email = DEMO_EMAIL;
+  formSignIn.password = DEMO_PASSWORD;
 };
 
 watch(formSignIn, () => {
