@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, Ref, onBeforeMount, watch } from "vue";
+import { ref, reactive, computed, Ref, onBeforeMount, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { minLength, required } from "@vuelidate/validators";
 import { useLocalStorage } from "@vueuse/core";
@@ -71,14 +71,14 @@ const { pickColor } = usePickColor();
 const router = useRouter();
 const userId = useRoute().params.userId;
 const { updateUser: updateUserStore } = useUsersStore();
-const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(useUsersStore());
-
-const formUpdateUser = ref(
-  useLocalStorage("currentUser", <User>{
-    username: currentUsername.value,
-    name: currentName.value,
-  }),
+const { currentName, currentUsername, currentColor, currentUser } = storeToRefs(
+  useUsersStore()
 );
+
+const formUpdateUser = reactive({
+  username: currentUsername.value,
+  name: currentName.value,
+});
 const erroMsg: Ref<string> = ref("");
 const isChange: Ref<boolean> = ref(false);
 const rules = computed(() => ({
@@ -97,15 +97,15 @@ async function HandleUpdateUser() {
       const color_profile = pickColor();
       await updateUser(
         userId as string,
-        formUpdateUser.value.name,
-        formUpdateUser.value.username,
-        color_profile,
+        formUpdateUser.name,
+        formUpdateUser.username,
+        color_profile
       );
       await updateUserStore(
         userId as string,
-        formUpdateUser.value.name,
-        formUpdateUser.value.username,
-        color_profile,
+        formUpdateUser.name,
+        formUpdateUser.username,
+        color_profile
       );
       router.back();
     }
@@ -122,17 +122,20 @@ async function getOneUser() {
       .select(`id, admin_id, created_at, name, user_id, username, color_profile`)
       .eq("user_id", userId)
       .single();
+
     currentUser.value = data as User;
     currentName.value = currentUser.value.name;
     currentUsername.value = currentUser.value.username;
     currentColor.value = currentUser.value.color_profile;
+    formUpdateUser.name = currentUser.value.name;
+    formUpdateUser.username = currentUser.value.username;
 
     localStorage.setItem(
       "currentUser",
       JSON.stringify({
         name: currentName.value,
         username: currentUsername.value,
-      }),
+      })
     );
   } catch (error) {
     return error;
@@ -140,8 +143,8 @@ async function getOneUser() {
 }
 watch(formUpdateUser, () => {
   if (
-    formUpdateUser.value.username !== currentUsername.value ||
-    formUpdateUser.value.name !== currentName.value
+    formUpdateUser.username !== currentUsername.value ||
+    formUpdateUser.name !== currentName.value
   ) {
     isChange.value = true;
   } else {
