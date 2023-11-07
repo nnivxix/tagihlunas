@@ -41,6 +41,9 @@ dependencies:
   v-money-spinner:
     specifier: ^1.2.3
     version: 1.2.3(vue@3.3.8)
+  v-money3:
+    specifier: ^3.24.0
+    version: 3.24.0(vue@3.3.8)
   vue:
     specifier: ^3.3.8
     version: 3.3.8(typescript@4.9.4)
@@ -2657,12 +2660,12 @@ packages:
     peerDependencies:
       vue: ^3.2.0
     dependencies:
-      v-money3: 3.22.3(vue@3.3.8)
+      v-money3: 3.24.0(vue@3.3.8)
       vue: 3.3.8(typescript@4.9.4)
     dev: false
 
-  /v-money3@3.22.3(vue@3.3.8):
-    resolution: {integrity: sha512-eLl+tg6iffrEBt55u6mIlzx+rvxJQLQYGaNTvwh9S4hzgz8oIhbTfNOsgHJjaoLD86zGuH+22YDELy4teddV5g==}
+  /v-money3@3.24.0(vue@3.3.8):
+    resolution: {integrity: sha512-ZPlmmH+EV6BmdnQF9/GIhbRf1C9smElrSsq847jlHonsqYxEq+GsAc705Rn+iL59XLgZFC+OUSI+qr0aT3gjuw==}
     peerDependencies:
       vue: '>= 3.2.0'
     dependencies:

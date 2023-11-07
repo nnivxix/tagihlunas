@@ -24,6 +24,7 @@
     "nanoid": "^4.0.0",
     "pinia": "^2.1.7",
     "v-money-spinner": "^1.2.3",
+    "v-money3": "^3.24.0",
     "vue": "^3.3.8",
     "vue-content-loader": "^2.0.1",
     "vue-final-modal": "^3.4.11",
