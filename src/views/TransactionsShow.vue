@@ -13,8 +13,8 @@
         </button>
       </template>
     </AppBar>
-    <div class="flex flex-col justify-between h-[90vh] mb-4">
-      <div v-if="!loading" id="info" class="flex flex-col text-dark my-8">
+    <div v-if="!loading" class="flex flex-col justify-between h-[90vh] mb-4">
+      <div id="info" class="flex flex-col text-dark my-8">
         <img
           src="@/assets/check-circle-rounded.svg"
           alt="success"
@@ -26,7 +26,7 @@
       <div id="detail" class="px-2 text-dark grid grid-cols-2">
         <p class="pt-2">Name</p>
         <p class="pt-2 text-right font-semibold">
-          {{ detailTransaction?.users.name }}
+          {{ detailTransaction?.users?.name }}
         </p>
         <p class="pt-2">Due date</p>
         <p class="pt-2 text-right font-semibold">
@@ -115,20 +115,20 @@ import { useAuthUser } from "@/composables/useAuthUser";
 import AppBar from "@/components/AppBar.vue";
 import ModalDelete from "@/components/ModalDelete.vue";
 import { timeFormated } from "@/composables/useTime";
-import { supabase } from "@/helpers/supabase";
+import { Transaction } from "@/schema";
 
-const { deleteTransactionById } = TransactionsService();
+const { deleteTransactionById, getTransactionById } = TransactionsService();
 const { copy } = useClipboard();
 const route = useRoute();
 const router = useRouter();
-const trxId = route.params.trxId;
+const { trxId } = route.params;
 const { deleteTransaction: deleteTransactionStore } = useTransactionsStore();
 const usersStore = useUsersStore();
 const { isLoggedIn } = useAuthUser();
 
 const showModal: Ref<boolean> = ref(false);
 const loading: Ref<boolean> = ref(true);
-const detailTransaction = ref();
+const detailTransaction = ref<Transaction | null>(null);
 const { transaction, initTransaction } = storeToRefs(useTransactionsStore());
 const { currentName } = storeToRefs(usersStore);
 
@@ -154,18 +154,8 @@ const startShare = () => {
 
 async function getDetailTransaction() {
   try {
-    const { data } = await supabase
-      .from("transactions")
-      .select(
-        `id, user_id, flow, amount, wallet, trx_id, message, created_at,
-      users (
-        id, admin_id, created_at, name, user_id, username, color_profile
-      )
-    `
-      )
-      .eq("trx_id", trxId)
-      .single();
-    detailTransaction.value = data;
+    const data = await getTransactionById(trxId as string);
+    detailTransaction.value = data as Transaction;
 
     loading.value = false;
   } catch (error) {

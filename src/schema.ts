@@ -24,4 +24,7 @@ export interface Transaction {
   trx_id: string;
   message?: string;
   created_at?: string;
+  users?: {
+    name: string;
+  };
 }
