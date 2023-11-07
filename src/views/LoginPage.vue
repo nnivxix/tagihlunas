@@ -70,18 +70,17 @@ const formSignIn = reactive({
 const isValid = ref(false);
 
 const handleLogin = async () => {
-  try {
-    await userLogin({
-      email: formSignIn.email,
-      password: formSignIn.password,
-    });
-    await router.push({
-      name: "users.index",
-    });
-  } catch (error) {
-    errorMsg.value = "Check again email or password!";
-    return error;
+  const { error } = await userLogin({
+    email: formSignIn.email,
+    password: formSignIn.password,
+  });
+  if (error) {
+    errorMsg.value = error.message;
+    return;
   }
+  await router.push({
+    name: "users.index",
+  });
 };
 
 const useDemoAccount = () => {
