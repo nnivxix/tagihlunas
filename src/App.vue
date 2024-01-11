@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="md:max-w-4xl mx-auto">
     <router-view></router-view>
   </div>
 </template>
