@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch, onMounted, defineAsyncComponent, computed } from "vue";
+import {
+  ref,
+  onBeforeMount,
+  watch,
+  onMounted,
+  defineAsyncComponent,
+  computed,
+} from "vue";
 import type { Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { VueFinalModal } from "vue-final-modal";
@@ -24,8 +31,12 @@ const router = useRouter();
 const route = useRoute();
 const { deleteUser: deleteUserStore } = useUsersStore();
 const { calculateAmount, deleteTransaction } = useTransactionsStore();
-const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(useUsersStore());
-const { transaction, initTransaction, amount, transactions } = storeToRefs(useTransactionsStore());
+const { currentUser, currentName, currentUsername, currentColor } = storeToRefs(
+  useUsersStore()
+);
+const { transaction, initTransaction, amount, transactions } = storeToRefs(
+  useTransactionsStore()
+);
 const userId = route.params.userId;
 const { getInitial } = useInitialName();
 const Avatar = defineAsyncComponent(() => import("@/components/TheAvatar.vue"));
@@ -49,7 +60,7 @@ async function getOneUser() {
         `id, admin_id, created_at, name, user_id, username, color_profile,
         transactions (
           id, user_id, flow, amount, wallet, trx_id, message, created_at
-          )`,
+          )`
       )
       .eq("user_id", userId)
       .single();
@@ -131,14 +142,17 @@ onMounted(async () => {
     <AppBar titleapp="Details" class="mx-6">
       <template #back>
         <button class="justify-self-start" @click="$router.back()">
-          <font-awesome-icon class="h-5" icon="fa-solid fa-arrow-left"></font-awesome-icon>
+          <font-awesome-icon
+            class="h-5"
+            icon="fa-solid fa-arrow-left"
+          ></font-awesome-icon>
         </button>
       </template>
       <template #exit>
-        <button class="justify-self-end" @click="showOption">
+        <button class="justify-self-end relative" @click="showOption">
           <font-awesome-icon class="h-5" icon="fa-solid fa-ellipsis-vertical" />
           <ul
-            class="border absolute right-7 text-right top-12 text-xl bg-white"
+            class="border absolute right-0 top-12 text-xl bg-white"
             :class="{ block: isShowOption, hidden: !isShowOption }"
           >
             <li class="p-3">
@@ -189,20 +203,30 @@ onMounted(async () => {
           </p>
         </div>
       </div>
-      <p id="amount" class="text-4xl font-semibold text-dark py-4" @click="editName">
-        {{ amount.toLocaleString("id-ID", { style: "currency", currency: "IDR" }) }}
+      <p
+        id="amount"
+        class="text-4xl font-semibold text-dark py-4"
+        @click="editName"
+      >
+        {{
+          amount.toLocaleString("id-ID", { style: "currency", currency: "IDR" })
+        }}
       </p>
       <TheButton
         icon="fa-plus"
         title="Add transaction"
-        @button-event="router.push({ name: 'transactions.add', params: { userId: userId } })"
+        @button-event="
+          router.push({ name: 'transactions.add', params: { userId: userId } })
+        "
       ></TheButton>
     </div>
     <div v-if="!currentUser.transactions?.length">
       <img src="@/assets/empty.svg" alt="empty transaction" />
       <p class="text-center text-2xl">
         No transactions yet, let's
-        <router-link class="underline" :to="{ name: 'transactions.add' }">create one</router-link>.
+        <router-link class="underline" :to="{ name: 'transactions.add' }"
+          >create one</router-link
+        >.
       </p>
     </div>
     <div v-else>
