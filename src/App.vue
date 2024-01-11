@@ -1,12 +1,6 @@
 <template>
-  <div class="md:hidden">
+  <div>
     <router-view></router-view>
-  </div>
-  <div class="hidden md:flex items-center text-3xl p-7 font-bold min-h-[100vh]">
-    <p>
-      Sorry, currently the web-app doesn't support desktop mode, please resize your screen to
-      mobile. 🙏📱
-    </p>
   </div>
 </template>
 
