@@ -17,10 +17,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { createPinia } from "pinia";
 import "./style.css";
-import App from "./App.vue";
-import router from "./router";
-import DefaultLayout from "./layouts/DefaultLayout.vue";
-import GuestLayout from "./layouts/GuestLayout.vue";
+import App from "@/App.vue";
+import router from "@/router";
+import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import GuestLayout from "@/layouts/GuestLayout.vue";
 import Icon from "@/components/Icon.vue";
 
 library.add(

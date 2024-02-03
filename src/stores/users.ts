@@ -24,7 +24,13 @@ export const useUsersStore = defineStore("users", () => {
     usersDuplicate.value.push(...data);
     users.value.push(...data);
   }
-  async function addUser({ admin_id, user_id, name, username, color_profile }: User) {
+  async function addUser({
+    admin_id,
+    user_id,
+    name,
+    username,
+    color_profile,
+  }: User) {
     users.value.push({
       admin_id,
       user_id,
@@ -40,7 +46,12 @@ export const useUsersStore = defineStore("users", () => {
     users.value.splice(id, 1);
     return users;
   }
-  async function updateUser(userId: string, name: string, username: string, color_profile: string) {
+  async function updateUser(
+    userId: string,
+    name: string,
+    username: string,
+    color_profile: string
+  ) {
     const id = users.value.findIndex((user) => user.user_id == userId);
     const user: User = {
       id: currentUser.value?.id,
@@ -58,6 +69,24 @@ export const useUsersStore = defineStore("users", () => {
     users.value.splice(id, 1, user);
     return users;
   }
+
+  function $reset() {
+    users.value = [];
+    usersDuplicate.value = [];
+    currentUser.value = {
+      id: 1,
+      admin_id: "",
+      user_id: "",
+      name: "",
+      username: "",
+      color_profile: "",
+      created_at: "",
+      transactions: [],
+    };
+    currentName.value = "";
+    currentUsername.value = "";
+    currentColor.value = "";
+  }
   return {
     users,
     usersDuplicate,
@@ -69,5 +98,6 @@ export const useUsersStore = defineStore("users", () => {
     addUser,
     deleteUser,
     updateUser,
+    $reset,
   };
 });

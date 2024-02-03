@@ -117,31 +117,6 @@ function sortByName() {
 usersStore.$patch({
   currentName: "",
 });
-function resetStateUsers() {
-  usersStore.$patch({
-    users: [],
-    usersDuplicate: [],
-    currentUser: {
-      id: 1,
-      admin_id: "",
-      user_id: "",
-      name: "",
-      username: "",
-      color_profile: "",
-      created_at: "",
-      transactions: [],
-    },
-    currentName: "",
-    currentUsername: "",
-    currentColor: "",
-  });
-}
-function resetStateTransactions() {
-  //reset transactionStore
-  transactionStore.$patch({
-    transactions: [],
-  });
-}
 
 const handleLogout = async () => {
   await userLogout();
@@ -157,8 +132,8 @@ function addUser() {
 }
 
 onMounted(async () => {
-  resetStateTransactions();
-  resetStateUsers();
+  transactionStore.$reset();
+  usersStore.$reset();
   // run function to fetch all data
   await getAllUsers();
 });

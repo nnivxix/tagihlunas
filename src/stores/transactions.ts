@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { Transaction } from "@/schema";
 import { reduce, remove } from "lodash";
 
-export const useTransactionsStore = defineStore("transaction", () => {
+export const useTransactionsStore = defineStore("transactions", () => {
   const transactions: Ref<Transaction[]> = ref([]);
   const initTransaction = {
     id: 0,
@@ -25,7 +25,7 @@ export const useTransactionsStore = defineStore("transaction", () => {
       function (sum, n): number {
         return sum + n.amount;
       },
-      0,
+      0
     );
     return amount.value;
   }
@@ -33,7 +33,14 @@ export const useTransactionsStore = defineStore("transaction", () => {
     transactions.value = []; // empty first then add from supabase
     transactions.value.push(...data);
   }
-  async function addTransaction({ user_id, flow, amount, wallet, trx_id, message }: Transaction) {
+  async function addTransaction({
+    user_id,
+    flow,
+    amount,
+    wallet,
+    trx_id,
+    message,
+  }: Transaction) {
     transactions.value.push({
       id: 0,
       // id: transactions.value.findLastIndex((e : Transactions) => e.id) + 1,
@@ -47,7 +54,9 @@ export const useTransactionsStore = defineStore("transaction", () => {
     });
   }
   async function deleteTransaction(trxId: string) {
-    const id = transactions.value.findIndex((transaction) => transaction.trx_id == trxId);
+    const id = transactions.value.findIndex(
+      (transaction) => transaction.trx_id == trxId
+    );
     transactions.value.splice(id, 1);
     return transactions;
   }
@@ -55,6 +64,10 @@ export const useTransactionsStore = defineStore("transaction", () => {
     remove(transactions.value, (n: Transaction) => {
       return n.user_id == userId;
     });
+  }
+
+  function $reset() {
+    transactions.value = [];
   }
 
   return {
@@ -67,5 +80,6 @@ export const useTransactionsStore = defineStore("transaction", () => {
     addTransaction,
     deleteTransaction,
     deleteTransactionsByUserId,
+    $reset,
   };
 });
