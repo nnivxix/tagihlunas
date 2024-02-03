@@ -1,15 +1,22 @@
 <template>
-  <div class="mx-6">
+  <DefaultLayout>
     <AppBar titleapp="Detail">
       <template #back>
-        <button v-if="isLoggedIn()" class="justify-self-start" @click="$router.back()">
+        <button
+          v-if="isLoggedIn()"
+          class="justify-self-start"
+          @click="$router.back()"
+        >
           <font-awesome-icon icon="fa-solid fa-x" class="h-5" />
         </button>
         <button v-else class="justify-self-start"></button>
       </template>
       <template #exit>
         <button class="justify-self-end" @click="startShare">
-          <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" class="h-5" />
+          <font-awesome-icon
+            icon="fa-solid fa-arrow-up-from-bracket"
+            class="h-5"
+          />
         </button>
       </template>
     </AppBar>
@@ -21,7 +28,9 @@
           srcset=""
           class="h-32"
         />
-        <h1 class="text-center font-semibold text-2xl mt-8">Transaction Success</h1>
+        <h1 class="text-center font-semibold text-2xl mt-8">
+          Transaction Success
+        </h1>
       </div>
       <div id="detail" class="px-2 text-dark grid grid-cols-2">
         <p class="pt-2">Name</p>
@@ -97,7 +106,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script setup lang="ts">
@@ -136,7 +145,9 @@ const shareOption = reactive({
   title: `This is transaction of ${currentName.value}`,
   text: `This is transaction of ${
     currentName.value
-  } you can check the detail transaction from ${useBrowserLocation().value.href}`,
+  } you can check the detail transaction from ${
+    useBrowserLocation().value.href
+  }`,
   url: useBrowserLocation().value.href ?? "",
 });
 const { share, isSupported } = useShare(shareOption);

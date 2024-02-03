@@ -1,12 +1,16 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="mx-5">
+  <DefaultLayout>
     <AppBar titleapp="List Users">
       <template #back>
         <span></span>
       </template>
       <template #exit>
-        <button class="justify-self-end" @click="handleLogout" title="log out button">
+        <button
+          class="justify-self-end"
+          @click="handleLogout"
+          title="log out button"
+        >
           <font-awesome-icon
             class="h-5 p-3 cursor-pointer text-dark"
             icon="fa-solid fa-arrow-right-from-bracket text-lg"
@@ -14,7 +18,11 @@
         </button>
       </template>
     </AppBar>
-    <TheButton icon="fa-plus" title="Add User" @button-event="addUser"></TheButton>
+    <TheButton
+      icon="fa-plus"
+      title="Add User"
+      @button-event="addUser"
+    ></TheButton>
     <div class="flex items-center">
       <input
         type="text"
@@ -45,7 +53,7 @@
       :background="user.color_profile"
     >
     </ContactUser>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script setup lang="ts">
@@ -76,7 +84,10 @@ const { users, usersDuplicate } = storeToRefs(usersStore);
 const getAllUsers = async () => {
   loading.value = true;
   try {
-    const { data } = await supabase.from("users").select().eq("admin_id", admin?.value.id);
+    const { data } = await supabase
+      .from("users")
+      .select()
+      .eq("admin_id", admin?.value.id);
 
     users.value = data as User[];
     usersDuplicate.value = data as User[];
@@ -97,7 +108,7 @@ function filterUser() {
     users.value = usersDuplicate.value;
   } else {
     users.value = usersDuplicate.value.filter((n) =>
-      n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase()),
+      n.name.toLocaleLowerCase().includes(queryName.value.toLocaleLowerCase())
     );
   }
 }

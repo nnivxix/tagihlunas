@@ -1,6 +1,5 @@
 <template>
-  <div class="mx-6">
-    <AppBar titleapp="tagihlunas" />
+  <GuestLayout>
     <h1 class="text-2xl py-5 text-dark">
       Welcome back, please sign in to
       <span class="font-medium">tagihlunas</span>
@@ -20,7 +19,7 @@
         <label for="password" class="text-xl text-dark">password</label>
         <span class="text-purple-600 cursor-pointer">forgot password?</span>
       </div>
-      <div class="flex">
+      <div class="flex relative">
         <input
           :type="hidePswd ? 'password' : 'text'"
           name="password"
@@ -29,7 +28,7 @@
           :class="{ 'mb-3': errorMsg, 'mb-12': !errorMsg }"
           class="bg-light-lemon p-3 rounded-lg w-full"
         />
-        <span class="absolute right-11 mt-3 z-20" @click="hidePswd = !hidePswd">
+        <span class="absolute right-4 mt-3 z-20" @click="hidePswd = !hidePswd">
           <font-awesome-icon
             :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
           />
@@ -47,16 +46,17 @@
     <div class="text-center mt-5">
       <p>
         Want to use demo account?
-        <button @click="useDemoAccount" class="text-blue-700">click here</button>
+        <button @click="useDemoAccount" class="text-blue-700">
+          click here
+        </button>
       </p>
     </div>
-  </div>
+  </GuestLayout>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import AppBar from "@/components/AppBar.vue";
 import { useAuthUser } from "@/composables/useAuthUser";
 
 const { userLogin } = useAuthUser();

@@ -1,7 +1,39 @@
+<script setup lang="ts">
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthUser } from "@/composables/useAuthUser";
+
+const { userRegister } = useAuthUser();
+const router = useRouter();
+const errorMsg = ref("");
+const hidePswd = ref(true);
+const formRegist = reactive({
+  email: "",
+  password: "",
+  name: "",
+});
+
+const handleLogin = async () => {
+  try {
+    await userRegister({
+      email: formRegist.email,
+      password: formRegist.password,
+      name: formRegist.name,
+    });
+    await router.push({
+      name: "users.index",
+    });
+  } catch (error) {
+    return error;
+  }
+};
+</script>
+
 <template>
-  <div class="mx-6">
-    <AppBar titleapp="tagihlunas" />
-    <h1 class="text-2xl py-5 text-dark">Welcome to <span class="font-medium">tagihlunas</span></h1>
+  <GuestLayout>
+    <h1 class="text-2xl py-5 text-dark">
+      Welcome to <span class="font-medium">tagihlunas</span>
+    </h1>
 
     <form class="flex flex-col" @submit.prevent="handleLogin">
       <label for="name" class="text-xl text-dark">name</label>
@@ -37,7 +69,9 @@
           class="bg-light-lemon p-3 rounded-lg w-full"
         />
         <span class="absolute right-11 mt-3 z-20" @click="hidePswd = !hidePswd">
-          <font-awesome-icon :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'" />
+          <font-awesome-icon
+            :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
+          />
         </span>
       </div>
       <p v-if="errorMsg" class="text-red-700 py-2">{{ errorMsg }}</p>
@@ -55,39 +89,5 @@
         <router-link class="underline" to="/login"> please login</router-link>
       </p>
     </div>
-  </div>
+  </GuestLayout>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import AppBar from "@/components/AppBar.vue";
-import { useAuthUser } from "@/composables/useAuthUser";
-
-const { userRegister } = useAuthUser();
-const router = useRouter();
-const errorMsg = ref("");
-const hidePswd = ref(true);
-const formRegist = reactive({
-  email: "",
-  password: "",
-  name: "",
-});
-
-const handleLogin = async () => {
-  try {
-    await userRegister({
-      email: formRegist.email,
-      password: formRegist.password,
-      name: formRegist.name,
-    });
-    await router.push({
-      name: "users.index",
-    });
-  } catch (error) {
-    return error;
-  }
-};
-</script>
-
-<style lang="scss" scoped></style>
