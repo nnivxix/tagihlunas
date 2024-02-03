@@ -20,6 +20,7 @@ import "./style.css";
 import App from "./App.vue";
 import router from "./router";
 import DefaultLayout from "./layouts/DefaultLayout.vue";
+import GuestLayout from "./layouts/GuestLayout.vue";
 
 library.add(
   faEye,
@@ -43,4 +44,5 @@ app.use(pinia);
 app.use(router);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.component("DefaultLayout", DefaultLayout);
+app.component("GuestLayout", GuestLayout);
 app.mount("#app");
