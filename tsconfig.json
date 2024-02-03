@@ -22,7 +22,8 @@
       "../../node_modules/@types"
     ]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "./src/**/*", ],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "./src/**/*", "src"],
+  "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }],
 
 }
