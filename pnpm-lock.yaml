@@ -32,6 +32,9 @@ dependencies:
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
+  lucide-vue-next:
+    specifier: ^0.321.0
+    version: 0.321.0(vue@3.4.15)
   nanoid:
     specifier: ^4.0.0
     version: 4.0.0
@@ -2422,6 +2425,14 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lucide-vue-next@0.321.0(vue@3.4.15):
+    resolution: {integrity: sha512-r4IXuXuFneX2tAJF9TxXY/X5J0zIblI/pBPMR5vcAtDFVAKwWHoGSvCMk3dkH2dmD/uUZfNZiLI5fa07g4pbMA==}
+    peerDependencies:
+      vue: '>=3.0.1'
+    dependencies:
+      vue: 3.4.15(typescript@5.3.3)
+    dev: false
 
   /magic-string@0.30.5:
     resolution: {integrity: sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==}

@@ -21,6 +21,7 @@ import App from "./App.vue";
 import router from "./router";
 import DefaultLayout from "./layouts/DefaultLayout.vue";
 import GuestLayout from "./layouts/GuestLayout.vue";
+import Icon from "@/components/Icon.vue";
 
 library.add(
   faEye,
@@ -45,4 +46,5 @@ app.use(router);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.component("DefaultLayout", DefaultLayout);
 app.component("GuestLayout", GuestLayout);
+app.component("Icon", Icon);
 app.mount("#app");

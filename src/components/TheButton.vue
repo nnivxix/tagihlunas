@@ -1,8 +1,14 @@
+<script setup lang="ts">
+const { icon, title } = defineProps<{
+  icon: string;
+  title: string;
+}>();
+</script>
 <template>
-  <button class="bg-lemon text-lg px-2 py-2 pr-4 rounded-md text-dark font-bold" @click="$emit('button-event')">
-    <font-awesome-icon :icon="'fa-solid '+ icon" class="mr-2"></font-awesome-icon> {{ title }}
+  <button
+    class="bg-lemon text-lg px-2 py-2 pr-4 rounded-md font-semibold text-dark flex items-center"
+    @click="$emit('button-event')"
+  >
+    <Icon :name="icon" defaultClass="mr-2"></Icon> {{ title }}
   </button>
 </template>
-<script setup lang="ts">
-defineProps(['icon', 'title']);
-</script>

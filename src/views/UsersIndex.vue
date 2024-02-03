@@ -18,11 +18,7 @@
         </button>
       </template>
     </AppBar>
-    <TheButton
-      icon="fa-plus"
-      title="Add User"
-      @button-event="addUser"
-    ></TheButton>
+    <TheButton icon="Plus" title="Add User" @button-event="addUser"></TheButton>
     <div class="flex items-center">
       <input
         type="text"
