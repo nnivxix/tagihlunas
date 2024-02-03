@@ -1,14 +1,22 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="mx-6">
+  <DefaultLayout>
     <AppBar titleapp="Add User">
       <template #back>
-        <button class="justify-self-start" @click="$router.push({ name: 'users.index' })">
+        <button
+          class="justify-self-start"
+          @click="$router.push({ name: 'users.index' })"
+        >
           <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
         </button>
       </template>
     </AppBar>
-    <form class="flex flex-col" @submit.prevent="HandleAddUser" action="/users" method="POST">
+    <form
+      class="flex flex-col"
+      @submit.prevent="HandleAddUser"
+      action="/users"
+      method="POST"
+    >
       <label for="name" class="text-xl text-dark">name</label>
       <input
         type="name"
@@ -47,7 +55,7 @@
         {{ textButton }}
       </button>
     </form>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script setup lang="ts">

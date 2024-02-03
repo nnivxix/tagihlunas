@@ -138,7 +138,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div>
+  <DefaultLayout>
     <AppBar titleapp="Details" class="mx-6">
       <template #back>
         <button class="justify-self-start" @click="$router.back()">
@@ -267,7 +267,7 @@ onMounted(async () => {
         </div>
       </ModalDelete>
     </vue-final-modal>
-  </div>
+  </DefaultLayout>
 </template>
 
 <style scoped></style>

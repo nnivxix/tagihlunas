@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="mx-6">
+  <DefaultLayout>
     <AppBar titleapp="Edit User">
       <template #back>
         <button class="justify-self-start" @click="$router.back()">
@@ -48,7 +48,7 @@
         Update User
       </button>
     </form>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script setup lang="ts">
@@ -118,7 +118,9 @@ async function getOneUser() {
   try {
     const { data } = await supabase
       .from("users")
-      .select(`id, admin_id, created_at, name, user_id, username, color_profile`)
+      .select(
+        `id, admin_id, created_at, name, user_id, username, color_profile`
+      )
       .eq("user_id", userId)
       .single();
 
