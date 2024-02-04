@@ -12,9 +12,6 @@
     "lint-fix": "eslint ./src --fix"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.2.1",
-    "@fortawesome/free-solid-svg-icons": "^6.2.1",
-    "@fortawesome/vue-fontawesome": "^3.0.2",
     "@supabase/supabase-js": "^2.4.0",
     "@types/lodash": "^4.14.191",
     "@vuelidate/core": "^2.0.0",
