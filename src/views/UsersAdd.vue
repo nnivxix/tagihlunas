@@ -1,63 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
-<template>
-  <DefaultLayout>
-    <AppBar titleapp="Add User">
-      <template #back>
-        <button
-          class="justify-self-start"
-          @click="$router.push({ name: 'users.index' })"
-        >
-          <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
-        </button>
-      </template>
-    </AppBar>
-    <form
-      class="flex flex-col"
-      @submit.prevent="HandleAddUser"
-      action="/users"
-      method="POST"
-    >
-      <label for="name" class="text-xl text-dark">name</label>
-      <input
-        type="name"
-        name="name"
-        id="name"
-        class="bg-light-lemon p-2 rounded-lg"
-        placeholder="John"
-        v-model.trim="formAddUser.name"
-      />
-      <div v-if="v$.name.$error">
-        <p class="text-red-500" v-for="e in v$.name.$errors" :key="e.$uid">
-          {{ e.$message }}
-        </p>
-      </div>
-
-      <label for="username" class="text-xl mt-5 text-dark">username</label>
-      <input
-        type="text"
-        name="username"
-        id="username"
-        class="bg-light-lemon p-2 rounded-lg"
-        placeholder="john123"
-        v-model.trim="formAddUser.username"
-      />
-      <div v-if="v$.username.$error">
-        <p class="text-red-500" v-for="e in v$.username.$errors" :key="e.$uid">
-          {{ e.$message }}
-        </p>
-      </div>
-      <p v-if="erroMsg" class="text-red-500">Username has been taken.</p>
-      <button
-        class="bg-lemon p-3 mt-5 font-bold text-dark rounded-lg"
-        :disabled="!isValid"
-        :class="{ 'bg-gray-300': !isValid, 'text-gray-500': !isValid }"
-      >
-        {{ textButton }}
-      </button>
-    </form>
-  </DefaultLayout>
-</template>
-
 <script setup lang="ts">
 import { ref, reactive, computed, Ref, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
@@ -119,7 +59,6 @@ async function HandleAddUser() {
         name: "users.index",
       });
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     erroMsg.value = error.message;
     return error;
@@ -134,3 +73,56 @@ watch(formAddUser, () => {
   }
 });
 </script>
+<template>
+  <DefaultLayout>
+    <AppBar titleapp="Add User">
+      <template #back>
+        <button
+          class="justify-self-start"
+          @click="$router.push({ name: 'users.index' })"
+        >
+          <Icon name="ArrowLeft" />
+        </button>
+      </template>
+    </AppBar>
+    <form class="flex flex-col" @submit.prevent="HandleAddUser">
+      <label for="name" class="text-xl text-dark">name</label>
+      <input
+        type="name"
+        name="name"
+        id="name"
+        class="bg-light-lemon p-2 rounded-lg"
+        placeholder="John"
+        v-model.trim="formAddUser.name"
+      />
+      <div v-if="v$.name.$error">
+        <p class="text-red-500" v-for="e in v$.name.$errors" :key="e.$uid">
+          {{ e.$message }}
+        </p>
+      </div>
+
+      <label for="username" class="text-xl mt-5 text-dark">username</label>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        class="bg-light-lemon p-2 rounded-lg"
+        placeholder="john123"
+        v-model.trim="formAddUser.username"
+      />
+      <div v-if="v$.username.$error">
+        <p class="text-red-500" v-for="e in v$.username.$errors" :key="e.$uid">
+          {{ e.$message }}
+        </p>
+      </div>
+      <p v-if="erroMsg" class="text-red-500">Username has been taken.</p>
+      <button
+        class="bg-lemon p-3 mt-5 font-bold text-dark rounded-lg"
+        :disabled="!isValid"
+        :class="{ 'bg-gray-300': !isValid, 'text-gray-500': !isValid }"
+      >
+        {{ textButton }}
+      </button>
+    </form>
+  </DefaultLayout>
+</template>
