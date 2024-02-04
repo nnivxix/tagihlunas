@@ -5,24 +5,20 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "strict": true,
-    "jsx": "preserve",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "noEmit": true,
+    "jsx": "preserve",
     "strictPropertyInitialization": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
     },
-    "typeRoots": [
-      "../../typings",
-      "../../node_modules/@types"
-    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "./src/**/*", "src"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*", "src"],
   "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }],
 

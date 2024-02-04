@@ -1,61 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
-<template>
-  <DefaultLayout>
-    <AppBar titleapp="List Users">
-      <template #back>
-        <span></span>
-      </template>
-      <template #exit>
-        <button
-          class="justify-self-end"
-          @click="handleLogout"
-          title="log out button"
-        >
-          <font-awesome-icon
-            class="h-5 p-3 cursor-pointer text-dark"
-            icon="fa-solid fa-arrow-right-from-bracket text-lg"
-          ></font-awesome-icon>
-        </button>
-      </template>
-    </AppBar>
-    <TheButton
-      icon="fa-plus"
-      title="Add User"
-      @button-event="addUser"
-    ></TheButton>
-    <div class="flex items-center">
-      <input
-        type="text"
-        name="filter users"
-        id="#searchByName"
-        @input="filterUser()"
-        :placeholder="users.length ? users.length + ' users' : 'no user'"
-        v-model="queryName"
-        class="border p-2 rounded-md w-full my-8 border-gray-800"
-      />
-      <font-awesome-icon
-        :class="{ hidden: !queryName.length }"
-        @click="deleteQuery"
-        class="absolute right-24 z-20 cursor-pointer text-dark"
-        icon="fa-solid fa-xmark"
-      />
-      <font-awesome-icon
-        class="h-7 p-3 cursor-pointer text-dark"
-        title="sort A to Z"
-        icon="fa-solid fa-arrow-down-a-z"
-        @click="sortByName"
-      />
-    </div>
-    <ContactUser
-      v-for="user in users"
-      :key="user.user_id"
-      :user="user"
-      :background="user.color_profile"
-    >
-    </ContactUser>
-  </DefaultLayout>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
@@ -121,31 +63,6 @@ function sortByName() {
 usersStore.$patch({
   currentName: "",
 });
-function resetStateUsers() {
-  usersStore.$patch({
-    users: [],
-    usersDuplicate: [],
-    currentUser: {
-      id: 1,
-      admin_id: "",
-      user_id: "",
-      name: "",
-      username: "",
-      color_profile: "",
-      created_at: "",
-      transactions: [],
-    },
-    currentName: "",
-    currentUsername: "",
-    currentColor: "",
-  });
-}
-function resetStateTransactions() {
-  //reset transactionStore
-  transactionStore.$patch({
-    transactions: [],
-  });
-}
 
 const handleLogout = async () => {
   await userLogout();
@@ -161,8 +78,8 @@ function addUser() {
 }
 
 onMounted(async () => {
-  resetStateTransactions();
-  resetStateUsers();
+  transactionStore.$reset();
+  usersStore.$reset();
   // run function to fetch all data
   await getAllUsers();
 });
@@ -170,3 +87,56 @@ onBeforeUnmount(() => {
   users.value = usersDuplicate.value;
 });
 </script>
+
+<template>
+  <DefaultLayout>
+    <AppBar titleapp="List Users">
+      <template #back>
+        <span></span>
+      </template>
+      <template #exit>
+        <button
+          class="justify-self-end"
+          @click="handleLogout"
+          title="log out button"
+        >
+          <Icon name="LogOut" />
+        </button>
+      </template>
+    </AppBar>
+    <TheButton icon="Plus" title="Add User" @button-event="addUser"></TheButton>
+    <div class="grid grid-cols-6 items-center">
+      <div class="relative col-span-5">
+        <input
+          type="text"
+          name="filter users"
+          id="#searchByName"
+          @input="filterUser()"
+          :placeholder="users.length ? users.length + ' users' : 'no user'"
+          v-model="queryName"
+          class="border p-2 rounded-md w-full my-8 border-gray-800"
+        />
+        <Icon
+          :class="{ hidden: !queryName.length }"
+          @click="deleteQuery"
+          class="absolute right-3 top-10 z-20 cursor-pointer text-dark"
+          name="X"
+        />
+      </div>
+      <Icon
+        name="ArrowDownAZ"
+        @click="sortByName"
+        :size="32"
+        :strokeWidth="2"
+        class="col-span-1 place-self-end self-center"
+      />
+    </div>
+    <ContactUser
+      v-for="user in users"
+      :key="user.user_id"
+      :user="user"
+      :background="user.color_profile"
+    >
+    </ContactUser>
+  </DefaultLayout>
+</template>

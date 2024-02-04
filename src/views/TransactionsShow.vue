@@ -1,114 +1,3 @@
-<template>
-  <DefaultLayout>
-    <AppBar titleapp="Detail">
-      <template #back>
-        <button
-          v-if="isLoggedIn()"
-          class="justify-self-start"
-          @click="$router.back()"
-        >
-          <font-awesome-icon icon="fa-solid fa-x" class="h-5" />
-        </button>
-        <button v-else class="justify-self-start"></button>
-      </template>
-      <template #exit>
-        <button class="justify-self-end" @click="startShare">
-          <font-awesome-icon
-            icon="fa-solid fa-arrow-up-from-bracket"
-            class="h-5"
-          />
-        </button>
-      </template>
-    </AppBar>
-    <div v-if="!loading" class="flex flex-col justify-between h-[90vh] mb-4">
-      <div id="info" class="flex flex-col text-dark my-8">
-        <img
-          src="@/assets/check-circle-rounded.svg"
-          alt="success"
-          srcset=""
-          class="h-32"
-        />
-        <h1 class="text-center font-semibold text-2xl mt-8">
-          Transaction Success
-        </h1>
-      </div>
-      <div id="detail" class="px-2 text-dark grid grid-cols-2">
-        <p class="pt-2">Name</p>
-        <p class="pt-2 text-right font-semibold">
-          {{ detailTransaction?.users?.name }}
-        </p>
-        <p class="pt-2">Due date</p>
-        <p class="pt-2 text-right font-semibold">
-          {{
-            timeFormated(detailTransaction?.created_at as string, "YYYY-MM-DD")
-          }}
-        </p>
-        <p class="pt-2">Time</p>
-        <p class="pt-2 text-right font-semibold">
-          {{
-            timeFormated(detailTransaction?.created_at as string, "HH:mm:ss")
-          }}
-        </p>
-        <p class="pt-2">Transaction id</p>
-
-        <p
-          class="text-sm pt-2 text-right font-semibold"
-          @click="copy(detailTransaction?.trx_id as string)"
-        >
-          <font-awesome-icon icon="fa-solid fa-copy"> </font-awesome-icon>
-          {{ detailTransaction?.trx_id }}
-        </p>
-
-        <p class="pt-2">Message</p>
-        <p class="pt-2 text-right font-semibold">
-          {{ detailTransaction?.message ?? "" }}
-        </p>
-        <div class="col-span-2 flex border p-2 mt-8 items-center">
-          <p class="text-lg w-1/2">Total transaction</p>
-          <p class="text-lg w-1/2 text-right font-semibold">
-            {{
-              detailTransaction?.amount?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })
-            }}
-          </p>
-        </div>
-
-        <!-- modal -->
-        <vue-final-modal
-          v-model="showModal"
-          classes="flex justify-center items-center w-full"
-        >
-          <ModalDelete
-            type-data="transaction"
-            cancel="Back"
-            confirm="Delete"
-            grid-rows="3"
-            @clickCancle="showModal = false"
-            @clickConfirm="deleteTransaction"
-          >
-          </ModalDelete>
-        </vue-final-modal>
-      </div>
-      <div id="action" v-if="isLoggedIn()" class="col-span-2 mt-10 mb-4">
-        <button
-          @click="showModal = true"
-          class="w-full mt-3 border border-red-600 p-3 font-bold text-red-600 rounded-lg"
-        >
-          Delete
-        </button>
-        <button
-          @click="$router.back()"
-          class="w-full mt-3 bg-lemon p-3 font-bold text-dark rounded-lg"
-        >
-          Done
-        </button>
-      </div>
-    </div>
-  </DefaultLayout>
-</template>
-
 <script setup lang="ts">
 import { onBeforeMount, ref, reactive, onBeforeUnmount } from "vue";
 import type { Ref } from "vue";
@@ -187,6 +76,111 @@ onBeforeUnmount(() => {
   Object.assign(transaction, initTransaction);
 });
 </script>
+<template>
+  <DefaultLayout>
+    <AppBar titleapp="Detail">
+      <template #back>
+        <button
+          v-if="isLoggedIn()"
+          class="justify-self-start"
+          @click="$router.back()"
+        >
+          <Icon name="X" class="h-5" />
+        </button>
+        <button v-else class="justify-self-start"></button>
+      </template>
+      <template #exit>
+        <button class="justify-self-end" @click="startShare">
+          <Icon name="Share" />
+        </button>
+      </template>
+    </AppBar>
+    <div v-if="!loading" class="flex flex-col justify-between h-[90vh] mb-4">
+      <div id="info" class="flex flex-col text-dark my-8">
+        <img
+          src="@/assets/check-circle-rounded.svg"
+          alt="success"
+          srcset=""
+          class="h-32"
+        />
+        <h1 class="text-center font-semibold text-2xl mt-8">
+          Transaction Success
+        </h1>
+      </div>
+      <div id="detail" class="px-2 text-dark grid grid-cols-2">
+        <p class="pt-2">Name</p>
+        <p class="pt-2 text-right font-semibold">
+          {{ detailTransaction?.users?.name }}
+        </p>
+        <p class="pt-2">Due date</p>
+        <p class="pt-2 text-right font-semibold">
+          {{
+            timeFormated(detailTransaction?.created_at as string, "YYYY-MM-DD")
+          }}
+        </p>
+        <p class="pt-2">Time</p>
+        <p class="pt-2 text-right font-semibold">
+          {{
+            timeFormated(detailTransaction?.created_at as string, "HH:mm:ss")
+          }}
+        </p>
+        <p class="pt-2">Transaction id</p>
+        <p
+          class="text-sm pt-2 text-right font-semibold"
+          @click="copy(detailTransaction?.trx_id as string)"
+        >
+          {{ detailTransaction?.trx_id }}
+        </p>
+
+        <p class="pt-2">Message</p>
+        <p class="pt-2 text-right font-semibold">
+          {{ detailTransaction?.message ?? "" }}
+        </p>
+        <div class="col-span-2 flex border p-2 mt-8 items-center">
+          <p class="text-lg w-1/2">Total transaction</p>
+          <p class="text-lg w-1/2 text-right font-semibold">
+            {{
+              detailTransaction?.amount?.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              })
+            }}
+          </p>
+        </div>
+
+        <!-- modal -->
+        <VueFinalModal
+          v-model="showModal"
+          classes="flex justify-center items-center w-full"
+        >
+          <ModalDelete
+            type-data="transaction"
+            cancel="Back"
+            confirm="Delete"
+            grid-rows="3"
+            @clickCancle="showModal = false"
+            @clickConfirm="deleteTransaction"
+          >
+          </ModalDelete>
+        </VueFinalModal>
+      </div>
+      <div id="action" v-if="isLoggedIn()" class="col-span-2 mt-10 mb-4">
+        <button
+          @click="showModal = true"
+          class="w-full mt-3 border border-red-600 p-3 font-bold text-red-600 rounded-lg"
+        >
+          Delete
+        </button>
+        <button
+          @click="$router.back()"
+          class="w-full mt-3 bg-lemon p-3 font-bold text-dark rounded-lg"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </DefaultLayout>
+</template>
 
 <style>
 .vue-use-popperjs-none {
