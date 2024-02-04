@@ -3,9 +3,9 @@
 <template>
   <div class="mx-6">
     <div class="my-auto h-screen flex mx-auto flex-col justify-center max-w-xl">
-      <router-link to="/">
-        <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
-        Back to home
+      <router-link to="/" class="flex gap-1">
+        <Icon name="ArrowLeft" />
+        <span> Back to home </span>
       </router-link>
       <slot />
     </div>

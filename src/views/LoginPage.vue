@@ -29,9 +29,13 @@
           class="bg-light-lemon p-3 rounded-lg w-full"
         />
         <span class="absolute right-4 mt-3 z-20" @click="hidePswd = !hidePswd">
-          <font-awesome-icon
-            :icon="hidePswd ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
+          <Icon
+            class="text-dark"
+            :strokeWidth="1.7"
+            v-if="hidePswd"
+            name="Eye"
           />
+          <Icon class="text-dark" :strokeWidth="1.7" name="EyeOff" v-else />
         </span>
       </div>
       <p v-if="errorMsg" class="text-red-700 py-2">{{ errorMsg }}</p>

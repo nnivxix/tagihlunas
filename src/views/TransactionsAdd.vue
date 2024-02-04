@@ -119,7 +119,7 @@ onBeforeMount(() => {
     <AppBar titleapp="Transaction">
       <template #back>
         <button class="justify-self-start" @click="$router.back()">
-          <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
+          <Icon name="ArrowLeft" />
         </button>
       </template>
     </AppBar>
