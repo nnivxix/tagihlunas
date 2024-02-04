@@ -142,15 +142,12 @@ onMounted(async () => {
     <AppBar titleapp="Details" class="mx-6">
       <template #back>
         <button class="justify-self-start" @click="$router.back()">
-          <font-awesome-icon
-            class="h-5"
-            icon="fa-solid fa-arrow-left"
-          ></font-awesome-icon>
+          <Icon name="ArrowLeft" />
         </button>
       </template>
       <template #exit>
         <button class="justify-self-end relative" @click="showOption">
-          <font-awesome-icon class="h-5" icon="fa-solid fa-ellipsis-vertical" />
+          <Icon name="MoreVertical" />
           <ul
             class="border absolute right-0 top-12 text-xl bg-white"
             :class="{ block: isShowOption, hidden: !isShowOption }"
@@ -192,13 +189,12 @@ onMounted(async () => {
           >
             {{ currentName }}
             <span>
-              <font-awesome-icon
-                icon="fa-solid fa-pen"
+              <Icon
+                name="Pencil"
                 @click="isEditName = true"
                 :class="{ 'hidden absolute top-0': isEditName }"
                 class="ml-3 h-5 text-gray-700"
-              >
-              </font-awesome-icon>
+              />
             </span>
           </p>
         </div>
