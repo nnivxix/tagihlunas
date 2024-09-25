@@ -73,9 +73,14 @@ const handleLogin = async () => {
             class="text-dark"
             :strokeWidth="1.7"
             v-if="hidePswd"
-            name="Eye"
+            icon="lucide:eye"
           />
-          <Icon class="text-dark" :strokeWidth="1.7" name="EyeOff" v-else />
+          <Icon
+            class="text-dark"
+            :strokeWidth="1.7"
+            icon="lucide:eye-off"
+            v-else
+          />
         </span>
       </div>
       <p v-if="errorMsg" class="text-red-700 py-2">{{ errorMsg }}</p>
@@ -95,3 +100,4 @@ const handleLogin = async () => {
     </div>
   </GuestLayout>
 </template>
+

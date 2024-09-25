@@ -16,3 +16,4 @@ app.component("DefaultLayout", DefaultLayout);
 app.component("GuestLayout", GuestLayout);
 app.component("Icon", Icon);
 app.mount("#app");
+

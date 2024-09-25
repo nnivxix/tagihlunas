@@ -25,6 +25,8 @@ export interface Transaction {
   message?: string;
   created_at?: string;
   users?: {
-    name: string;
+    name?: string;
+    user_id?: string;
   };
 }
+
