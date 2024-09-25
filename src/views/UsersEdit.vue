@@ -4,7 +4,7 @@
     <AppBar titleapp="Edit User">
       <template #back>
         <button class="justify-self-start" @click="$router.back()">
-          <Icon name="ArrowLeft" />
+          <Icon icon="lucide:arrow-left" />
         </button>
       </template>
     </AppBar>
@@ -156,3 +156,4 @@ onBeforeMount(async () => {
   await getOneUser();
 });
 </script>
+

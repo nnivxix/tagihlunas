@@ -29,13 +29,13 @@
           class="bg-light-lemon p-3 rounded-lg w-full"
         />
         <span class="absolute right-4 mt-3 z-20" @click="hidePswd = !hidePswd">
+          <Icon class="text-dark" v-if="hidePswd" icon="lucide:eye" />
           <Icon
             class="text-dark"
             :strokeWidth="1.7"
-            v-if="hidePswd"
-            name="Eye"
+            icon="lucide:eye-off"
+            v-else
           />
-          <Icon class="text-dark" :strokeWidth="1.7" name="EyeOff" v-else />
         </span>
       </div>
       <p v-if="errorMsg" class="text-red-700 py-2">{{ errorMsg }}</p>
@@ -102,3 +102,4 @@ watch(formSignIn, () => {
   }
 });
 </script>
+

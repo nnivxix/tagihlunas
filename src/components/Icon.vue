@@ -1,29 +1,12 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import * as icons from "lucide-vue-next";
-
-const { name, size, color, strokeWidth, defaultClass } = withDefaults(
-  defineProps<{
-    name: string;
-    size?: number;
-    color?: string;
-    strokeWidth?: number;
-    defaultClass?: string;
-  }>(),
-  {
-    strokeWidth: 2.3,
-  }
-);
-
-const icon = computed(() => icons[name as keyof typeof icons]);
+import { Icon } from "@iconify/vue";
+const { icon, width = "1.5em" } = defineProps<{
+  icon: string;
+  width: string;
+}>();
 </script>
 
 <template>
-  <Component
-    :is="icon"
-    :size="size"
-    :color="color"
-    :stroke-width="strokeWidth"
-    :default-class="defaultClass"
-  />
+  <Icon v-bind="$attrs" :icon :width />
 </template>
+

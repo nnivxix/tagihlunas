@@ -56,7 +56,6 @@ async function HandleAddUser() {
       });
       return router.push({
         path: "/users",
-        name: "users.index",
       });
     }
   } catch (error: any) {
@@ -81,7 +80,7 @@ watch(formAddUser, () => {
           class="justify-self-start"
           @click="$router.push({ name: 'users.index' })"
         >
-          <Icon name="ArrowLeft" />
+          <Icon icon="lucide:arrow-left" />
         </button>
       </template>
     </AppBar>
@@ -126,3 +125,4 @@ watch(formAddUser, () => {
     </form>
   </DefaultLayout>
 </template>
+

@@ -85,13 +85,13 @@ onBeforeUnmount(() => {
           class="justify-self-start"
           @click="$router.back()"
         >
-          <Icon name="X" class="h-5" />
+          <Icon icon="lucide:x" class="h-5" />
         </button>
         <button v-else class="justify-self-start"></button>
       </template>
       <template #exit>
         <button class="justify-self-end" @click="startShare">
-          <Icon name="Share" />
+          <Icon icon="lucide:share" />
         </button>
       </template>
     </AppBar>
@@ -194,3 +194,4 @@ onBeforeUnmount(() => {
   font-size: 13px;
 }
 </style>
+

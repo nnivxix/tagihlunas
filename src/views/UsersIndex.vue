@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
           @click="handleLogout"
           title="log out button"
         >
-          <Icon name="LogOut" />
+          <Icon icon="lucide:log-out" />
         </button>
       </template>
     </AppBar>
@@ -120,11 +120,11 @@ onBeforeUnmount(() => {
           :class="{ hidden: !queryName.length }"
           @click="deleteQuery"
           class="absolute right-3 top-10 z-20 cursor-pointer text-dark"
-          name="X"
+          icon="lucide:x"
         />
       </div>
       <Icon
-        name="ArrowDownAZ"
+        icon="lucide:arrow-down-a-z"
         @click="sortByName"
         :size="32"
         :strokeWidth="2"
@@ -140,3 +140,4 @@ onBeforeUnmount(() => {
     </ContactUser>
   </DefaultLayout>
 </template>
+
